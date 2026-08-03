@@ -1,0 +1,25 @@
+{
+  "run_id": "lora_fa_small_classification_seed42_0",
+  "method": "lora_fa",
+  "backbone": "small",
+  "task": "classification",
+  "seed": 42,
+  "performance": {
+    "accuracy": 0.782
+  },
+  "efficiency": {
+    "wall_clock_seconds": 600.0,
+    "peak_gpu_memory_gb": 3.9,
+    "trainable_param_pct": 0.012
+  },
+  "energy": {
+    "total_kwh": 0.017
+  },
+  "carbon": {
+    "kgco2eq": 0.007
+  },
+  "cost_proxy_usd": 0.02,
+  "sustainability": {
+    "score_balanced": 0.658
+  }
+}

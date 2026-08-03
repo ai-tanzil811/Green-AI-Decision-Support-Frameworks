@@ -1,0 +1,12 @@
+method: lisa
+sweep:
+  layer_sample_prob:
+  - 0.25
+  - 0.5
+  resample_every_n_steps:
+  - 10
+  - 50
+fixed:
+  always_train:
+  - embed_tokens
+  - lm_head

@@ -1,0 +1,13 @@
+backbones:
+  tiny:
+    model_id: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+    revision: main
+  small:
+    model_id: google/gemma-2b
+    revision: main
+  medium:
+    model_id: google/gemma-7b
+    revision: main
+  large:
+    model_id: google/gemma-2-9b
+    revision: main

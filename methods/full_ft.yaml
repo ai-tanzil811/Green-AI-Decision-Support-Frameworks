@@ -1,0 +1,6 @@
+method: full_ft
+sweep:
+  learning_rate:
+  - 5.0e-06
+  - 1.0e-05
+fixed: {}

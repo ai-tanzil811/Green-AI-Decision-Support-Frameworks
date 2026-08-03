@@ -1,0 +1,23 @@
+method: lora
+sweep:
+  rank:
+  - 4
+  - 8
+  - 16
+  - 32
+  alpha:
+  - 16
+  - 32
+  target_modules:
+  - - q_proj
+    - v_proj
+  - - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+  learning_rate:
+  - 0.0001
+  - 0.0002
+fixed:
+  lora_dropout: 0.05
+  bias: none

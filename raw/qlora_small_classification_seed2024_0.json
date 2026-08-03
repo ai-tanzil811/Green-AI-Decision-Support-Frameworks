@@ -1,0 +1,25 @@
+{
+  "run_id": "qlora_small_classification_seed2024_0",
+  "method": "qlora",
+  "backbone": "small",
+  "task": "classification",
+  "seed": 2024,
+  "performance": {
+    "accuracy": 0.778
+  },
+  "efficiency": {
+    "wall_clock_seconds": 600.0,
+    "peak_gpu_memory_gb": 3.0,
+    "trainable_param_pct": 0.015
+  },
+  "energy": {
+    "total_kwh": 0.01
+  },
+  "carbon": {
+    "kgco2eq": 0.004
+  },
+  "cost_proxy_usd": 0.01,
+  "sustainability": {
+    "score_balanced": 0.705
+  }
+}

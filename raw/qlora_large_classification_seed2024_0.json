@@ -1,0 +1,25 @@
+{
+  "run_id": "qlora_large_classification_seed2024_0",
+  "method": "qlora",
+  "backbone": "large",
+  "task": "classification",
+  "seed": 2024,
+  "performance": {
+    "accuracy": 0.873
+  },
+  "efficiency": {
+    "wall_clock_seconds": 600.0,
+    "peak_gpu_memory_gb": 11.0,
+    "trainable_param_pct": 0.015
+  },
+  "energy": {
+    "total_kwh": 0.088
+  },
+  "carbon": {
+    "kgco2eq": 0.034
+  },
+  "cost_proxy_usd": 0.11,
+  "sustainability": {
+    "score_balanced": 0.719
+  }
+}

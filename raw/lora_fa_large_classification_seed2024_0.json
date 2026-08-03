@@ -1,0 +1,25 @@
+{
+  "run_id": "lora_fa_large_classification_seed2024_0",
+  "method": "lora_fa",
+  "backbone": "large",
+  "task": "classification",
+  "seed": 2024,
+  "performance": {
+    "accuracy": 0.883
+  },
+  "efficiency": {
+    "wall_clock_seconds": 600.0,
+    "peak_gpu_memory_gb": 14.3,
+    "trainable_param_pct": 0.012
+  },
+  "energy": {
+    "total_kwh": 0.143
+  },
+  "carbon": {
+    "kgco2eq": 0.055
+  },
+  "cost_proxy_usd": 0.17,
+  "sustainability": {
+    "score_balanced": 0.714
+  }
+}

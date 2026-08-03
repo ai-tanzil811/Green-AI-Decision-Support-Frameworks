@@ -1,0 +1,25 @@
+{
+  "run_id": "lora_large_classification_seed13_0",
+  "method": "lora",
+  "backbone": "large",
+  "task": "classification",
+  "seed": 13,
+  "performance": {
+    "accuracy": 0.88
+  },
+  "efficiency": {
+    "wall_clock_seconds": 600.0,
+    "peak_gpu_memory_gb": 15.4,
+    "trainable_param_pct": 0.015
+  },
+  "energy": {
+    "total_kwh": 0.1429
+  },
+  "carbon": {
+    "kgco2eq": 0.0549
+  },
+  "cost_proxy_usd": 0.17,
+  "sustainability": {
+    "score_balanced": 0.682
+  }
+}

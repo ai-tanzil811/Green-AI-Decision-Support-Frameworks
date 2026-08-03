@@ -1,0 +1,18 @@
+method: qlora
+sweep:
+  rank:
+  - 8
+  - 16
+  - 32
+  learning_rate:
+  - 0.0001
+  - 0.0002
+fixed:
+  quant_type: nf4
+  double_quant: true
+  compute_dtype: bfloat16
+  target_modules:
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj
