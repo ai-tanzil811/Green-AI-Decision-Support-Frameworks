@@ -1,84 +1,206 @@
-#  Project Overview
+# GreenPEFT: A Multi-Objective Green AI Decision Support Framework
 
-## 1.Summary
+> **Sustainable Parameter-Efficient Fine-Tuning of Large Language Models via Predictive Zero-Shot Constraint Filtering and Green Efficiency Index (GEI)**
 
-This project sets up a sustainable PEFT benchmark workflow for comparing fine-tuning strategies under accuracy, memory, time, energy, and carbon constraints. The workspace already contains the core benchmark artifacts, including raw run data, aggregated CSV outputs, configuration files, a notebook pipeline, and a paper-style methodology document.
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.2%2B-orange.svg)](https://pytorch.org/)
+[![CodeCarbon](https://img.shields.io/badge/CodeCarbon-2.8%2B-brightgreen.svg)](https://codecarbon.io/)
 
-## 2. Problem Statement
+---
 
-Large language models are expensive to fine-tune, and full fine-tuning is often impractical for teams with limited hardware or sustainability budgets. Most comparisons focus only on accuracy, which leaves out the operational cost of training.
+## 📌 Executive Summary
 
-The problem is to evaluate PEFT methods in a way that answers practical deployment questions such as:
+**GreenPEFT** shifts the paradigm of sustainable machine learning from static post-hoc benchmarking (*"Which method was most energy-efficient in past runs?"*) to **predictive, constraint-aware decision support** (*"Which PEFT configuration dynamically satisfies user VRAM, carbon, energy, and accuracy constraints while maximizing resource efficiency?"*).
 
-- Which method gives the best accuracy?
-- Which method uses the least memory and energy?
-- Which method minimizes carbon footprint?
-- Which method is best when multiple constraints must be balanced together?
+Instead of requiring practitioners to run expensive empirical sweeps prior to selecting a fine-tuning strategy, GreenPEFT leverages a **zero-shot surrogate regressor** trained on pre-training metadata features (backbone parameters, adapter rank, quantization bits, dataset size) to forecast task performance and environmental cost. Combined with a multi-objective decision engine, Pareto-frontier filtering, and the **Green Efficiency Index (GEI)**, GreenPEFT prescribes the optimal adaptation strategy in sub-second inference time.
 
-## 3. Proposed Solution
+---
 
-The project solves this with a benchmark and decision-support workflow that measures performance and sustainability together.
+## 📑 Core Documentation & Repository Artifacts
 
-The solution includes:
+| Document / Artifact | File Link | Description & Purpose |
+| :--- | :--- | :--- |
+| **IEEE Research Paper** | [main.tex](file:///c:/Users/Tanzil/Downloads/green/main.tex) / [GreenPEFT_IEEE.tex](file:///c:/Users/Tanzil/Downloads/green/GreenPEFT_IEEE.tex) | Complete academic manuscript in IEEE format with TikZ system architecture diagram, equations, empirical tables, and references. |
+| **Viva & Defense Guide** | [viva_prep.md](file:///c:/Users/Tanzil/Downloads/green/viva_prep.md) | Complete viva preparation handbook with elevator pitches, basic knowledge Q&A, tough supervisor defense questions, and cheat sheet. |
+| **Onboarding & Workflow Guide** | [GreenPEFT_Onboarding_and_Workflow.md](file:///c:/Users/Tanzil/Downloads/green/GreenPEFT_Onboarding_and_Workflow.md) | Step-by-step team onboarding, cell-by-cell execution flow, honest empirical evaluation, self-check guide, and prioritized fix list. |
+| **Prompting & Empirical Report** | [report.md](file:///c:/Users/Tanzil/Downloads/green/report.md) | Itemized raw log breakdown across seeds, promptable summary blocks, mathematical equations, failure diagnostics, and downstream prompt templates. |
+| **Presentation Slide Deck** | [presentation.md](file:///c:/Users/Tanzil/Downloads/green/presentation.md) | 13-slide Marp/Slidev/Gamma-ready presentation deck formatted for slide generation and PPT prompting. |
+| **Master Benchmark Notebook** | [green-project.ipynb](file:///c:/Users/Tanzil/Downloads/green/green-project.ipynb) | End-to-end Jupyter Notebook with synthetic Mode-A simulation, real Kaggle T4 execution, CodeCarbon NVML tracking, and Pareto plotter. |
+| **Master Research Context** | [docs/context.md](file:///c:/Users/Tanzil/Downloads/green/docs/context.md) | Primary research context detailing RQ1–RQ4, baseline comparisons, and the 3-Tier Strategic Roadmap. |
 
-- A controlled benchmark across PEFT methods
-- Standardized backbone and task configurations
-- Raw result logging for each run
-- Aggregation into summary tables
-- Pareto analysis for trade-off selection
-- Weighted scoring for different user priorities
-- A Green Efficiency Index for final ranking
-- A decision framework that recommends a method based on constraints
+---
 
-## 4. Methodology
+## 🏗️ Framework Architecture & Pipeline Workflow
 
-The current workflow follows these steps:
+![GreenPEFT Methodology Pipeline Diagram](figures/greenpeft_methodology_pipeline.png)
 
-1. Define the backbone, task, and PEFT method configurations.
-2. Generate benchmark runs for each method/backbone/seed combination.
-3. Save raw JSON outputs in a structured folder.
-4. Aggregate the raw outputs into CSV summaries.
-5. Compute weighted scores and Pareto fronts.
-6. Calculate the Green Efficiency Index.
-7. Produce plots and export the final benchmark bundle.
+```mermaid
+flowchart TD
+    subgraph Input["1. User Inputs & Hardware Constraints"]
+        UC["User Constraints\n• Max VRAM (GB)\n• Carbon Cap (kgCO₂eq)\n• Accuracy Floor\n• Time Limit (s)"]
+        W["Preference Profile (AHP Weights)\n• Balanced / Strict Carbon / High Accuracy"]
+    end
 
-The methodology is designed to work first with synthetic validation data and later with real Colab or hardware-backed measurements.
+    subgraph Metadata["2. Cheap Pre-Training Metadata"]
+        F["Metadata Vector x\n• Param Count (B)\n• Adapter Rank (r)\n• Quant Bits (q)\n• Task & Dataset Size"]
+    end
 
-## 5. What Has Been Done So Far
+    subgraph Surrogate["3. Predictive Surrogate Model"]
+        S["Surrogate Regressor f_φ(x)\nForecasts ŷ = [Acc, VRAM, Energy, Carbon, Time]"]
+    end
 
-The project is already in a usable state.
+    subgraph Engine["4. GreenPEFT Decision Engine"]
+        CF["Constraint Filtering\nFilter configurations violating user caps"]
+        PF["Pareto Frontier Extraction\nIsolate non-dominated trade-off points"]
+        GEI["GEI Scoring & Ranking\nCompute Green Efficiency Index"]
+    end
 
-Completed work includes:
+    subgraph Output["5. Strategy Prescription"]
+        REC["Recommended PEFT Configuration\n+ Quantitative Trade-off Explanation"]
+    end
 
-- The benchmark notebook was refactored into a canonical workflow.
-- The benchmark methodology markdown was rewritten.
-- A standalone Colab master prompt was created.
-- Redundant notebook appendix cells were removed.
-- The notebook workflow now covers setup, configs, synthetic generation, aggregation, scoring, GEI, and export.
-- Synthetic Mode A benchmark outputs already exist in the workspace.
-- Aggregated results and trade-off files are already present.
+    UC --> F
+    F --> S
+    S --> CF
+    W --> GEI
+    CF --> PF
+    PF --> GEI
+    GEI --> REC
 
-## 6. What We Will Do Next
+    style Input fill:#f0f4f8,stroke:#3b82f6,stroke-width:2px
+    style Metadata fill:#fdf4ff,stroke:#c084fc,stroke-width:2px
+    style Surrogate fill:#fff7ed,stroke:#f97316,stroke-width:2px
+    style Engine fill:#f0fdf4,stroke:#22c55e,stroke-width:2px
+    style Output fill:#fef2f2,stroke:#ef4444,stroke-width:2px
+```
 
-The next phase is to move from a synthetic benchmark to a more complete evaluation.
+---
 
-Planned next steps:
+## 🔬 Core Research Questions (RQs)
 
-- Run the notebook end to end in the current environment.
-- Validate the generated CSV summaries and plots.
-- Extend the workflow to real Colab execution if needed.
-- Add summarization and instruction-following benchmark runs.
-- Replace synthetic values with measured results where possible.
-- Refine the decision framework with real experimental data.
+- **RQ1 (Sustainability Benchmarking):** How do Full Fine-Tuning (Full-FT), LoRA, QLoRA, LoRA-FA, and LISA compare across accuracy, peak VRAM, wall-clock time, energy draw (kWh), carbon emissions ($\text{kgCO}_2\text{eq}$), and monetary cost?
+- **RQ2 (Multi-Objective Trade-offs):** Which PEFT configurations construct the non-dominated Pareto frontier when accuracy is jointly traded off against memory and environmental footprint?
+- **RQ3 (Constraint-Aware Decision Support):** Can a constraint engine reliably prescribe optimal strategies given explicit hardware and carbon budgets?
+- **RQ4 (Predictive Recommendation — Core Novelty):** Can a lightweight surrogate regressor accurately estimate performance metrics from cheap pre-training metadata, enabling zero-shot strategy selection?
 
-## 7. Expected Outcome
+---
 
-At the end of the project, the workspace should provide:
+## 📊 Empirical Kaggle Pilot Benchmark (NVIDIA Tesla T4)
 
-- A reproducible benchmark pipeline
-- A clear comparison of PEFT methods
-- A practical recommendation layer for method selection
+![GreenPEFT Benchmark Overview Plot](figures/benchmark_overview.png)
 
-## 8. Current Status
+Below are the empirical findings from a 60-run benchmark grid executed on Kaggle using an **NVIDIA Tesla T4 GPU (16 GB VRAM)** on the SST-2 classification task ($k=3$ random seeds):
 
-The project is past the setup stage and is now in the analysis and refinement phase. The main structure is in place, and the remaining work is mostly about validation, extension to additional tasks, and replacing synthetic data with real measurements.
+| Strategy | Backbone | Params | Accuracy (mean ± std) | Wall-clock (s) | Peak VRAM (GB) | Energy (kWh) | Carbon (kgCO₂eq) | GEI Score |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **full_ft** | Qwen2.5-Tiny | 0.5B | **0.9122 ± 0.0117** | 222.77 | 13.48 | 0.00382 | 0.00248 | 0.964 |
+| **lisa** | Qwen2.5-Tiny | 0.5B | 0.5089 ± 0.0165 | **182.87** | **4.84** | **0.00324** | **0.00211** | **0.999** |
+| **lisa** | TinyLlama-Small | 1.1B | 0.6122 ± 0.0901 | 467.91 | 9.43 | 0.00833 | 0.00541 | 0.822 |
+| **lisa** | Qwen2.5-Medium | 1.5B | 0.4889 ± 0.0342 | 636.33 | 14.88 | 0.01124 | 0.00731 | 0.751 |
+
+### Key Takeaways from Pilot Runs:
+1. **Full-FT Memory Ceiling:** Full Fine-Tuning hits a hard VRAM wall at 0.5B parameters ($13.48$ GB peak VRAM). At $\ge 1.1\text{B}$, Full-FT immediately fails with Out-Of-Memory (OOM) errors.
+2. **LISA Hardware Scaling:** LISA enables a 1.5B model to execute within a 16 GB VRAM budget ($14.88$ GB peak), where Full-FT fails completely.
+3. **GEI Dominance:** LISA on 0.5B achieves the highest GEI score ($0.999$) due to its compact $4.84$ GB memory footprint and low carbon footprint.
+
+---
+
+## 🛠️ Complete Repository Structure
+
+```text
+├── configs/
+│   ├── backbones.yaml                  # Backbone specifications (0.5B to 3.0B)
+│   ├── tasks.yaml                      # Downstream task definitions (classification, etc.)
+│   └── methods/                        # Hyperparameter configurations for PEFT methods
+│       ├── full_ft.yaml
+│       ├── lisa.yaml                   # Updated: layer_sample_prob=0.5, resample_steps=5
+│       ├── lora.yaml
+│       ├── lora_fa.yaml
+│       └── qlora.yaml
+├── docs/
+│   ├── context.md                      # Master research context and roadmap
+│   └── deepseek_markdown_...md         # Kaggle empirical run analysis & diagnosis
+├── raw/                                # Individual JSON run logs (60 files)
+├── figures/                            # High-resolution plots and trade-off visualisations
+├── aggregated_gei.csv                  # GEI scored empirical results
+├── pareto_fronts.csv                   # Identified non-dominated Pareto configurations
+├── sweep_raw.csv                       # Raw execution log across all 60 runs
+├── green-project.ipynb                 # Master execution notebook
+├── GreenPEFT_IEEE.tex                  # IEEE format research paper (LaTeX source)
+├── main.tex                            # Primary IEEE LaTeX compilation entry point
+├── presentation.md                     # Markdown slide deck for PPT generation
+├── report.md                           # System performance & prompt engineering report
+├── GreenPEFT_Onboarding_and_Workflow.md # Onboarding guide & cell-by-cell execution flow
+└── README.md                           # Master repository documentation
+```
+
+---
+
+## 🚀 Environment Setup & Installation
+
+### 1. Prerequisites
+- Python 3.10+
+- PyTorch 2.2+ with CUDA support
+- GPU with CUDA capabilities (tested on NVIDIA Tesla T4 16GB)
+
+### 2. Install Dependencies & Fix Environment Conflicts
+To prevent dependency locks encountered during initial benchmark sweeps (`torchao` version mismatch and `bitsandbytes` quantization requirements), install updated packages:
+
+```bash
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+pip install --upgrade "peft>=0.10.0" "bitsandbytes>=0.46.1" "torchao>=0.16.0" codecarbon transformers datasets accelerate trl pandas numpy scikit-learn
+```
+
+---
+
+## 🎯 Onboarding & Usage Workflow
+
+For a detailed team onboarding walkthrough, consult **[GreenPEFT_Onboarding_and_Workflow.md](file:///c:/Users/Tanzil/Downloads/green/GreenPEFT_Onboarding_and_Workflow.md)**.
+
+### Quick Start (Kaggle T4 Setup):
+1. **Upload Notebook:** Import `green-project.ipynb` into Kaggle.
+2. **Set Accelerator:** Select **GPU T4 x2** in the right panel settings.
+3. **Execute Cells:**
+   - **Cell 1–2:** Verify dependency upgrades and select `RUN_MODE` (`smoke` first, then `real`).
+   - **Cell 10:** Launch the CodeCarbon-tracked benchmark sweep.
+   - **Cell 13–15:** Extract Pareto frontiers, calculate GEI scores, and run the GreenPEFT Decision Engine.
+
+---
+
+## ⚖️ Green Efficiency Index (GEI) Formula
+
+The **Green Efficiency Index (GEI)** synthesizes multi-dimensional objectives into a single decision score:
+
+$$\text{GEI}(\mathbf{c}) = w_{\text{Acc}} \hat{S}_{\text{Acc}} + w_{\text{Mem}} \hat{S}_{\text{Mem}} + w_{C} \hat{S}_{C} + w_{T} \hat{S}_{T}$$
+
+Where normalized metric scores are defined as:
+$$\hat{S}_{\text{Acc}} = \frac{\text{Acc} - \text{Acc}_{\min}}{\text{Acc}_{\max} - \text{Acc}_{\min}}, \quad \hat{S}_{M} = 1 - \frac{M - M_{\min}}{M_{\max} - M_{\min}} \quad (M \in \{\text{Mem}, C, T\})$$
+
+Weights satisfy $\sum w_i = 1$ based on user preference profiles:
+- **Balanced Profile:** $w = [0.35, 0.25, 0.25, 0.15]$
+- **Strict Carbon Profile:** $w = [0.20, 0.20, 0.50, 0.10]$
+- **High-Accuracy Profile:** $w = [0.60, 0.15, 0.15, 0.10]$
+
+---
+
+## 🗺️ Strategic Roadmap (Tiers 1–3)
+
+- [x] **Tier 1 — Core Methodology:** Establish CodeCarbon tracking, run empirical Kaggle pilot, identify OOM boundaries, fix LISA hyperparameter configs (`layer_sample_prob=0.5`).
+- [ ] **Tier 2 — Analytical Upgrades:** Train XGBoost surrogate regressors on empirical traces, integrate DoRA/GaLore methods, derive AHP survey weights.
+- [ ] **Tier 3 — Systems Tooling:** Package open-source CLI tool (`green-peft recommend --vram 16 --carbon 0.05`), test cross-hardware surrogate transfer (A100 $\to$ T4).
+
+---
+
+## 📜 Citation
+
+If you use **GreenPEFT** in your research, please cite:
+
+```bibtex
+@inproceedings{greenpeft2026,
+  title={GreenPEFT: A Multi-Objective Green AI Decision Support Framework for Sustainable Parameter-Efficient Fine-Tuning of Large Language Models},
+  author={Anonymous Authors},
+  booktitle={IEEE Conference Proceedings},
+  year={2026}
+}
+```

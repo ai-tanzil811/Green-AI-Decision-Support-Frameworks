@@ -1,4 +1,0 @@
-method: lisa
-learning_rate: 1.0e-05
-layer_sample_prob: 0.25
-resample_every_n_steps: 20
