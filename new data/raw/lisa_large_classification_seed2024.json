@@ -1,0 +1,19 @@
+{
+  "run_id": "lisa_large_classification_seed2024",
+  "method": "lisa",
+  "backbone": "large",
+  "task": "classification",
+  "seed": 2024,
+  "model_id": "Qwen/Qwen2.5-3B",
+  "gpu": "Tesla T4",
+  "gpu_total_gb": 15.6,
+  "mode": "measured",
+  "status": "oom",
+  "timestamp": "2026-08-10T18:36:15",
+  "params": {
+    "trainable": 4096,
+    "total": 3085942784,
+    "trainable_param_pct": 1e-06
+  },
+  "error": "CUDA out of memory. Tried to allocate 44.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 14.81 MiB is free. Including non-PyTorch memory, this process has 14.54 GiB memory in use. Of the allocated memory 14.02 GiB is allocated by PyTorch, and 325.48 MiB is reserved by PyTorch but unallocate"
+}

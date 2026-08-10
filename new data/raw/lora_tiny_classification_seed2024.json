@@ -1,0 +1,14 @@
+{
+  "run_id": "lora_tiny_classification_seed2024",
+  "method": "lora",
+  "backbone": "tiny",
+  "task": "classification",
+  "seed": 2024,
+  "model_id": "Qwen/Qwen2.5-0.5B",
+  "gpu": "Tesla T4",
+  "gpu_total_gb": 15.6,
+  "mode": "measured",
+  "status": "error",
+  "timestamp": "2026-08-10T17:25:37",
+  "error": "ImportError: Found an incompatible version of torchao. Found version 0.10.0, but only versions above 0.16.0 are supported"
+}

@@ -1,0 +1,43 @@
+{
+  "run_id": "lisa_tiny_classification_seed42",
+  "method": "lisa",
+  "backbone": "tiny",
+  "task": "classification",
+  "seed": 42,
+  "model_id": "Qwen/Qwen2.5-0.5B",
+  "gpu": "Tesla T4",
+  "gpu_total_gb": 15.6,
+  "mode": "measured",
+  "status": "ok",
+  "timestamp": "2026-08-10T17:30:13",
+  "params": {
+    "trainable": 1792,
+    "total": 494034560,
+    "trainable_param_pct": 4e-06
+  },
+  "efficiency": {
+    "wall_clock_seconds": 186.78,
+    "energy_kwh": 0.003308,
+    "avg_power_watts": 63.8,
+    "peak_gpu_memory_gb": 4.827,
+    "torch_peak_gb": 3.635,
+    "nvml_peak_gb": 4.827,
+    "n_power_samples": 369
+  },
+  "energy": {
+    "total_kwh": 0.003308,
+    "avg_power_watts": 63.8
+  },
+  "carbon": {
+    "carbon_kgco2eq": 0.00215,
+    "carbon_renewable_grid": 0.000496,
+    "carbon_fossil_grid": 0.00215
+  },
+  "cost_proxy_usd": 0.0186,
+  "performance": {
+    "accuracy": 0.52,
+    "f1_macro": 0.4725,
+    "performance_score": 0.52,
+    "metric_name": "accuracy"
+  }
+}

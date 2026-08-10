@@ -1,0 +1,13 @@
+backbones:
+  tiny:
+    model_id: Qwen/Qwen2.5-0.5B
+    params_b: 0.5
+  small:
+    model_id: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+    params_b: 1.1
+  medium:
+    model_id: Qwen/Qwen2.5-1.5B
+    params_b: 1.5
+  large:
+    model_id: Qwen/Qwen2.5-3B
+    params_b: 3.0
