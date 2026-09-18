@@ -198,8 +198,8 @@ If you use **GreenPEFT** in your research, please cite:
 
 ```bibtex
 @inproceedings{greenpeft2026,
-  title={GreenPEFT: A Multi-Objective Green AI Decision Support Framework for Sustainable Parameter-Efficient Fine-Tuning of Large Language Models},
-  author={Anonymous Authors},
+  title={GreenPEFT: Green Fine Tuning},
+  author={Ashraful Islam Tanzil},
   booktitle={IEEE Conference Proceedings},
   year={2026}
 }
