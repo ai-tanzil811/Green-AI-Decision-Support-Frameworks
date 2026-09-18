@@ -38,47 +38,7 @@ Instead of requiring practitioners to run expensive empirical sweeps prior to se
 
 ![GreenPEFT Methodology Pipeline Diagram](methodology.png)
 
-```mermaid
-flowchart TD
-    subgraph Input["1. User Inputs & Hardware Constraints"]
-        UC["User Constraints\n• Max VRAM (GB)\n• Carbon Cap (kgCO₂eq)\n• Accuracy Floor\n• Time Limit (s)"]
-        W["Preference Profile (AHP Weights)\n• Balanced / Strict Carbon / High Accuracy"]
-    end
 
-    subgraph Metadata["2. Cheap Pre-Training Metadata"]
-        F["Metadata Vector x\n• Param Count (B)\n• Adapter Rank (r)\n• Quant Bits (q)\n• Task & Dataset Size"]
-    end
-
-    subgraph Surrogate["3. Predictive Surrogate Model"]
-        S["Surrogate Regressor f_φ(x)\nForecasts ŷ = [Acc, VRAM, Energy, Carbon, Time]"]
-    end
-
-    subgraph Engine["4. GreenPEFT Decision Engine"]
-        CF["Constraint Filtering\nFilter configurations violating user caps"]
-        PF["Pareto Frontier Extraction\nIsolate non-dominated trade-off points"]
-        GEI["GEI Scoring & Ranking\nCompute Green Efficiency Index"]
-    end
-
-    subgraph Output["5. Strategy Prescription"]
-        REC["Recommended PEFT Configuration\n+ Quantitative Trade-off Explanation"]
-    end
-
-    UC --> F
-    F --> S
-    S --> CF
-    W --> GEI
-    CF --> PF
-    PF --> GEI
-    GEI --> REC
-
-    style Input fill:#f0f4f8,stroke:#3b82f6,stroke-width:2px
-    style Metadata fill:#fdf4ff,stroke:#c084fc,stroke-width:2px
-    style Surrogate fill:#fff7ed,stroke:#f97316,stroke-width:2px
-    style Engine fill:#f0fdf4,stroke:#22c55e,stroke-width:2px
-    style Output fill:#fef2f2,stroke:#ef4444,stroke-width:2px
-```
-
----
 
 ## 🔬 Core Research Questions (RQs)
 
