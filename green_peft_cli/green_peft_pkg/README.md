@@ -26,7 +26,7 @@ e.g. `./peft_bench_export/`, and point `--artifacts-dir` at it.
 This repository includes a ready-to-use export at:
 
 ```text
-../../surrogate_artifacts_export/artifacts_export/
+../../model/artifacts_export/
 ├── configs/backbones.yaml
 ├── configs/methods/*.yaml
 ├── configs/tasks.yaml
@@ -40,7 +40,7 @@ From the repository root, install the package and use that export directly:
 ```powershell
 cd green_peft_cli/green_peft_pkg
 python -m pip install -e .
-green-peft list-zoo --artifacts-dir ../../surrogate_artifacts_export/artifacts_export
+green-peft list-zoo --artifacts-dir ../../model/artifacts_export
 ```
 
 ## Usage

@@ -65,7 +65,7 @@ This corrects the earlier pilot description that reported 12 successful runs. Fu
 ### Surrogate and CLI Export
 
 The first reusable surrogate export is available at
-`surrogate_artifacts_export/artifacts_export/`:
+`model/artifacts_export/`:
 
 ```text
 artifacts_export/
@@ -83,7 +83,7 @@ After `python -m pip install -e .` from `green_peft_cli/green_peft_pkg/`, query 
 
 ```bash
 green-peft recommend \
-  --artifacts-dir ./surrogate_artifacts_export/artifacts_export \
+  --artifacts-dir ./model/artifacts_export \
   --vram 16 --accuracy 0.90 --profile balanced --json
 ```
 

@@ -27,7 +27,7 @@ Instead of requiring practitioners to run expensive empirical sweeps prior to se
 | **Results index** | [results/README.md](results/README.md) | Navigation guide for canonical results, working files, archives, and notebook assets. |
 | **Canonical benchmark** | [results/canonical_benchmark](results/canonical_benchmark) | Configurations, raw runs, aggregate metrics, Pareto fronts, and figures from the 60-run Kaggle T4 benchmark. |
 | **Working run** | [results/working_run](results/working_run) | Working data, duplicate exports, and the original benchmark archive. |
-| **Surrogate export** | [surrogate_artifacts_export/artifacts_export](surrogate_artifacts_export/artifacts_export) | Exported surrogate models, validation metrics, feature data, and candidate configuration files used by the CLI recommender. |
+| **Surrogate export** | [model/artifacts_export](model/artifacts_export) | Exported surrogate models, validation metrics, feature data, and candidate configuration files used by the CLI recommender. |
 | **CLI package** | [green_peft_cli/green_peft_pkg](green_peft_cli/green_peft_pkg) | Installable `green-peft` command for constraint-aware experiment planning. |
 
 ---
@@ -171,7 +171,7 @@ The result folders and their intended uses are documented in the [results index]
 ### CLI Recommendation Workflow
 
 The repository includes a current surrogate export at
-`surrogate_artifacts_export/artifacts_export`. It contains models trained from the
+`model/artifacts_export`. It contains models trained from the
 benchmark traces, the expanded model catalog in `configs/backbones.yaml`, method
 configurations, and `results/surrogate_cv_metrics.json`.
 
@@ -179,14 +179,14 @@ List the candidate model and method combinations:
 
 ```bash
 green-peft list-zoo \
-    --artifacts-dir ./surrogate_artifacts_export/artifacts_export
+    --artifacts-dir ./model/artifacts_export
 ```
 
 Request a balanced recommendation under explicit resource constraints:
 
 ```bash
 green-peft recommend \
-    --artifacts-dir ./surrogate_artifacts_export/artifacts_export \
+    --artifacts-dir ./model/artifacts_export \
     --vram 16 --accuracy 0.90 --profile balanced --top-k 5
 ```
 
@@ -194,7 +194,7 @@ For automation, request JSON output and select a carbon-constrained profile:
 
 ```bash
 green-peft recommend \
-    --artifacts-dir ./surrogate_artifacts_export/artifacts_export \
+    --artifacts-dir ./model/artifacts_export \
     --vram 16 --carbon 0.003 --accuracy 0.90 \
     --profile strict_carbon --json
 ```
