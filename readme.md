@@ -22,6 +22,7 @@ Instead of requiring practitioners to run expensive empirical sweeps prior to se
 | Document / Artifact | File Link | Description & Purpose |
 | :--- | :--- | :--- |
 | **IEEE Research Paper** | [main.tex](file:///c:/Users/Tanzil/Downloads/green/main.tex) / [GreenPEFT_IEEE.tex](file:///c:/Users/Tanzil/Downloads/green/GreenPEFT_IEEE.tex) | Complete academic manuscript in IEEE format with TikZ system architecture diagram, equations, empirical tables, and references. |
+| **Emergency Viva Handout** | [viva_handout.md](file:///c:/Users/Tanzil/Downloads/green/viva_handout.md) | Printable 1-page defense summary, opening script, empirical results table, supervisor Q&A, and math cheat sheet for tomorrow's defense. |
 | **Viva & Defense Guide** | [viva_prep.md](file:///c:/Users/Tanzil/Downloads/green/viva_prep.md) | Complete viva preparation handbook with elevator pitches, basic knowledge Q&A, tough supervisor defense questions, and cheat sheet. |
 | **Onboarding & Workflow Guide** | [GreenPEFT_Onboarding_and_Workflow.md](file:///c:/Users/Tanzil/Downloads/green/GreenPEFT_Onboarding_and_Workflow.md) | Step-by-step team onboarding, cell-by-cell execution flow, honest empirical evaluation, self-check guide, and prioritized fix list. |
 | **Prompting & Empirical Report** | [report.md](file:///c:/Users/Tanzil/Downloads/green/report.md) | Itemized raw log breakdown across seeds, promptable summary blocks, mathematical equations, failure diagnostics, and downstream prompt templates. |
@@ -198,8 +199,8 @@ If you use **GreenPEFT** in your research, please cite:
 
 ```bibtex
 @inproceedings{greenpeft2026,
-  title={GreenPEFT: A Multi-Objective Green AI Decision Support Framework for Sustainable Parameter-Efficient Fine-Tuning of Large Language Models},
-  author={Anonymous Authors},
+  title={GreenPEFT: Tune it fine , Tune it Green},
+  author={Ashraful Islam Tanzil},
   booktitle={IEEE Conference Proceedings},
   year={2026}
 }
