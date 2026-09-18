@@ -148,32 +148,36 @@ pip install --upgrade "peft>=0.10.0" "bitsandbytes>=0.46.1" "torchao>=0.16.0" co
 
 ### 3. Install the recommendation CLI
 
-The CLI does not require PyTorch or a GPU. Install it in a separate environment when
-you only need recommendation and experiment-planning capabilities:
+The CLI does not require PyTorch or a GPU. Install the published package in a
+separate environment:
 
 ```bash
-cd green_peft_cli/green_peft_pkg
-python -m pip install -e .
+python -m pip install green-peft
 ```
 
-### Hugging Face Upload
+Published release:
 
-Open the published model directly:
+- [PyPI: green-peft 0.1.0](https://pypi.org/project/green-peft/0.1.0/)
+- [Hugging Face: ai-tanzil/GreenPEFT](https://huggingface.co/ai-tanzil/GreenPEFT)
+- [Kaggle: GreenPEFT Surrogate Data](https://www.kaggle.com/datasets/ashrafulislamtanzil/greenpeft-surrogate-data)
+- [DOI: 10.57967/hf/10504](https://doi.org/10.57967/hf/10504)
 
-[https://huggingface.co/ai-tanzil/GreenPEFT](https://huggingface.co/ai-tanzil/GreenPEFT)
-
-To update the repository from a local clone:
+Download the versioned surrogate artifacts:
 
 ```bash
-git xet install
 git clone https://huggingface.co/ai-tanzil/GreenPEFT
-cd GreenPEFT
-git add .
-git commit -m "Update GreenPEFT surrogate artifacts"
-git push
 ```
 
-Hugging Face credentials are required for `git push`.
+Run the recommender:
+
+```bash
+green-peft recommend \
+    --artifacts-dir ./GreenPEFT \
+    --vram 16 --accuracy 0.90 --profile balanced
+```
+
+For reproducibility, use the same artifact revision documented by the DOI and
+retain the CLI version with every recommendation report.
 
 ---
 
@@ -224,6 +228,10 @@ The CLI predicts accuracy, peak VRAM, energy, carbon, and wall-clock time, filte
 infeasible candidates, then ranks the survivors using Pareto filtering and GEI. It is
 a planning aid: always validate the selected configuration with a measured run before
 using it as a production policy.
+
+The published CLI release is `green-peft==0.1.0` and the published artifact bundle
+is `ai-tanzil/GreenPEFT`. The CLI and artifact bundle should be treated as a matched
+release pair.
 
 ### Current Surrogate Validation
 

@@ -79,13 +79,18 @@ artifacts_export/
     └── surrogate_dataset.csv
 ```
 
-After `python -m pip install -e .` from `green_peft_cli/green_peft_pkg/`, query it with:
+Install the published CLI with `python -m pip install green-peft`, clone the
+artifact repository, and query it with:
 
 ```bash
+git clone https://huggingface.co/ai-tanzil/GreenPEFT
 green-peft recommend \
-  --artifacts-dir ./model/artifacts_export \
+  --artifacts-dir ./GreenPEFT \
   --vram 16 --accuracy 0.90 --profile balanced --json
 ```
+
+For local development, the checked-in export is available at
+`model/artifacts_export/`.
 
 The exported catalog contains the four benchmarked tiers plus additional 135M, 360M,
 600M, 1.7B, 2.7B, 3.8B, and approximately 7B parameter entries. Recommendations for

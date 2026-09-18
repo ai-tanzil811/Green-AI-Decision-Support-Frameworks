@@ -1,3 +1,18 @@
+Metadata-Version: 2.4
+Name: green-peft
+Version: 0.1.0
+Summary: Constraint-aware, zero-shot PEFT strategy recommender using the GreenPEFT surrogate models.
+License-Expression: MIT
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: scikit-learn<1.9,>=1.8
+Requires-Dist: pandas<2.3,>=1.5
+Requires-Dist: numpy<2.1,>=1.23
+Requires-Dist: joblib>=1.2
+Requires-Dist: pyyaml>=6.0
+Dynamic: license-file
+
 # green-peft
 
 Constraint-aware PEFT strategy recommender. Wraps the surrogate models trained in
@@ -7,12 +22,8 @@ use?" from the command line, without running anything.
 ## Install
 
 ```bash
-pip install green-peft
+pip install -e .
 ```
-
-The published package is available at
-[PyPI](https://pypi.org/project/green-peft/0.1.0/). For development from this
-repository, use `python -m pip install -e .` instead.
 
 ## Export artifacts from your notebook run
 
@@ -30,7 +41,7 @@ e.g. `./peft_bench_export/`, and point `--artifacts-dir` at it.
 This repository includes a ready-to-use export at:
 
 ```text
-model/artifacts_export/
+../../model/artifacts_export/
 ├── configs/backbones.yaml
 ├── configs/methods/*.yaml
 ├── configs/tasks.yaml
@@ -42,13 +53,10 @@ model/artifacts_export/
 From the repository root, install the package and use that export directly:
 
 ```powershell
-python -m pip install green-peft
-git clone https://huggingface.co/ai-tanzil/GreenPEFT
-green-peft list-zoo --artifacts-dir ./GreenPEFT
+cd green_peft_cli/green_peft_pkg
+python -m pip install -e .
+green-peft list-zoo --artifacts-dir ../../model/artifacts_export
 ```
-
-For local development from this repository, use the checked-in export with
-`--artifacts-dir ./model/artifacts_export` from the project root.
 
 ## Usage
 
@@ -98,6 +106,4 @@ Use the CLI for experiment planning, shortlist generation, and explicit budget c
 It does not run fine-tuning, measure the target hardware, or guarantee performance.
 The benchmark evidence is primarily SST-2 classification on a Tesla T4; recommendations
 for unbenchmarked catalog entries are extrapolations. Validate the selected option with
-a real run and retain the JSON output alongside the measured results. The published
-CLI version is `0.1.0`; cite the release with DOI
-[10.57967/hf/10504](https://doi.org/10.57967/hf/10504).
+a real run and retain the JSON output alongside the measured results.

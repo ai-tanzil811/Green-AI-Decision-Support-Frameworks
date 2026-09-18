@@ -1,0 +1,2 @@
+[console_scripts]
+green-peft = green_peft.cli:main
