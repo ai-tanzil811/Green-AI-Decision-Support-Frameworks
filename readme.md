@@ -28,6 +28,7 @@ Instead of requiring practitioners to run expensive empirical sweeps prior to se
 | **Canonical benchmark** | [results/canonical_benchmark](results/canonical_benchmark) | Configurations, raw runs, aggregate metrics, Pareto fronts, and figures from the 60-run Kaggle T4 benchmark. |
 | **Working run** | [results/working_run](results/working_run) | Working data, duplicate exports, and the original benchmark archive. |
 | **Surrogate export** | [model/artifacts_export](model/artifacts_export) | Exported surrogate models, validation metrics, feature data, and candidate configuration files used by the CLI recommender. |
+| **Surrogate dataset** | [GreenPEFT Surrogate Data on Kaggle](https://www.kaggle.com/datasets/ashrafulislamtanzil/greenpeft-surrogate-data) | Benchmark-derived features and targets used to train the surrogate models. |
 | **CLI package** | [green_peft_cli/green_peft_pkg](green_peft_cli/green_peft_pkg) | Installable `green-peft` command for constraint-aware experiment planning. |
 | **Hugging Face model** | [ai-tanzil/GreenPEFT](https://huggingface.co/ai-tanzil/GreenPEFT) | Published surrogate artifacts and model card. |
 

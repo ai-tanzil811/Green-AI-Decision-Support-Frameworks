@@ -38,6 +38,10 @@ The export reports leave-one-tier-out feasibility accuracy of approximately
 0.7833. Accuracy and peak-VRAM regression remain weak under this validation,
 so every recommendation should be verified with an actual measured run.
 
+The benchmark-derived surrogate dataset is published on Kaggle:
+
+[ashrafulislamtanzil/greenpeft-surrogate-data](https://www.kaggle.com/datasets/ashrafulislamtanzil/greenpeft-surrogate-data)
+
 ## Use with the CLI
 
 ```bash
