@@ -271,13 +271,18 @@ Weights satisfy $\sum w_i = 1$ based on user preference profiles:
 
 ## 📜 Citation
 
-If you use **GreenPEFT** in your research, please cite:
+If you use **GreenPEFT** in your research, please cite the archived Hugging Face
+revision [f21ab54](https://huggingface.co/ai-tanzil/GreenPEFT/tree/f21ab54):
+
+[DOI: 10.57967/hf/10504](https://doi.org/10.57967/hf/10504)
 
 ```bibtex
-@inproceedings{greenpeft2026,
-  title={GreenPEFT: Green Fine-Tuning},
-  author={Ashraful Islam Tanzil},
-  booktitle={IEEE Conference Proceedings},
-  year={2026}
+@misc{ashraful_islam_tanzil_2026,
+    author       = {Ashraful Islam Tanzil},
+    title        = {GreenPEFT (Revision f21ab54)},
+    year         = {2026},
+    url          = {https://huggingface.co/ai-tanzil/GreenPEFT},
+    doi          = {10.57967/hf/10504},
+    publisher    = {Hugging Face}
 }
 ```
