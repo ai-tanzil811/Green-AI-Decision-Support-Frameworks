@@ -1,0 +1,1244 @@
+8.4s 1 0.00s - Debugger warning: It seems that frozen modules are being used, which may
+8.4s 2 0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+8.4s 3 0.00s - to python to disable frozen modules.
+8.4s 4 0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+9.1s 5 0.00s - Debugger warning: It seems that frozen modules are being used, which may
+9.1s 6 0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+9.1s 7 0.00s - to python to disable frozen modules.
+9.1s 8 0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+10.5s 9 Installing packages, this takes 1-3 minutes...
+87.2s 10 Skipping import of cpp extensions due to incompatible torch version. Please upgrade to torch >= 2.11.0 (found 2.10.0+cu128).
+87.2s 11 
+87.2s 12 Skipping import of cpp extensions due to incompatible torch version. Please upgrade to torch >= 2.11.0 (found 2.10.0+cu128).
+90.2s 13 All PEFT requirements satisfied cleanly.
+90.2s 14 torch       : 2.10.0+cu128
+90.2s 15 transformers: 5.17.0
+90.2s 16 peft        : 0.21.0
+90.2s 17 GPU         : Tesla T4 | 15.6 GB | compute 7.5 | visible devices 1
+90.2s 18 QLoRA 4-bit supported: True | native bf16: False
+90.2s 19 
+90.2s 20 Platform: kaggle
+90.2s 21 Project root: /kaggle/working/peft_bench
+90.2s 22 Folders ready.
+90.2s 23 REAL MODE: full grid. Expect several hours. Runs are resumable.
+90.2s 24 Planned runs: 5 methods x 4 tiers x 1 tasks x 3 seeds = 60
+90.2s 25 Tiers: {'tiny': 'Qwen/Qwen2.5-0.5B', 'small': 'TinyLlama/TinyLlama-1.1B-Chat-v1.0', 'medium': 'Qwen/Qwen2.5-1.5B', 'large': 'Qwen/Qwen2.5-3B'}
+90.2s 26 Wrote configs to /kaggle/working/peft_bench/configs
+90.2s 27 - configs/backbones.yaml
+90.2s 28 - configs/methods/full_ft.yaml
+90.2s 29 - configs/methods/lisa.yaml
+90.2s 30 - configs/methods/lora.yaml
+90.2s 31 - configs/methods/lora_fa.yaml
+90.2s 32 - configs/methods/qlora.yaml
+90.2s 33 - configs/tasks.yaml
+91.7s 34 [classification] downloading stanfordnlp/sst2 ...
+91.8s 35 Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+91.8s 36 
+91.8s 37 Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+94.4s 38 [classification] train=4000  eval=872  saved to /kaggle/working/peft_bench/data/classification_4000_872
+94.4s 39 
+94.4s 40 Sample row from classification :
+94.4s 41 {'idx': 32326, 'sentence': 'klein , charming in comedies like american pie and dead-on in election , ', 'label': 1}
+94.6s 42 NVML OK: instantaneous draw 10.0 W, 0.47 GB in use.
+94.6s 43 CodeCarbon available -- each run will log a second, independent estimate.
+96.5s 44 Meter self-test: {'wall_clock_seconds': 2.06, 'energy_kwh': 3.257e-05, 'energy_kwh_marginal': 3.257e-05, 'energy_source': 'nvml', 'avg_power_watts': 55.5, 'peak_gpu_memory_gb': 0.823, 'torch_peak_reserved_gb': 0.216, 'torch_peak_allocated_gb': 0.204, 'nvml_peak_gb': 0.823, 'n_power_samples': 11, 'n_sample_failures': 0}
+96.6s 45 Model builders ready. Compute dtype: torch.float16
+96.6s 46 Task pipelines ready. Dynamic padding: True
+96.8s 47 run_one() ready.
+96.8s 48 RUN_MODE is not synthetic -- nothing written. Good.
+96.9s 49 Sweep plan: 60 runs (cheapest first)
+96.9s 50 ============================================================
+96.9s 51 [1/60] lora | tiny (0.5B) | classification | seed 13
+102.9s 52 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+102.9s 53 Key          | Status  |
+102.9s 54 -------------+---------+-
+102.9s 55 score.weight | MISSING |
+102.9s 56 
+102.9s 57 Notes:
+102.9s 58 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+102.9s 59 
+102.9s 60 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+102.9s 61 Key          | Status  |
+102.9s 62 -------------+---------+-
+102.9s 63 score.weight | MISSING |
+102.9s 64 
+102.9s 65 Notes:
+102.9s 66 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+105.0s 67 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+107.1s 68 [codecarbon WARNING @ 17:44:51] Multiple instances of codecarbon are allowed to run at the same time.
+107.1s 69 
+107.1s 70 [codecarbon WARNING @ 17:44:51] Multiple instances of codecarbon are allowed to run at the same time.
+223.6s 71 [ok] lora_tiny_classification_seed13  score=0.9163  loss=0.59018  108.59s  4.206GB  0.001158kWh (38.4W avg)
+223.6s 72 [2/60] lora | tiny (0.5B) | classification | seed 42
+224.5s 73 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+224.5s 74 Key          | Status  |
+224.5s 75 -------------+---------+-
+224.5s 76 score.weight | MISSING |
+224.5s 77 
+224.5s 78 Notes:
+224.5s 79 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+224.5s 80 
+224.5s 81 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+224.5s 82 Key          | Status  |
+224.5s 83 -------------+---------+-
+224.5s 84 score.weight | MISSING |
+224.5s 85 
+224.5s 86 Notes:
+224.5s 87 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+225.9s 88 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+339.7s 89 [ok] lora_tiny_classification_seed42  score=0.9174  loss=0.58183  105.4s  4.877GB  0.001216kWh (41.6W avg)
+339.7s 90 [3/60] lora | tiny (0.5B) | classification | seed 2024
+340.4s 91 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+340.4s 92 Key          | Status  |
+340.4s 93 -------------+---------+-
+340.4s 94 score.weight | MISSING |
+340.4s 95 
+340.4s 96 Notes:
+340.4s 97 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+340.4s 98 
+340.4s 99 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+340.4s 100 Key          | Status  |
+340.4s 101 -------------+---------+-
+340.4s 102 score.weight | MISSING |
+340.4s 103 
+340.4s 104 Notes:
+340.4s 105 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+341.8s 106 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+456.0s 107 [ok] lora_tiny_classification_seed2024  score=0.9186  loss=0.58839  105.65s  4.879GB  0.001292kWh (44.1W avg)
+456.0s 108 [4/60] qlora | tiny (0.5B) | classification | seed 13
+457.3s 109 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+457.3s 110 Key          | Status  |
+457.3s 111 -------------+---------+-
+457.3s 112 score.weight | MISSING |
+457.3s 113 
+457.3s 114 Notes:
+457.3s 115 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+457.3s 116 
+457.3s 117 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+457.3s 118 Key          | Status  |
+457.3s 119 -------------+---------+-
+457.3s 120 score.weight | MISSING |
+457.3s 121 
+457.3s 122 Notes:
+457.3s 123 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+458.3s 124 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+630.4s 125 [ok] qlora_tiny_classification_seed13  score=0.9025  loss=0.60311  162.23s  3.64GB  0.002141kWh (47.5W avg)
+630.4s 126 [5/60] qlora | tiny (0.5B) | classification | seed 42
+631.7s 127 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+631.7s 128 Key          | Status  |
+631.7s 129 -------------+---------+-
+631.7s 130 score.weight | MISSING |
+631.7s 131 
+631.7s 132 Notes:
+631.7s 133 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+631.7s 134 
+631.7s 135 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+631.7s 136 Key          | Status  |
+631.7s 137 -------------+---------+-
+631.7s 138 score.weight | MISSING |
+631.7s 139 
+631.7s 140 Notes:
+631.7s 141 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+632.6s 142 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+807.2s 143 [ok] qlora_tiny_classification_seed42  score=0.9163  loss=0.60416  164.77s  2.694GB  0.002138kWh (46.8W avg)
+807.2s 144 [6/60] qlora | tiny (0.5B) | classification | seed 2024
+808.4s 145 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+808.4s 146 Key          | Status  |
+808.4s 147 -------------+---------+-
+808.4s 148 score.weight | MISSING |
+808.4s 149 
+808.4s 150 Notes:
+808.4s 151 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+808.4s 152 
+808.4s 153 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+808.4s 154 Key          | Status  |
+808.4s 155 -------------+---------+-
+808.4s 156 score.weight | MISSING |
+808.4s 157 
+808.4s 158 Notes:
+808.4s 159 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+809.3s 160 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+984.2s 161 [ok] qlora_tiny_classification_seed2024  score=0.9163  loss=0.62696  165.03s  2.879GB  0.002163kWh (47.2W avg)
+984.2s 162 [7/60] lora_fa | tiny (0.5B) | classification | seed 13
+985.0s 163 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+985.0s 164 Key          | Status  |
+985.0s 165 -------------+---------+-
+985.0s 166 score.weight | MISSING |
+985.0s 167 
+985.0s 168 Notes:
+985.0s 169 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+985.0s 170 
+985.0s 171 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+985.0s 172 Key          | Status  |
+985.0s 173 -------------+---------+-
+985.0s 174 score.weight | MISSING |
+985.0s 175 
+985.0s 176 Notes:
+985.0s 177 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+986.4s 178 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+1097.8s 179 [ok] lora_fa_tiny_classification_seed13  score=0.9174  loss=0.59674  102.81s  4.084GB  0.001297kWh (45.5W avg)
+1097.8s 180 [8/60] lora_fa | tiny (0.5B) | classification | seed 42
+1098.6s 181 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+1098.6s 182 Key          | Status  |
+1098.6s 183 -------------+---------+-
+1098.6s 184 score.weight | MISSING |
+1098.6s 185 
+1098.6s 186 Notes:
+1098.6s 187 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+1098.6s 188 
+1098.6s 189 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+1098.6s 190 Key          | Status  |
+1098.6s 191 -------------+---------+-
+1098.6s 192 score.weight | MISSING |
+1098.6s 193 
+1098.6s 194 Notes:
+1098.6s 195 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+1100.0s 196 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+1210.6s 197 [ok] lora_fa_tiny_classification_seed42  score=0.9151  loss=0.61227  101.96s  4.873GB  0.001304kWh (46.2W avg)
+1210.6s 198 [9/60] lora_fa | tiny (0.5B) | classification | seed 2024
+1211.3s 199 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+1211.3s 200 Key          | Status  |
+1211.3s 201 -------------+---------+-
+1211.3s 202 score.weight | MISSING |
+1211.3s 203 
+1211.3s 204 Notes:
+1211.3s 205 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+1211.3s 206 
+1211.3s 207 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+1211.3s 208 Key          | Status  |
+1211.3s 209 -------------+---------+-
+1211.3s 210 score.weight | MISSING |
+1211.3s 211 
+1211.3s 212 Notes:
+1211.3s 213 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+1212.7s 214 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+1322.0s 215 [ok] lora_fa_tiny_classification_seed2024  score=0.914  loss=0.61806  100.83s  4.865GB  0.001298kWh (46.4W avg)
+1322.0s 216 [10/60] lisa | tiny (0.5B) | classification | seed 13
+1322.7s 217 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+1322.7s 218 Key          | Status  |
+1322.7s 219 -------------+---------+-
+1322.7s 220 score.weight | MISSING |
+1322.7s 221 
+1322.7s 222 Notes:
+1322.7s 223 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+1322.7s 224 
+1322.7s 225 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+1322.7s 226 Key          | Status  |
+1322.7s 227 -------------+---------+-
+1322.7s 228 score.weight | MISSING |
+1322.7s 229 
+1322.7s 230 Notes:
+1322.7s 231 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+1401.3s 232 [ok] lisa_tiny_classification_seed13  score=0.8635  loss=0.76544  69.08s  5.143GB  0.001244kWh (65.0W avg)
+1401.3s 233 [11/60] lisa | tiny (0.5B) | classification | seed 42
+1402.0s 234 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+1402.0s 235 Key          | Status  |
+1402.0s 236 -------------+---------+-
+1402.0s 237 score.weight | MISSING |
+1402.0s 238 
+1402.0s 239 Notes:
+1402.0s 240 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+1402.0s 241 
+1402.0s 242 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+1402.0s 243 Key          | Status  |
+1402.0s 244 -------------+---------+-
+1402.0s 245 score.weight | MISSING |
+1402.0s 246 
+1402.0s 247 Notes:
+1402.0s 248 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+1483.1s 249 [ok] lisa_tiny_classification_seed42  score=0.9071  loss=0.62609  71.65s  5.586GB  0.001280kWh (64.6W avg)
+1483.1s 250 [12/60] lisa | tiny (0.5B) | classification | seed 2024
+1483.9s 251 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+1483.9s 252 Key          | Status  |
+1483.9s 253 -------------+---------+-
+1483.9s 254 score.weight | MISSING |
+1483.9s 255 
+1483.9s 256 Notes:
+1483.9s 257 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+1483.9s 258 
+1483.9s 259 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+1483.9s 260 Key          | Status  |
+1483.9s 261 -------------+---------+-
+1483.9s 262 score.weight | MISSING |
+1483.9s 263 
+1483.9s 264 Notes:
+1483.9s 265 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+1563.0s 266 [ok] lisa_tiny_classification_seed2024  score=0.8899  loss=0.64539  69.65s  5.54GB  0.001255kWh (65.1W avg)
+1563.0s 267 [13/60] full_ft | tiny (0.5B) | classification | seed 13
+1563.7s 268 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+1563.7s 269 Key          | Status  |
+1563.7s 270 -------------+---------+-
+1563.7s 271 score.weight | MISSING |
+1563.7s 272 
+1563.7s 273 Notes:
+1563.7s 274 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+1563.7s 275 
+1563.7s 276 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+1563.7s 277 Key          | Status  |
+1563.7s 278 -------------+---------+-
+1563.7s 279 score.weight | MISSING |
+1563.7s 280 
+1563.7s 281 Notes:
+1563.7s 282 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+1705.4s 283 [ok] full_ft_tiny_classification_seed13  score=0.9117  loss=0.60834  132.28s  11.462GB  0.002394kWh (65.3W avg)
+1705.4s 284 [14/60] full_ft | tiny (0.5B) | classification | seed 42
+1706.2s 285 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+1706.2s 286 Key          | Status  |
+1706.2s 287 -------------+---------+-
+1706.2s 288 score.weight | MISSING |
+1706.2s 289 
+1706.2s 290 Notes:
+1706.2s 291 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+1706.2s 292 
+1706.2s 293 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+1706.2s 294 Key          | Status  |
+1706.2s 295 -------------+---------+-
+1706.2s 296 score.weight | MISSING |
+1706.2s 297 
+1706.2s 298 Notes:
+1706.2s 299 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+1847.3s 300 [ok] full_ft_tiny_classification_seed42  score=0.9048  loss=0.6471  131.62s  11.414GB  0.002380kWh (65.2W avg)
+1847.3s 301 [15/60] full_ft | tiny (0.5B) | classification | seed 2024
+1848.1s 302 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+1848.1s 303 Key          | Status  |
+1848.1s 304 -------------+---------+-
+1848.1s 305 score.weight | MISSING |
+1848.1s 306 
+1848.1s 307 Notes:
+1848.1s 308 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+1848.1s 309 
+1848.1s 310 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-0.5B
+1848.1s 311 Key          | Status  |
+1848.1s 312 -------------+---------+-
+1848.1s 313 score.weight | MISSING |
+1848.1s 314 
+1848.1s 315 Notes:
+1848.1s 316 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+1990.7s 317 [ok] full_ft_tiny_classification_seed2024  score=0.8991  loss=0.63369  132.95s  11.439GB  0.002409kWh (65.3W avg)
+1990.7s 318 [16/60] lora | small (1.1B) | classification | seed 13
+2005.2s 319 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+2005.2s 320 Key            | Status     |
+2005.2s 321 ---------------+------------+-
+2005.2s 322 lm_head.weight | UNEXPECTED |
+2005.2s 323 score.weight   | MISSING    |
+2005.2s 324 
+2005.2s 325 Notes:
+2005.2s 326 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+2005.2s 327 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+2005.2s 328 
+2005.2s 329 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+2005.2s 330 Key            | Status     |
+2005.2s 331 ---------------+------------+-
+2005.2s 332 lm_head.weight | UNEXPECTED |
+2005.2s 333 score.weight   | MISSING    |
+2005.2s 334 
+2005.2s 335 Notes:
+2005.2s 336 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+2005.2s 337 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+2007.7s 338 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+2124.0s 339 [ok] lora_small_classification_seed13  score=0.9404  loss=0.51261  103.56s  11.043GB  0.001806kWh (62.9W avg)
+2124.0s 340 [17/60] lora | small (1.1B) | classification | seed 42
+2125.4s 341 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+2125.4s 342 Key            | Status     |
+2125.4s 343 ---------------+------------+-
+2125.4s 344 lm_head.weight | UNEXPECTED |
+2125.4s 345 score.weight   | MISSING    |
+2125.4s 346 
+2125.4s 347 Notes:
+2125.4s 348 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+2125.4s 349 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+2125.4s 350 
+2125.4s 351 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+2125.4s 352 Key            | Status     |
+2125.4s 353 ---------------+------------+-
+2125.4s 354 lm_head.weight | UNEXPECTED |
+2125.4s 355 score.weight   | MISSING    |
+2125.4s 356 
+2125.4s 357 Notes:
+2125.4s 358 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+2125.4s 359 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+2127.1s 360 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+2239.7s 361 [ok] lora_small_classification_seed42  score=0.9495  loss=0.46676  100.16s  9.12GB  0.001764kWh (63.6W avg)
+2239.7s 362 [18/60] lora | small (1.1B) | classification | seed 2024
+2241.0s 363 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+2241.0s 364 Key            | Status     |
+2241.0s 365 ---------------+------------+-
+2241.0s 366 lm_head.weight | UNEXPECTED |
+2241.0s 367 score.weight   | MISSING    |
+2241.0s 368 
+2241.0s 369 Notes:
+2241.0s 370 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+2241.0s 371 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+2241.0s 372 
+2241.0s 373 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+2241.0s 374 Key            | Status     |
+2241.0s 375 ---------------+------------+-
+2241.0s 376 lm_head.weight | UNEXPECTED |
+2241.0s 377 score.weight   | MISSING    |
+2241.0s 378 
+2241.0s 379 Notes:
+2241.0s 380 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+2241.0s 381 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+2242.7s 382 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+2354.5s 383 [ok] lora_small_classification_seed2024  score=0.9415  loss=0.50889  99.52s  9.044GB  0.001751kWh (63.5W avg)
+2354.5s 384 [19/60] qlora | small (1.1B) | classification | seed 13
+2356.2s 385 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+2356.2s 386 Key            | Status     |
+2356.2s 387 ---------------+------------+-
+2356.2s 388 lm_head.weight | UNEXPECTED |
+2356.2s 389 score.weight   | MISSING    |
+2356.2s 390 
+2356.2s 391 Notes:
+2356.2s 392 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+2356.2s 393 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+2356.2s 394 
+2356.2s 395 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+2356.2s 396 Key            | Status     |
+2356.2s 397 ---------------+------------+-
+2356.2s 398 lm_head.weight | UNEXPECTED |
+2356.2s 399 score.weight   | MISSING    |
+2356.2s 400 
+2356.2s 401 Notes:
+2356.2s 402 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+2356.2s 403 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+2356.8s 404 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+2524.4s 405 [ok] qlora_small_classification_seed13  score=0.9358  loss=0.48854  153.22s  5.831GB  0.002726kWh (64.2W avg)
+2524.4s 406 [20/60] qlora | small (1.1B) | classification | seed 42
+2526.5s 407 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+2526.5s 408 Key            | Status     |
+2526.5s 409 ---------------+------------+-
+2526.5s 410 lm_head.weight | UNEXPECTED |
+2526.5s 411 score.weight   | MISSING    |
+2526.5s 412 
+2526.5s 413 Notes:
+2526.5s 414 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+2526.5s 415 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+2526.5s 416 
+2526.5s 417 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+2526.5s 418 Key            | Status     |
+2526.5s 419 ---------------+------------+-
+2526.5s 420 lm_head.weight | UNEXPECTED |
+2526.5s 421 score.weight   | MISSING    |
+2526.5s 422 
+2526.5s 423 Notes:
+2526.5s 424 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+2526.5s 425 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+2527.0s 426 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+2694.1s 427 [ok] qlora_small_classification_seed42  score=0.9427  loss=0.47286  152.61s  3.493GB  0.002698kWh (63.7W avg)
+2694.1s 428 [21/60] qlora | small (1.1B) | classification | seed 2024
+2696.0s 429 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+2696.0s 430 Key            | Status     |
+2696.0s 431 ---------------+------------+-
+2696.0s 432 lm_head.weight | UNEXPECTED |
+2696.0s 433 score.weight   | MISSING    |
+2696.0s 434 
+2696.0s 435 Notes:
+2696.0s 436 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+2696.0s 437 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+2696.0s 438 
+2696.0s 439 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+2696.0s 440 Key            | Status     |
+2696.0s 441 ---------------+------------+-
+2696.0s 442 lm_head.weight | UNEXPECTED |
+2696.0s 443 score.weight   | MISSING    |
+2696.0s 444 
+2696.0s 445 Notes:
+2696.0s 446 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+2696.0s 447 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+2696.5s 448 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+2865.5s 449 [ok] qlora_small_classification_seed2024  score=0.9358  loss=0.48445  154.39s  3.518GB  0.002727kWh (63.7W avg)
+2865.5s 450 [22/60] lora_fa | small (1.1B) | classification | seed 13
+2866.7s 451 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+2866.7s 452 Key            | Status     |
+2866.7s 453 ---------------+------------+-
+2866.7s 454 lm_head.weight | UNEXPECTED |
+2866.7s 455 score.weight   | MISSING    |
+2866.7s 456 
+2866.7s 457 Notes:
+2866.7s 458 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+2866.7s 459 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+2866.7s 460 
+2866.7s 461 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+2866.7s 462 Key            | Status     |
+2866.7s 463 ---------------+------------+-
+2866.7s 464 lm_head.weight | UNEXPECTED |
+2866.7s 465 score.weight   | MISSING    |
+2866.7s 466 
+2866.7s 467 Notes:
+2866.7s 468 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+2866.7s 469 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+2868.5s 470 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+2979.0s 471 [ok] lora_fa_small_classification_seed13  score=0.9243  loss=0.5338  98.22s  7.945GB  0.001733kWh (63.7W avg)
+2979.0s 472 [23/60] lora_fa | small (1.1B) | classification | seed 42
+2980.3s 473 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+2980.3s 474 Key            | Status     |
+2980.3s 475 ---------------+------------+-
+2980.3s 476 lm_head.weight | UNEXPECTED |
+2980.3s 477 score.weight   | MISSING    |
+2980.3s 478 
+2980.3s 479 Notes:
+2980.3s 480 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+2980.3s 481 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+2980.3s 482 
+2980.3s 483 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+2980.3s 484 Key            | Status     |
+2980.3s 485 ---------------+------------+-
+2980.3s 486 lm_head.weight | UNEXPECTED |
+2980.3s 487 score.weight   | MISSING    |
+2980.3s 488 
+2980.3s 489 Notes:
+2980.3s 490 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+2980.3s 491 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+2982.1s 492 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+3092.2s 493 [ok] lora_fa_small_classification_seed42  score=0.9255  loss=0.50674  97.77s  9.069GB  0.001722kWh (63.5W avg)
+3092.2s 494 [24/60] lora_fa | small (1.1B) | classification | seed 2024
+3093.5s 495 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+3093.5s 496 Key            | Status     |
+3093.5s 497 ---------------+------------+-
+3093.5s 498 lm_head.weight | UNEXPECTED |
+3093.5s 499 score.weight   | MISSING    |
+3093.5s 500 
+3093.5s 501 Notes:
+3093.5s 502 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+3093.5s 503 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+3093.5s 504 
+3093.5s 505 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+3093.5s 506 Key            | Status     |
+3093.5s 507 ---------------+------------+-
+3093.5s 508 lm_head.weight | UNEXPECTED |
+3093.5s 509 score.weight   | MISSING    |
+3093.5s 510 
+3093.5s 511 Notes:
+3093.5s 512 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+3093.5s 513 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+3095.3s 514 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+3206.2s 515 [ok] lora_fa_small_classification_seed2024  score=0.9255  loss=0.51765  98.55s  9.023GB  0.001734kWh (63.5W avg)
+3206.2s 516 [25/60] lisa | small (1.1B) | classification | seed 13
+3207.5s 517 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+3207.5s 518 Key            | Status     |
+3207.5s 519 ---------------+------------+-
+3207.5s 520 lm_head.weight | UNEXPECTED |
+3207.5s 521 score.weight   | MISSING    |
+3207.5s 522 
+3207.5s 523 Notes:
+3207.5s 524 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+3207.5s 525 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+3207.5s 526 
+3207.5s 527 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+3207.5s 528 Key            | Status     |
+3207.5s 529 ---------------+------------+-
+3207.5s 530 lm_head.weight | UNEXPECTED |
+3207.5s 531 score.weight   | MISSING    |
+3207.5s 532 
+3207.5s 533 Notes:
+3207.5s 534 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+3207.5s 535 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+3337.3s 536 [ok] lisa_small_classification_seed13  score=0.9186  loss=0.54419  116.47s  11.223GB  0.002095kWh (64.9W avg)
+3337.3s 537 [26/60] lisa | small (1.1B) | classification | seed 42
+3338.5s 538 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+3338.5s 539 Key            | Status     |
+3338.5s 540 ---------------+------------+-
+3338.5s 541 lm_head.weight | UNEXPECTED |
+3338.5s 542 score.weight   | MISSING    |
+3338.5s 543 
+3338.5s 544 Notes:
+3338.5s 545 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+3338.5s 546 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+3338.5s 547 
+3338.5s 548 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+3338.5s 549 Key            | Status     |
+3338.5s 550 ---------------+------------+-
+3338.5s 551 lm_head.weight | UNEXPECTED |
+3338.5s 552 score.weight   | MISSING    |
+3338.5s 553 
+3338.5s 554 Notes:
+3338.5s 555 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+3338.5s 556 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+3467.9s 557 [ok] lisa_small_classification_seed42  score=0.9266  loss=0.53987  115.98s  11.116GB  0.002070kWh (64.4W avg)
+3467.9s 558 [27/60] lisa | small (1.1B) | classification | seed 2024
+3469.2s 559 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+3469.2s 560 Key            | Status     |
+3469.2s 561 ---------------+------------+-
+3469.2s 562 lm_head.weight | UNEXPECTED |
+3469.2s 563 score.weight   | MISSING    |
+3469.2s 564 
+3469.2s 565 Notes:
+3469.2s 566 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+3469.2s 567 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+3469.2s 568 
+3469.2s 569 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+3469.2s 570 Key            | Status     |
+3469.2s 571 ---------------+------------+-
+3469.2s 572 lm_head.weight | UNEXPECTED |
+3469.2s 573 score.weight   | MISSING    |
+3469.2s 574 
+3469.2s 575 Notes:
+3469.2s 576 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+3469.2s 577 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+3599.5s 578 [ok] lisa_small_classification_seed2024  score=0.9151  loss=0.61278  116.84s  11.183GB  0.002099kWh (64.8W avg)
+3599.5s 579 [28/60] full_ft | small (1.1B) | classification | seed 13
+3600.8s 580 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+3600.8s 581 Key            | Status     |
+3600.8s 582 ---------------+------------+-
+3600.8s 583 lm_head.weight | UNEXPECTED |
+3600.8s 584 score.weight   | MISSING    |
+3600.8s 585 
+3600.8s 586 Notes:
+3600.8s 587 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+3600.8s 588 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+3600.8s 589 
+3600.8s 590 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+3600.8s 591 Key            | Status     |
+3600.8s 592 ---------------+------------+-
+3600.8s 593 lm_head.weight | UNEXPECTED |
+3600.8s 594 score.weight   | MISSING    |
+3600.8s 595 
+3600.8s 596 Notes:
+3600.8s 597 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+3600.8s 598 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+3609.6s 599 [OOM] full_ft_small_classification_seed13 -- out of memory (this is a valid result, recorded)
+3619.7s 600 [29/60] full_ft | small (1.1B) | classification | seed 42
+3620.8s 601 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+3620.8s 602 Key            | Status     |
+3620.8s 603 ---------------+------------+-
+3620.8s 604 lm_head.weight | UNEXPECTED |
+3620.8s 605 score.weight   | MISSING    |
+3620.8s 606 
+3620.8s 607 Notes:
+3620.8s 608 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+3620.8s 609 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+3620.8s 610 
+3620.8s 611 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+3620.8s 612 Key            | Status     |
+3620.8s 613 ---------------+------------+-
+3620.8s 614 lm_head.weight | UNEXPECTED |
+3620.8s 615 score.weight   | MISSING    |
+3620.8s 616 
+3620.8s 617 Notes:
+3620.8s 618 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+3620.8s 619 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+3621.3s 620 [OOM] full_ft_small_classification_seed42 -- out of memory (this is a valid result, recorded)
+3622.0s 621 [30/60] full_ft | small (1.1B) | classification | seed 2024
+3622.9s 622 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+3622.9s 623 Key            | Status     |
+3622.9s 624 ---------------+------------+-
+3622.9s 625 lm_head.weight | UNEXPECTED |
+3622.9s 626 score.weight   | MISSING    |
+3622.9s 627 
+3622.9s 628 Notes:
+3622.9s 629 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+3622.9s 630 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+3622.9s 631 
+3622.9s 632 [transformers] [1mLlamaForSequenceClassification LOAD REPORT[0m from: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+3622.9s 633 Key            | Status     |
+3622.9s 634 ---------------+------------+-
+3622.9s 635 lm_head.weight | UNEXPECTED |
+3622.9s 636 score.weight   | MISSING    |
+3622.9s 637 
+3622.9s 638 Notes:
+3622.9s 639 - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+3622.9s 640 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+3632.0s 641 [OOM] full_ft_small_classification_seed2024 -- out of memory (this is a valid result, recorded)
+3642.0s 642 [31/60] lora | medium (1.5B) | classification | seed 13
+3663.2s 643 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+3663.2s 644 Key          | Status  |
+3663.2s 645 -------------+---------+-
+3663.2s 646 score.weight | MISSING |
+3663.2s 647 
+3663.2s 648 Notes:
+3663.2s 649 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+3663.2s 650 
+3663.2s 651 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+3663.2s 652 Key          | Status  |
+3663.2s 653 -------------+---------+-
+3663.2s 654 score.weight | MISSING |
+3663.2s 655 
+3663.2s 656 Notes:
+3663.2s 657 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+3663.4s 658 [OOM] lora_medium_classification_seed13 -- out of memory (this is a valid result, recorded)
+3664.6s 659 [32/60] lora | medium (1.5B) | classification | seed 42
+3666.7s 660 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+3666.7s 661 Key          | Status  |
+3666.7s 662 -------------+---------+-
+3666.7s 663 score.weight | MISSING |
+3666.7s 664 
+3666.7s 665 Notes:
+3666.7s 666 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+3666.7s 667 
+3666.7s 668 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+3666.7s 669 Key          | Status  |
+3666.7s 670 -------------+---------+-
+3666.7s 671 score.weight | MISSING |
+3666.7s 672 
+3666.7s 673 Notes:
+3666.7s 674 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+3670.1s 675 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+3810.4s 676 [ok] lora_medium_classification_seed42  score=0.9461  loss=0.51343  125.43s  11.24GB  0.002160kWh (62.1W avg)
+3810.6s 677 [33/60] lora | medium (1.5B) | classification | seed 2024
+3812.5s 678 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+3812.5s 679 Key          | Status  |
+3812.5s 680 -------------+---------+-
+3812.5s 681 score.weight | MISSING |
+3812.5s 682 
+3812.5s 683 Notes:
+3812.5s 684 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+3812.5s 685 
+3812.5s 686 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+3812.5s 687 Key          | Status  |
+3812.5s 688 -------------+---------+-
+3812.5s 689 score.weight | MISSING |
+3812.5s 690 
+3812.5s 691 Notes:
+3812.5s 692 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+3815.3s 693 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+3955.0s 694 [ok] lora_medium_classification_seed2024  score=0.9495  loss=0.50556  125.38s  13.316GB  0.002200kWh (63.4W avg)
+3955.3s 695 [34/60] qlora | medium (1.5B) | classification | seed 13
+3958.2s 696 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+3958.2s 697 Key          | Status  |
+3958.2s 698 -------------+---------+-
+3958.2s 699 score.weight | MISSING |
+3958.2s 700 
+3958.2s 701 Notes:
+3958.2s 702 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+3958.2s 703 
+3958.2s 704 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+3958.2s 705 Key          | Status  |
+3958.2s 706 -------------+---------+-
+3958.2s 707 score.weight | MISSING |
+3958.2s 708 
+3958.2s 709 Notes:
+3958.2s 710 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+3959.1s 711 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+4168.5s 712 [ok] qlora_medium_classification_seed13  score=0.9438  loss=0.53909  191.64s  8.642GB  0.003396kWh (63.9W avg)
+4168.5s 713 [35/60] qlora | medium (1.5B) | classification | seed 42
+4171.8s 714 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+4171.8s 715 Key          | Status  |
+4171.8s 716 -------------+---------+-
+4171.8s 717 score.weight | MISSING |
+4171.8s 718 
+4171.8s 719 Notes:
+4171.8s 720 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+4171.8s 721 
+4171.8s 722 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+4171.8s 723 Key          | Status  |
+4171.8s 724 -------------+---------+-
+4171.8s 725 score.weight | MISSING |
+4171.8s 726 
+4171.8s 727 Notes:
+4171.8s 728 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+4172.7s 729 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+4384.1s 730 [ok] qlora_medium_classification_seed42  score=0.9404  loss=0.53062  193.62s  6.653GB  0.003430kWh (63.8W avg)
+4384.1s 731 [36/60] qlora | medium (1.5B) | classification | seed 2024
+4386.8s 732 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+4386.8s 733 Key          | Status  |
+4386.8s 734 -------------+---------+-
+4386.8s 735 score.weight | MISSING |
+4386.8s 736 
+4386.8s 737 Notes:
+4386.8s 738 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+4386.8s 739 
+4386.8s 740 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+4386.8s 741 Key          | Status  |
+4386.8s 742 -------------+---------+-
+4386.8s 743 score.weight | MISSING |
+4386.8s 744 
+4386.8s 745 Notes:
+4386.8s 746 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+4387.7s 747 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+4601.1s 748 [ok] qlora_medium_classification_seed2024  score=0.9461  loss=0.53901  195.61s  5.034GB  0.003482kWh (64.1W avg)
+4601.1s 749 [37/60] lora_fa | medium (1.5B) | classification | seed 13
+4603.1s 750 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+4603.1s 751 Key          | Status  |
+4603.1s 752 -------------+---------+-
+4603.1s 753 score.weight | MISSING |
+4603.1s 754 
+4603.1s 755 Notes:
+4603.1s 756 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+4603.1s 757 
+4603.1s 758 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+4603.1s 759 Key          | Status  |
+4603.1s 760 -------------+---------+-
+4603.1s 761 score.weight | MISSING |
+4603.1s 762 
+4603.1s 763 Notes:
+4603.1s 764 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+4605.9s 765 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+4742.3s 766 [ok] lora_fa_medium_classification_seed13  score=0.9438  loss=0.56577  122.02s  10.894GB  0.002223kWh (65.8W avg)
+4742.3s 767 [38/60] lora_fa | medium (1.5B) | classification | seed 42
+4744.4s 768 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+4744.4s 769 Key          | Status  |
+4744.4s 770 -------------+---------+-
+4744.4s 771 score.weight | MISSING |
+4744.4s 772 
+4744.4s 773 Notes:
+4744.4s 774 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+4744.4s 775 
+4744.4s 776 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+4744.4s 777 Key          | Status  |
+4744.4s 778 -------------+---------+-
+4744.4s 779 score.weight | MISSING |
+4744.4s 780 
+4744.4s 781 Notes:
+4744.4s 782 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+4747.1s 783 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+4883.4s 784 [ok] lora_fa_medium_classification_seed42  score=0.9392  loss=0.58567  121.64s  13.335GB  0.002132kWh (63.2W avg)
+4883.4s 785 [39/60] lora_fa | medium (1.5B) | classification | seed 2024
+4885.4s 786 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+4885.4s 787 Key          | Status  |
+4885.4s 788 -------------+---------+-
+4885.4s 789 score.weight | MISSING |
+4885.4s 790 
+4885.4s 791 Notes:
+4885.4s 792 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+4885.4s 793 
+4885.4s 794 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+4885.4s 795 Key          | Status  |
+4885.4s 796 -------------+---------+-
+4885.4s 797 score.weight | MISSING |
+4885.4s 798 
+4885.4s 799 Notes:
+4885.4s 800 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+4888.1s 801 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+5025.0s 802 [ok] lora_fa_medium_classification_seed2024  score=0.9461  loss=0.56087  122.44s  13.283GB  0.002123kWh (62.5W avg)
+5025.0s 803 [40/60] lisa | medium (1.5B) | classification | seed 13
+5027.1s 804 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+5027.1s 805 Key          | Status  |
+5027.1s 806 -------------+---------+-
+5027.1s 807 score.weight | MISSING |
+5027.1s 808 
+5027.1s 809 Notes:
+5027.1s 810 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+5027.1s 811 
+5027.1s 812 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+5027.1s 813 Key          | Status  |
+5027.1s 814 -------------+---------+-
+5027.1s 815 score.weight | MISSING |
+5027.1s 816 
+5027.1s 817 Notes:
+5027.1s 818 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+5183.6s 819 [ok] lisa_medium_classification_seed13  score=0.9438  loss=0.54042  139.68s  14.788GB  0.002516kWh (65.0W avg)
+5183.6s 820 [41/60] lisa | medium (1.5B) | classification | seed 42
+5185.7s 821 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+5185.7s 822 Key          | Status  |
+5185.7s 823 -------------+---------+-
+5185.7s 824 score.weight | MISSING |
+5185.7s 825 
+5185.7s 826 Notes:
+5185.7s 827 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+5185.7s 828 
+5185.7s 829 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+5185.7s 830 Key          | Status  |
+5185.7s 831 -------------+---------+-
+5185.7s 832 score.weight | MISSING |
+5185.7s 833 
+5185.7s 834 Notes:
+5185.7s 835 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+5343.3s 836 [ok] lisa_medium_classification_seed42  score=0.9335  loss=0.52684  140.82s  15.896GB  0.002530kWh (64.8W avg)
+5343.3s 837 [42/60] lisa | medium (1.5B) | classification | seed 2024
+5345.3s 838 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+5345.3s 839 Key          | Status  |
+5345.3s 840 -------------+---------+-
+5345.3s 841 score.weight | MISSING |
+5345.3s 842 
+5345.3s 843 Notes:
+5345.3s 844 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+5345.3s 845 
+5345.3s 846 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+5345.3s 847 Key          | Status  |
+5345.3s 848 -------------+---------+-
+5345.3s 849 score.weight | MISSING |
+5345.3s 850 
+5345.3s 851 Notes:
+5345.3s 852 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+5503.4s 853 [ok] lisa_medium_classification_seed2024  score=0.9369  loss=0.56545  141.3s  15.866GB  0.002537kWh (64.8W avg)
+5503.4s 854 [43/60] full_ft | medium (1.5B) | classification | seed 13
+5505.4s 855 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+5505.4s 856 Key          | Status  |
+5505.4s 857 -------------+---------+-
+5505.4s 858 score.weight | MISSING |
+5505.4s 859 
+5505.4s 860 Notes:
+5505.4s 861 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+5505.4s 862 
+5505.4s 863 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+5505.4s 864 Key          | Status  |
+5505.4s 865 -------------+---------+-
+5505.4s 866 score.weight | MISSING |
+5505.4s 867 
+5505.4s 868 Notes:
+5505.4s 869 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+5514.6s 870 [OOM] full_ft_medium_classification_seed13 -- out of memory (this is a valid result, recorded)
+5524.8s 871 [44/60] full_ft | medium (1.5B) | classification | seed 42
+5526.7s 872 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+5526.7s 873 Key          | Status  |
+5526.7s 874 -------------+---------+-
+5526.7s 875 score.weight | MISSING |
+5526.7s 876 
+5526.7s 877 Notes:
+5526.7s 878 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+5526.7s 879 
+5526.7s 880 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+5526.7s 881 Key          | Status  |
+5526.7s 882 -------------+---------+-
+5526.7s 883 score.weight | MISSING |
+5526.7s 884 
+5526.7s 885 Notes:
+5526.7s 886 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+5527.6s 887 [OOM] full_ft_medium_classification_seed42 -- out of memory (this is a valid result, recorded)
+5528.5s 888 [45/60] full_ft | medium (1.5B) | classification | seed 2024
+5530.3s 889 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+5530.3s 890 Key          | Status  |
+5530.3s 891 -------------+---------+-
+5530.3s 892 score.weight | MISSING |
+5530.3s 893 
+5530.3s 894 Notes:
+5530.3s 895 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+5530.3s 896 
+5530.3s 897 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-1.5B
+5530.3s 898 Key          | Status  |
+5530.3s 899 -------------+---------+-
+5530.3s 900 score.weight | MISSING |
+5530.3s 901 
+5530.3s 902 Notes:
+5530.3s 903 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+5539.5s 904 [OOM] full_ft_medium_classification_seed2024 -- out of memory (this is a valid result, recorded)
+5549.7s 905 [46/60] lora | large (3.0B) | classification | seed 13
+5599.5s 906 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+5599.5s 907 Key          | Status  |
+5599.5s 908 -------------+---------+-
+5599.5s 909 score.weight | MISSING |
+5599.5s 910 
+5599.5s 911 Notes:
+5599.5s 912 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+5599.5s 913 
+5599.5s 914 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+5599.5s 915 Key          | Status  |
+5599.5s 916 -------------+---------+-
+5599.5s 917 score.weight | MISSING |
+5599.5s 918 
+5599.5s 919 Notes:
+5599.5s 920 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+5600.6s 921 [OOM] lora_large_classification_seed13 -- out of memory (this is a valid result, recorded)
+5601.9s 922 [47/60] lora | large (3.0B) | classification | seed 42
+5621.4s 923 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+5621.4s 924 Key          | Status  |
+5621.4s 925 -------------+---------+-
+5621.4s 926 score.weight | MISSING |
+5621.4s 927 
+5621.4s 928 Notes:
+5621.4s 929 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+5621.4s 930 
+5621.4s 931 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+5621.4s 932 Key          | Status  |
+5621.4s 933 -------------+---------+-
+5621.4s 934 score.weight | MISSING |
+5621.4s 935 
+5621.4s 936 Notes:
+5621.4s 937 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+5626.8s 938 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+5634.0s 939 [OOM] lora_large_classification_seed42 -- out of memory (this is a valid result, recorded)
+5644.3s 940 [48/60] lora | large (3.0B) | classification | seed 2024
+5648.4s 941 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+5648.4s 942 Key          | Status  |
+5648.4s 943 -------------+---------+-
+5648.4s 944 score.weight | MISSING |
+5648.4s 945 
+5648.4s 946 Notes:
+5648.4s 947 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+5648.4s 948 
+5648.4s 949 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+5648.4s 950 Key          | Status  |
+5648.4s 951 -------------+---------+-
+5648.4s 952 score.weight | MISSING |
+5648.4s 953 
+5648.4s 954 Notes:
+5648.4s 955 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+5649.6s 956 [OOM] lora_large_classification_seed2024 -- out of memory (this is a valid result, recorded)
+5650.8s 957 [49/60] qlora | large (3.0B) | classification | seed 13
+5655.8s 958 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+5655.8s 959 Key          | Status  |
+5655.8s 960 -------------+---------+-
+5655.8s 961 score.weight | MISSING |
+5655.8s 962 
+5655.8s 963 Notes:
+5655.8s 964 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+5655.8s 965 
+5655.8s 966 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+5655.8s 967 Key          | Status  |
+5655.8s 968 -------------+---------+-
+5655.8s 969 score.weight | MISSING |
+5655.8s 970 
+5655.8s 971 Notes:
+5655.8s 972 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+5656.8s 973 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+6018.7s 974 [ok] qlora_large_classification_seed13  score=0.9472  loss=0.53903  332.38s  7.457GB  0.005998kWh (65.0W avg)
+6018.9s 975 [50/60] qlora | large (3.0B) | classification | seed 42
+6025.6s 976 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+6025.6s 977 Key          | Status  |
+6025.6s 978 -------------+---------+-
+6025.6s 979 score.weight | MISSING |
+6025.6s 980 
+6025.6s 981 Notes:
+6025.6s 982 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+6025.6s 983 
+6025.6s 984 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+6025.6s 985 Key          | Status  |
+6025.6s 986 -------------+---------+-
+6025.6s 987 score.weight | MISSING |
+6025.6s 988 
+6025.6s 989 Notes:
+6025.6s 990 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+6026.5s 991 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+6388.2s 992 [ok] qlora_large_classification_seed42  score=0.9495  loss=0.51043  332.2s  7.45GB  0.006014kWh (65.2W avg)
+6388.2s 993 [51/60] qlora | large (3.0B) | classification | seed 2024
+6393.9s 994 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+6393.9s 995 Key          | Status  |
+6393.9s 996 -------------+---------+-
+6393.9s 997 score.weight | MISSING |
+6393.9s 998 
+6393.9s 999 Notes:
+6393.9s 1000 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+6393.9s 1001 
+6393.9s 1002 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+6393.9s 1003 Key          | Status  |
+6393.9s 1004 -------------+---------+-
+6393.9s 1005 score.weight | MISSING |
+6393.9s 1006 
+6393.9s 1007 Notes:
+6393.9s 1008 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+6394.8s 1009 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+6759.5s 1010 [ok] qlora_large_classification_seed2024  score=0.9484  loss=0.54175  335.11s  7.448GB  0.006028kWh (64.8W avg)
+6759.5s 1011 [52/60] lora_fa | large (3.0B) | classification | seed 13
+6763.6s 1012 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+6763.6s 1013 Key          | Status  |
+6763.6s 1014 -------------+---------+-
+6763.6s 1015 score.weight | MISSING |
+6763.6s 1016 
+6763.6s 1017 Notes:
+6763.6s 1018 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+6763.6s 1019 
+6763.6s 1020 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+6763.6s 1021 Key          | Status  |
+6763.6s 1022 -------------+---------+-
+6763.6s 1023 score.weight | MISSING |
+6763.6s 1024 
+6763.6s 1025 Notes:
+6763.6s 1026 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+6768.3s 1027 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+6774.9s 1028 [OOM] lora_fa_large_classification_seed13 -- out of memory (this is a valid result, recorded)
+6785.1s 1029 [53/60] lora_fa | large (3.0B) | classification | seed 42
+6789.0s 1030 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+6789.0s 1031 Key          | Status  |
+6789.0s 1032 -------------+---------+-
+6789.0s 1033 score.weight | MISSING |
+6789.0s 1034 
+6789.0s 1035 Notes:
+6789.0s 1036 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+6789.0s 1037 
+6789.0s 1038 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+6789.0s 1039 Key          | Status  |
+6789.0s 1040 -------------+---------+-
+6789.0s 1041 score.weight | MISSING |
+6789.0s 1042 
+6789.0s 1043 Notes:
+6789.0s 1044 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+6790.1s 1045 [OOM] lora_fa_large_classification_seed42 -- out of memory (this is a valid result, recorded)
+6791.3s 1046 [54/60] lora_fa | large (3.0B) | classification | seed 2024
+6795.1s 1047 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+6795.1s 1048 Key          | Status  |
+6795.1s 1049 -------------+---------+-
+6795.1s 1050 score.weight | MISSING |
+6795.1s 1051 
+6795.1s 1052 Notes:
+6795.1s 1053 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+6795.1s 1054 
+6795.1s 1055 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+6795.1s 1056 Key          | Status  |
+6795.1s 1057 -------------+---------+-
+6795.1s 1058 score.weight | MISSING |
+6795.1s 1059 
+6795.1s 1060 Notes:
+6795.1s 1061 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+6799.8s 1062 LoRA targets: ['q_proj', 'k_proj', 'v_proj', 'o_proj']
+6806.5s 1063 [OOM] lora_fa_large_classification_seed2024 -- out of memory (this is a valid result, recorded)
+6816.8s 1064 [55/60] lisa | large (3.0B) | classification | seed 13
+6820.6s 1065 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+6820.6s 1066 Key          | Status  |
+6820.6s 1067 -------------+---------+-
+6820.6s 1068 score.weight | MISSING |
+6820.6s 1069 
+6820.6s 1070 Notes:
+6820.6s 1071 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+6820.6s 1072 
+6820.6s 1073 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+6820.6s 1074 Key          | Status  |
+6820.6s 1075 -------------+---------+-
+6820.6s 1076 score.weight | MISSING |
+6820.6s 1077 
+6820.6s 1078 Notes:
+6820.6s 1079 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+6821.8s 1080 [OOM] lisa_large_classification_seed13 -- out of memory (this is a valid result, recorded)
+6823.0s 1081 [56/60] lisa | large (3.0B) | classification | seed 42
+6826.7s 1082 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+6826.7s 1083 Key          | Status  |
+6826.7s 1084 -------------+---------+-
+6826.7s 1085 score.weight | MISSING |
+6826.7s 1086 
+6826.7s 1087 Notes:
+6826.7s 1088 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+6826.7s 1089 
+6826.7s 1090 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+6826.7s 1091 Key          | Status  |
+6826.7s 1092 -------------+---------+-
+6826.7s 1093 score.weight | MISSING |
+6826.7s 1094 
+6826.7s 1095 Notes:
+6826.7s 1096 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+6837.6s 1097 [OOM] lisa_large_classification_seed42 -- out of memory (this is a valid result, recorded)
+6847.8s 1098 [57/60] lisa | large (3.0B) | classification | seed 2024
+6851.8s 1099 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+6851.8s 1100 Key          | Status  |
+6851.8s 1101 -------------+---------+-
+6851.8s 1102 score.weight | MISSING |
+6851.8s 1103 
+6851.8s 1104 Notes:
+6851.8s 1105 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+6851.8s 1106 
+6851.8s 1107 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+6851.8s 1108 Key          | Status  |
+6851.8s 1109 -------------+---------+-
+6851.8s 1110 score.weight | MISSING |
+6851.8s 1111 
+6851.8s 1112 Notes:
+6851.8s 1113 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+6852.9s 1114 [OOM] lisa_large_classification_seed2024 -- out of memory (this is a valid result, recorded)
+6854.2s 1115 [58/60] full_ft | large (3.0B) | classification | seed 13
+6858.0s 1116 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+6858.0s 1117 Key          | Status  |
+6858.0s 1118 -------------+---------+-
+6858.0s 1119 score.weight | MISSING |
+6858.0s 1120 
+6858.0s 1121 Notes:
+6858.0s 1122 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+6858.0s 1123 
+6858.0s 1124 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+6858.0s 1125 Key          | Status  |
+6858.0s 1126 -------------+---------+-
+6858.0s 1127 score.weight | MISSING |
+6858.0s 1128 
+6858.0s 1129 Notes:
+6858.0s 1130 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+6868.8s 1131 [OOM] full_ft_large_classification_seed13 -- out of memory (this is a valid result, recorded)
+6879.1s 1132 [59/60] full_ft | large (3.0B) | classification | seed 42
+6883.2s 1133 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+6883.2s 1134 Key          | Status  |
+6883.2s 1135 -------------+---------+-
+6883.2s 1136 score.weight | MISSING |
+6883.2s 1137 
+6883.2s 1138 Notes:
+6883.2s 1139 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+6883.2s 1140 
+6883.2s 1141 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+6883.2s 1142 Key          | Status  |
+6883.2s 1143 -------------+---------+-
+6883.2s 1144 score.weight | MISSING |
+6883.2s 1145 
+6883.2s 1146 Notes:
+6883.2s 1147 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+6884.3s 1148 [OOM] full_ft_large_classification_seed42 -- out of memory (this is a valid result, recorded)
+6885.5s 1149 [60/60] full_ft | large (3.0B) | classification | seed 2024
+6889.3s 1150 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+6889.3s 1151 Key          | Status  |
+6889.3s 1152 -------------+---------+-
+6889.3s 1153 score.weight | MISSING |
+6889.3s 1154 
+6889.3s 1155 Notes:
+6889.3s 1156 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+6889.3s 1157 
+6889.3s 1158 [transformers] [1mQwen2ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen2.5-3B
+6889.3s 1159 Key          | Status  |
+6889.3s 1160 -------------+---------+-
+6889.3s 1161 score.weight | MISSING |
+6889.3s 1162 
+6889.3s 1163 Notes:
+6889.3s 1164 - MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+6900.2s 1165 [OOM] full_ft_large_classification_seed2024 -- out of memory (this is a valid result, recorded)
+6910.3s 1166 ============================================================
+6910.3s 1167 Sweep finished in 113.6 min
+6910.3s 1168 Raw result files on disk: 60
+6910.5s 1169 Total runs: 60 | usable: 41 | failed/OOM: 19
+6910.5s 1170 
+6910.5s 1171 Failures (these are findings, not bugs):
+6910.5s 1172 method backbone status
+6910.5s 1173 full_ft    large    oom
+6910.5s 1174 full_ft    large    oom
+6910.5s 1175 full_ft    large    oom
+6910.5s 1176 full_ft   medium    oom
+6910.5s 1177 full_ft   medium    oom
+6910.5s 1178 full_ft   medium    oom
+6910.5s 1179 full_ft    small    oom
+6910.5s 1180 full_ft    small    oom
+6910.5s 1181 full_ft    small    oom
+6910.5s 1182 lisa    large    oom
+6910.5s 1183 lisa    large    oom
+6910.5s 1184 lisa    large    oom
+6910.5s 1185 lora_fa    large    oom
+6910.5s 1186 lora_fa    large    oom
+6910.5s 1187 lora_fa    large    oom
+6910.5s 1188 lora    large    oom
+6910.5s 1189 lora    large    oom
+6910.5s 1190 lora    large    oom
+6910.5s 1191 lora   medium    oom
+6910.5s 1192 
+6910.5s 1193 Wrote aggregated.csv (14 configurations)
+6910.6s 1194 Wrote aggregated_scored.csv
+6910.6s 1195 
+6910.6s 1196 Ranking by BALANCED profile:
+6910.8s 1197 Wrote aggregated_gei.csv and pareto_fronts.csv
+6910.8s 1198 
+6910.8s 1199 GEI ranking (higher = greener per unit of accuracy):
+6910.8s 1200 
+6910.8s 1201 Pareto-optimal configurations: 11 of 14
+6910.8s 1202 ======================================================================
+6910.8s 1203 A. Consumer single GPU (16GB)
+6910.9s 1204 Constraints: VRAM<=16GB, carbon<=1.0kg, time<=1000000000.0s, accuracy>=0.0
+6910.9s 1205 Feasible: 14  ->  Pareto front: 10
+6910.9s 1206 
+6910.9s 1207 >>> RECOMMENDED: LISA on tiny backbone
+6910.9s 1208 accuracy 0.8868 | VRAM 5.42 GB | energy 0.00126 kWh | carbon 0.00082 kg | GEI 1.4291
+6910.9s 1209 ======================================================================
+6910.9s 1210 B. Strict carbon ceiling
+6910.9s 1211 Constraints: VRAM<=48GB, carbon<=0.05kg, time<=1000000000.0s, accuracy>=0.0
+6910.9s 1212 Feasible: 14  ->  Pareto front: 10
+6910.9s 1213 
+6910.9s 1214 >>> RECOMMENDED: LISA on tiny backbone
+6910.9s 1215 accuracy 0.8868 | VRAM 5.42 GB | energy 0.00126 kWh | carbon 0.00082 kg | GEI 1.4291
+6910.9s 1216 ======================================================================
+6910.9s 1217 C. High-accuracy production
+6910.9s 1218 Constraints: VRAM<=48GB, carbon<=1.0kg, time<=1000000000.0s, accuracy>=0.0
+6910.9s 1219 Feasible: 14  ->  Pareto front: 10
+6910.9s 1220 
+6910.9s 1221 >>> RECOMMENDED: LISA on tiny backbone
+6910.9s 1222 accuracy 0.8868 | VRAM 5.42 GB | energy 0.00126 kWh | carbon 0.00082 kg | GEI 1.4291
+6910.9s 1223 ======================================================================
+6910.9s 1224 D. Tight deadline
+6910.9s 1225 Constraints: VRAM<=48GB, carbon<=1.0kg, time<=600s, accuracy>=0.0
+6910.9s 1226 Feasible: 14  ->  Pareto front: 10
+6910.9s 1227 
+6910.9s 1228 >>> RECOMMENDED: LISA on tiny backbone
+6910.9s 1229 accuracy 0.8868 | VRAM 5.42 GB | energy 0.00126 kWh | carbon 0.00082 kg | GEI 1.4291
+6912.7s 1230 Saved /kaggle/working/peft_bench/results/figures/benchmark_overview.png
+6912.8s 1231 Bundle: /kaggle/working/peft_bench/sustainable_peft_benchmark_bundle.zip
+6912.8s 1232 Size  : 0.23 MB
+6912.8s 1233 
+6912.8s 1234 Copied to /kaggle/working -> download it from the Output panel on the right.
+6920.1s 1235 /usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\|'
+6920.1s 1236 cells[i][c] = re.sub('\\\\\|', '|', cell)
+6920.4s 1237 /usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\_'
+6920.4s 1238 text = re.sub(r'_', '\_', text) # Escape underscores in display text
+6922.4s 1239 [NbConvertApp] Converting notebook __notebook__.ipynb to notebook
+6923.1s 1240 [NbConvertApp] Writing 1664402 bytes to __notebook__.ipynb
+6925.7s 1241 [NbConvertApp] Converting notebook __notebook__.ipynb to html
+6927.6s 1242 [NbConvertApp] Support files will be in __results___files/
+6927.6s 1243 [NbConvertApp] Making directory __results___files
+6927.6s 1244 [NbConvertApp] Writing 1622522 bytes to __results__.html

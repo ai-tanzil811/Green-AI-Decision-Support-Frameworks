@@ -1,0 +1,66 @@
+backbones:
+  tiny: &id001
+    model_id: Qwen/Qwen2.5-0.5B
+    params_b: 0.5
+    family: qwen
+  small: &id002
+    model_id: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+    params_b: 1.1
+    family: llama
+  medium: &id003
+    model_id: Qwen/Qwen2.5-1.5B
+    params_b: 1.5
+    family: qwen
+  large: &id004
+    model_id: Qwen/Qwen2.5-3B
+    params_b: 3.0
+    family: qwen
+model_zoo:
+  nano:
+    model_id: HuggingFaceTB/SmolLM2-135M
+    params_b: 0.135
+    family: llama
+  micro:
+    model_id: HuggingFaceTB/SmolLM2-360M
+    params_b: 0.36
+    family: llama
+  tiny: *id001
+  tiny_q3:
+    model_id: Qwen/Qwen3-0.6B
+    params_b: 0.6
+    family: qwen
+  small: *id002
+  small_px:
+    model_id: EleutherAI/pythia-1.4b
+    params_b: 1.4
+    family: gpt_neox
+  medium: *id003
+  medium_sl:
+    model_id: HuggingFaceTB/SmolLM2-1.7B
+    params_b: 1.7
+    family: llama
+  medium_q3:
+    model_id: Qwen/Qwen3-1.7B
+    params_b: 1.7
+    family: qwen
+  large_phi:
+    model_id: microsoft/phi-2
+    params_b: 2.7
+    family: phi2
+  large: *id004
+  large_p3:
+    model_id: microsoft/Phi-3-mini-4k-instruct
+    params_b: 3.8
+    family: phi3
+  xl:
+    model_id: Qwen/Qwen2.5-7B
+    params_b: 7.6
+    family: qwen
+    peft_only: true
+    min_vram_gb: 11
+  xl_mis:
+    model_id: HuggingFaceH4/zephyr-7b-beta
+    params_b: 7.2
+    family: mistral
+    peft_only: true
+    min_vram_gb: 11

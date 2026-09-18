@@ -1,0 +1,64 @@
+{
+  "run_id": "lisa_small_classification_seed13",
+  "method": "lisa",
+  "backbone": "small",
+  "task": "classification",
+  "seed": 13,
+  "model_id": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+  "params_b": 1.1,
+  "family": "llama",
+  "gpu": "Tesla T4",
+  "gpu_total_gb": 15.6,
+  "mode": "measured",
+  "status": "ok",
+  "timestamp": "2026-09-18T18:36:30",
+  "budget": {
+    "train_steps": 300,
+    "batch_size": 8,
+    "grad_accum": 2,
+    "max_seq_len": 128,
+    "dynamic_padding": true,
+    "grad_checkpointing": false,
+    "compute_dtype": "torch.float16"
+  },
+  "params": {
+    "trainable": 968978432,
+    "total": 1034516480,
+    "trainable_param_pct": 0.936649
+  },
+  "codecarbon_kgco2eq": 0.0008000962088098196,
+  "efficiency": {
+    "wall_clock_seconds": 116.47,
+    "energy_kwh": 0.00209492,
+    "energy_kwh_marginal": 0.00209492,
+    "energy_source": "nvml",
+    "avg_power_watts": 64.9,
+    "peak_gpu_memory_gb": 11.223,
+    "torch_peak_reserved_gb": 10.603,
+    "torch_peak_allocated_gb": 10.203,
+    "nvml_peak_gb": 11.223,
+    "n_power_samples": 565,
+    "n_sample_failures": 0
+  },
+  "train_loss": 0.54419,
+  "energy": {
+    "total_kwh": 0.00209492,
+    "marginal_kwh": 0.00209492,
+    "avg_power_watts": 64.9,
+    "source": "nvml"
+  },
+  "carbon": {
+    "carbon_kgco2eq": 0.0013617,
+    "carbon_renewable_grid": 0.00031424,
+    "carbon_fossil_grid": 0.0013617
+  },
+  "cost_proxy_usd": 0.0116,
+  "performance": {
+    "accuracy": 0.9186,
+    "f1_macro": 0.9186,
+    "majority_baseline": 0.5092,
+    "n_eval": 872,
+    "performance_score": 0.9186,
+    "metric_name": "accuracy"
+  }
+}

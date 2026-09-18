@@ -1,0 +1,31 @@
+tasks:
+  classification:
+    dataset_id: stanfordnlp/sst2
+    config_name: null
+    train_split: train
+    eval_split: validation
+    text_field: sentence
+    label_field: label
+    num_labels: 2
+    model_head: sequence_classification
+    metric: accuracy
+  summarization:
+    dataset_id: abisee/cnn_dailymail
+    config_name: 3.0.0
+    train_split: train
+    eval_split: validation
+    text_field: article
+    label_field: highlights
+    model_head: causal_lm
+    metric: rougeL
+    max_target_length: 96
+  instruction_following:
+    dataset_id: openai/gsm8k
+    config_name: main
+    train_split: train
+    eval_split: test
+    text_field: question
+    label_field: answer
+    model_head: causal_lm
+    metric: exact_match
+    max_target_length: 160

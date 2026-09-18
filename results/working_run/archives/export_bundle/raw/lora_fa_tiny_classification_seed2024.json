@@ -1,0 +1,64 @@
+{
+  "run_id": "lora_fa_tiny_classification_seed2024",
+  "method": "lora_fa",
+  "backbone": "tiny",
+  "task": "classification",
+  "seed": 2024,
+  "model_id": "Qwen/Qwen2.5-0.5B",
+  "params_b": 0.5,
+  "family": "qwen",
+  "gpu": "Tesla T4",
+  "gpu_total_gb": 15.6,
+  "mode": "measured",
+  "status": "ok",
+  "timestamp": "2026-09-18T18:03:15",
+  "budget": {
+    "train_steps": 300,
+    "batch_size": 8,
+    "grad_accum": 2,
+    "max_seq_len": 128,
+    "dynamic_padding": true,
+    "grad_checkpointing": false,
+    "compute_dtype": "torch.float16"
+  },
+  "params": {
+    "trainable": 788224,
+    "total": 496199040,
+    "trainable_param_pct": 0.001589
+  },
+  "codecarbon_kgco2eq": 0.0005452884091425734,
+  "efficiency": {
+    "wall_clock_seconds": 100.83,
+    "energy_kwh": 0.00129812,
+    "energy_kwh_marginal": 0.00129812,
+    "energy_source": "nvml",
+    "avg_power_watts": 46.4,
+    "peak_gpu_memory_gb": 4.865,
+    "torch_peak_reserved_gb": 4.245,
+    "torch_peak_allocated_gb": 3.997,
+    "nvml_peak_gb": 4.865,
+    "n_power_samples": 492,
+    "n_sample_failures": 0
+  },
+  "train_loss": 0.61806,
+  "energy": {
+    "total_kwh": 0.00129812,
+    "marginal_kwh": 0.00129812,
+    "avg_power_watts": 46.4,
+    "source": "nvml"
+  },
+  "carbon": {
+    "carbon_kgco2eq": 0.00084378,
+    "carbon_renewable_grid": 0.00019472,
+    "carbon_fossil_grid": 0.00084378
+  },
+  "cost_proxy_usd": 0.01,
+  "performance": {
+    "accuracy": 0.914,
+    "f1_macro": 0.9139,
+    "majority_baseline": 0.5092,
+    "n_eval": 872,
+    "performance_score": 0.914,
+    "metric_name": "accuracy"
+  }
+}

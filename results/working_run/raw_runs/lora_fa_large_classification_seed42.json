@@ -1,0 +1,25 @@
+{
+  "run_id": "lora_fa_large_classification_seed42",
+  "method": "lora_fa",
+  "backbone": "large",
+  "task": "classification",
+  "seed": 42,
+  "model_id": "Qwen/Qwen2.5-3B",
+  "params_b": 3.0,
+  "family": "qwen",
+  "gpu": "Tesla T4",
+  "gpu_total_gb": 15.6,
+  "mode": "measured",
+  "status": "oom",
+  "timestamp": "2026-09-18T19:36:09",
+  "budget": {
+    "train_steps": 300,
+    "batch_size": 8,
+    "grad_accum": 2,
+    "max_seq_len": 128,
+    "dynamic_padding": true,
+    "grad_checkpointing": false,
+    "compute_dtype": "torch.float16"
+  },
+  "error": "CUDA out of memory. Tried to allocate 86.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 84.81 MiB is free. Including non-PyTorch memory, this process has 14.48 GiB memory in use. Of the allocated memory 14.18 GiB is allocated by PyTorch, and 168.28 MiB is reserved by PyTorch but unallocate"
+}

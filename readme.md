@@ -2,7 +2,7 @@
 
 > **Sustainable Parameter-Efficient Fine-Tuning of Large Language Models via Predictive Zero-Shot Constraint Filtering and Green Efficiency Index (GEI)**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.2%2B-orange.svg)](https://pytorch.org/)
 [![CodeCarbon](https://img.shields.io/badge/CodeCarbon-2.8%2B-brightgreen.svg)](https://codecarbon.io/)
@@ -21,20 +21,18 @@ Instead of requiring practitioners to run expensive empirical sweeps prior to se
 
 | Document / Artifact | File Link | Description & Purpose |
 | :--- | :--- | :--- |
-| **IEEE Research Paper** | [main.tex](file:///c:/Users/Tanzil/Downloads/green/main.tex) / [GreenPEFT_IEEE.tex](file:///c:/Users/Tanzil/Downloads/green/GreenPEFT_IEEE.tex) | Complete academic manuscript in IEEE format with TikZ system architecture diagram, equations, empirical tables, and references. |
-| **Emergency Viva Handout** | [viva_handout.md](file:///c:/Users/Tanzil/Downloads/green/viva_handout.md) | Printable 1-page defense summary, opening script, empirical results table, supervisor Q&A, and math cheat sheet for tomorrow's defense. |
-| **Viva & Defense Guide** | [viva_prep.md](file:///c:/Users/Tanzil/Downloads/green/viva_prep.md) | Complete viva preparation handbook with elevator pitches, basic knowledge Q&A, tough supervisor defense questions, and cheat sheet. |
-| **Onboarding & Workflow Guide** | [GreenPEFT_Onboarding_and_Workflow.md](file:///c:/Users/Tanzil/Downloads/green/GreenPEFT_Onboarding_and_Workflow.md) | Step-by-step team onboarding, cell-by-cell execution flow, honest empirical evaluation, self-check guide, and prioritized fix list. |
-| **Prompting & Empirical Report** | [report.md](file:///c:/Users/Tanzil/Downloads/green/report.md) | Itemized raw log breakdown across seeds, promptable summary blocks, mathematical equations, failure diagnostics, and downstream prompt templates. |
-| **Presentation Slide Deck** | [presentation.md](file:///c:/Users/Tanzil/Downloads/green/presentation.md) | 13-slide Marp/Slidev/Gamma-ready presentation deck formatted for slide generation and PPT prompting. |
-| **Master Benchmark Notebook** | [green-project.ipynb](file:///c:/Users/Tanzil/Downloads/green/green-project.ipynb) | End-to-end Jupyter Notebook with synthetic Mode-A simulation, real Kaggle T4 execution, CodeCarbon NVML tracking, and Pareto plotter. |
-| **Master Research Context** | [docs/context.md](file:///c:/Users/Tanzil/Downloads/green/docs/context.md) | Primary research context detailing RQ1–RQ4, baseline comparisons, and the 3-Tier Strategic Roadmap. |
+| **Benchmark notebook** | [Green_PEFT.ipynb](Green_PEFT.ipynb) | End-to-end notebook for the GreenPEFT benchmark. |
+| **Benchmark log** | [Green_PEFT_log.txt](Green_PEFT_log.txt) | Execution log from the benchmark run. |
+| **Methodology diagram** | [methodology.png](methodology.png) | Overview of the GreenPEFT pipeline. |
+| **Results index** | [results/README.md](results/README.md) | Navigation guide for canonical results, working files, archives, and notebook assets. |
+| **Canonical benchmark** | [results/canonical_benchmark](results/canonical_benchmark) | Configurations, raw runs, aggregate metrics, Pareto fronts, and figures from the 60-run Kaggle T4 benchmark. |
+| **Working run** | [results/working_run](results/working_run) | Working data, duplicate exports, and the original benchmark archive. |
 
 ---
 
 ## 🏗️ Framework Architecture & Pipeline Workflow
 
-![GreenPEFT Methodology Pipeline Diagram](figures/greenpeft_methodology_pipeline.png)
+![GreenPEFT Methodology Pipeline Diagram](methodology.png)
 
 ```mermaid
 flowchart TD
@@ -89,7 +87,7 @@ flowchart TD
 
 ## 📊 Empirical Kaggle Pilot Benchmark (NVIDIA Tesla T4)
 
-![GreenPEFT Benchmark Overview Plot](figures/benchmark_overview.png)
+![GreenPEFT Benchmark Overview Plot](results/canonical_benchmark/figures/benchmark_overview.png)
 
 Below are the empirical findings from a 60-run benchmark grid executed on Kaggle using an **NVIDIA Tesla T4 GPU (16 GB VRAM)** on the SST-2 classification task ($k=3$ random seeds):
 
@@ -107,33 +105,24 @@ Below are the empirical findings from a 60-run benchmark grid executed on Kaggle
 
 ---
 
-## 🛠️ Complete Repository Structure
+## 🛠️ Repository Structure
 
 ```text
-├── configs/
-│   ├── backbones.yaml                  # Backbone specifications (0.5B to 3.0B)
-│   ├── tasks.yaml                      # Downstream task definitions (classification, etc.)
-│   └── methods/                        # Hyperparameter configurations for PEFT methods
-│       ├── full_ft.yaml
-│       ├── lisa.yaml                   # Updated: layer_sample_prob=0.5, resample_steps=5
-│       ├── lora.yaml
-│       ├── lora_fa.yaml
-│       └── qlora.yaml
-├── docs/
-│   ├── context.md                      # Master research context and roadmap
-│   └── deepseek_markdown_...md         # Kaggle empirical run analysis & diagnosis
-├── raw/                                # Individual JSON run logs (60 files)
-├── figures/                            # High-resolution plots and trade-off visualisations
-├── aggregated_gei.csv                  # GEI scored empirical results
-├── pareto_fronts.csv                   # Identified non-dominated Pareto configurations
-├── sweep_raw.csv                       # Raw execution log across all 60 runs
-├── green-project.ipynb                 # Master execution notebook
-├── GreenPEFT_IEEE.tex                  # IEEE format research paper (LaTeX source)
-├── main.tex                            # Primary IEEE LaTeX compilation entry point
-├── presentation.md                     # Markdown slide deck for PPT generation
-├── report.md                           # System performance & prompt engineering report
-├── GreenPEFT_Onboarding_and_Workflow.md # Onboarding guide & cell-by-cell execution flow
-└── README.md                           # Master repository documentation
+├── Green_PEFT.ipynb                    # Master benchmark notebook
+├── Green_PEFT_log.txt                  # Benchmark execution log
+├── methodology.png                     # Pipeline diagram
+├── results/
+│   ├── README.md                       # Results navigation guide
+│   ├── canonical_benchmark/            # Verified benchmark source of truth
+│   │   ├── configs/                    # Backbone, task, and method YAML files
+│   │   ├── raw_runs/                   # Individual JSON run logs (60 files)
+│   │   ├── figures/                    # Benchmark visualizations
+│   │   ├── metrics/                    # Aggregate, scored, Pareto, and sweep CSVs
+│   │   └── manifest.json               # Bundle metadata
+│   ├── working_run/                    # Working data and retained exports
+│   ├── notebook_assets/                # Notebook-rendered support files
+│   └── cache/                          # Download/cache metadata
+└── readme.md                           # Project documentation
 ```
 
 ---
@@ -157,10 +146,10 @@ pip install --upgrade "peft>=0.10.0" "bitsandbytes>=0.46.1" "torchao>=0.16.0" co
 
 ## 🎯 Onboarding & Usage Workflow
 
-For a detailed team onboarding walkthrough, consult **[GreenPEFT_Onboarding_and_Workflow.md](file:///c:/Users/Tanzil/Downloads/green/GreenPEFT_Onboarding_and_Workflow.md)**.
+The result folders and their intended uses are documented in the [results index](results/README.md). The canonical benchmark is described by its [manifest](results/canonical_benchmark/manifest.json).
 
 ### Quick Start (Kaggle T4 Setup):
-1. **Upload Notebook:** Import `green-project.ipynb` into Kaggle.
+1. **Upload Notebook:** Import `Green_PEFT.ipynb` into Kaggle.
 2. **Set Accelerator:** Select **GPU T4 x2** in the right panel settings.
 3. **Execute Cells:**
    - **Cell 1–2:** Verify dependency upgrades and select `RUN_MODE` (`smoke` first, then `real`).
@@ -199,11 +188,7 @@ If you use **GreenPEFT** in your research, please cite:
 
 ```bibtex
 @inproceedings{greenpeft2026,
-<<<<<<< HEAD
-  title={GreenPEFT: Tune it fine , Tune it Green},
-=======
-  title={GreenPEFT: Green Fine Tuning},
->>>>>>> d659bc4a8a7fa8411c1abb322f52567613e2b695
+  title={GreenPEFT: Green Fine-Tuning},
   author={Ashraful Islam Tanzil},
   booktitle={IEEE Conference Proceedings},
   year={2026}
