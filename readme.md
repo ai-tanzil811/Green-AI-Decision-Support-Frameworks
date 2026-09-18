@@ -199,7 +199,11 @@ If you use **GreenPEFT** in your research, please cite:
 
 ```bibtex
 @inproceedings{greenpeft2026,
+<<<<<<< HEAD
   title={GreenPEFT: Tune it fine , Tune it Green},
+=======
+  title={GreenPEFT: Green Fine Tuning},
+>>>>>>> d659bc4a8a7fa8411c1abb322f52567613e2b695
   author={Ashraful Islam Tanzil},
   booktitle={IEEE Conference Proceedings},
   year={2026}
