@@ -1,0 +1,8 @@
+method: qlora
+learning_rate: 0.0002
+rank: 16
+alpha: 32
+lora_dropout: 0.05
+target_modules: auto
+quant_type: nf4
+double_quant: true

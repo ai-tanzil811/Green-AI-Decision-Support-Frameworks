@@ -27,6 +27,8 @@ Instead of requiring practitioners to run expensive empirical sweeps prior to se
 | **Results index** | [results/README.md](results/README.md) | Navigation guide for canonical results, working files, archives, and notebook assets. |
 | **Canonical benchmark** | [results/canonical_benchmark](results/canonical_benchmark) | Configurations, raw runs, aggregate metrics, Pareto fronts, and figures from the 60-run Kaggle T4 benchmark. |
 | **Working run** | [results/working_run](results/working_run) | Working data, duplicate exports, and the original benchmark archive. |
+| **Surrogate export** | [surrogate_artifacts_export/artifacts_export](surrogate_artifacts_export/artifacts_export) | Exported surrogate models, validation metrics, feature data, and candidate configuration files used by the CLI recommender. |
+| **CLI package** | [green_peft_cli/green_peft_pkg](green_peft_cli/green_peft_pkg) | Installable `green-peft` command for constraint-aware experiment planning. |
 
 ---
 
@@ -142,6 +144,16 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 pip install --upgrade "peft>=0.10.0" "bitsandbytes>=0.46.1" "torchao>=0.16.0" codecarbon transformers datasets accelerate trl pandas numpy scikit-learn
 ```
 
+### 3. Install the recommendation CLI
+
+The CLI does not require PyTorch or a GPU. Install it in a separate environment when
+you only need recommendation and experiment-planning capabilities:
+
+```bash
+cd green_peft_cli/green_peft_pkg
+python -m pip install -e .
+```
+
 ---
 
 ## 🎯 Onboarding & Usage Workflow
@@ -155,6 +167,60 @@ The result folders and their intended uses are documented in the [results index]
    - **Cell 1–2:** Verify dependency upgrades and select `RUN_MODE` (`smoke` first, then `real`).
    - **Cell 10:** Launch the CodeCarbon-tracked benchmark sweep.
    - **Cell 13–15:** Extract Pareto frontiers, calculate GEI scores, and run the GreenPEFT Decision Engine.
+
+### CLI Recommendation Workflow
+
+The repository includes a current surrogate export at
+`surrogate_artifacts_export/artifacts_export`. It contains models trained from the
+benchmark traces, the expanded model catalog in `configs/backbones.yaml`, method
+configurations, and `results/surrogate_cv_metrics.json`.
+
+List the candidate model and method combinations:
+
+```bash
+green-peft list-zoo \
+    --artifacts-dir ./surrogate_artifacts_export/artifacts_export
+```
+
+Request a balanced recommendation under explicit resource constraints:
+
+```bash
+green-peft recommend \
+    --artifacts-dir ./surrogate_artifacts_export/artifacts_export \
+    --vram 16 --accuracy 0.90 --profile balanced --top-k 5
+```
+
+For automation, request JSON output and select a carbon-constrained profile:
+
+```bash
+green-peft recommend \
+    --artifacts-dir ./surrogate_artifacts_export/artifacts_export \
+    --vram 16 --carbon 0.003 --accuracy 0.90 \
+    --profile strict_carbon --json
+```
+
+The CLI predicts accuracy, peak VRAM, energy, carbon, and wall-clock time, filters
+infeasible candidates, then ranks the survivors using Pareto filtering and GEI. It is
+a planning aid: always validate the selected configuration with a measured run before
+using it as a production policy.
+
+### Current Surrogate Validation
+
+The exported models use leave-one-tier-out validation across four backbone tiers.
+The recorded feasibility accuracy is **0.7833**. Regression MAE and the selected model
+for each target are:
+
+| Target | Selected model | MAE | Leave-one-tier-out R² |
+| :--- | :--- | ---: | ---: |
+| Accuracy | Gradient boosting | 0.0182 | -0.4573 |
+| Peak VRAM (GB) | Gradient boosting | 3.9703 | -0.5154 |
+| Energy (kWh) | Ridge | 0.000563 | 0.3740 |
+| Wall-clock time (s) | Gradient boosting | 33.12 | 0.4077 |
+
+These results support shortlist generation and experiment planning, but not automatic
+production approval. Predictions for catalog entries that were not directly benchmarked
+are extrapolations. The current evidence base is primarily SST-2 classification on a
+Tesla T4, with 41 successful runs and 19 OOM records across 60 attempts.
 
 ---
 
@@ -177,8 +243,8 @@ Weights satisfy $\sum w_i = 1$ based on user preference profiles:
 ## 🗺️ Strategic Roadmap (Tiers 1–3)
 
 - [x] **Tier 1 — Core Methodology:** Establish CodeCarbon tracking, run empirical Kaggle pilot, identify OOM boundaries, fix LISA hyperparameter configs (`layer_sample_prob=0.5`).
-- [ ] **Tier 2 — Analytical Upgrades:** Train XGBoost surrogate regressors on empirical traces, integrate DoRA/GaLore methods, derive AHP survey weights.
-- [ ] **Tier 3 — Systems Tooling:** Package open-source CLI tool (`green-peft recommend --vram 16 --carbon 0.05`), test cross-hardware surrogate transfer (A100 $\to$ T4).
+- [x] **Tier 2 — Analytical Upgrades (initial):** Train and export surrogate regressors on empirical traces. DoRA/GaLore integration and AHP weight derivation remain open.
+- [x] **Tier 3 — Systems Tooling (initial):** Package the open-source CLI tool (`green-peft recommend --vram 16 --carbon 0.05`) and export reusable surrogate artifacts. Cross-hardware transfer and production hardening remain open.
 
 ---
 

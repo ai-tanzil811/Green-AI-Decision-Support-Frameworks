@@ -34,11 +34,11 @@ flowchart TD
 
 ### Not yet implemented as a complete product
 
-- A trained surrogate that predicts outcomes before execution.
-- A formal user-constraint API or CLI.
-- Calibrated uncertainty estimates for predictions.
+- Calibrated uncertainty estimates for CLI predictions.
 - Automatic recommendation explanations tied to active constraints.
 - Cross-task and cross-hardware validation.
+
+The initial constraint-query CLI is now implemented in `green_peft_cli/green_peft_pkg/`.
 
 ## 3. Evidence Base
 
@@ -61,6 +61,41 @@ The manifest reports:
 The raw directory contains **41 successful runs** and **19 OOM records**. OOM records are retained as resource-feasibility observations and must not be silently dropped from feasibility analysis. The aggregate files contain 14 feasible method/backbone combinations; failed runs do not have valid performance and environmental means.
 
 This corrects the earlier pilot description that reported 12 successful runs. Future reports should derive status counts directly from the raw JSON records or manifest rather than relying on copied narrative text.
+
+### Surrogate and CLI Export
+
+The first reusable surrogate export is available at
+`surrogate_artifacts_export/artifacts_export/`:
+
+```text
+artifacts_export/
+├── configs/
+│   ├── backbones.yaml
+│   ├── methods/*.yaml
+│   └── tasks.yaml
+└── results/
+    ├── surrogate_models.joblib
+    ├── surrogate_cv_metrics.json
+    └── surrogate_dataset.csv
+```
+
+After `python -m pip install -e .` from `green_peft_cli/green_peft_pkg/`, query it with:
+
+```bash
+green-peft recommend \
+  --artifacts-dir ./surrogate_artifacts_export/artifacts_export \
+  --vram 16 --accuracy 0.90 --profile balanced --json
+```
+
+The exported catalog contains the four benchmarked tiers plus additional 135M, 360M,
+600M, 1.7B, 2.7B, 3.8B, and approximately 7B parameter entries. Recommendations for
+unbenchmarked entries are extrapolations and require experimental validation.
+
+The recorded leave-one-tier-out validation reports feasibility accuracy of **0.7833**.
+Regression MAE / R² are **0.0182 / -0.4573** for accuracy, **3.9703 GB / -0.5154**
+for peak VRAM, **0.000563 kWh / 0.3740** for energy, and **33.12 seconds / 0.4077**
+for wall-clock time. The CLI is therefore appropriate for shortlisting, budget checks,
+and experiment planning, but not unattended production decisions.
 
 ## 4. Empirical Findings
 
@@ -176,11 +211,24 @@ The surrogate is only useful for recommendation if its errors are incorporated i
 
 ### Phase 4: Usable tooling
 
-- [ ] Package the recommendation path as a CLI, for example:
+- [x] Package the recommendation path as a CLI, for example:
   `green-peft recommend --vram 16 --carbon 0.05 --accuracy 0.85`.
-- [ ] Export JSON and CSV decision reports.
+- [x] Export JSON decision reports.
+- [ ] Export CSV decision reports.
 - [ ] Provide a reproducible environment file and a small local smoke-test mode.
 - [ ] Add a visualization of the feasible set, Pareto frontier, and recommended point.
+
+### Professional Operating Procedure
+
+1. Record the task, dataset size, hardware, accuracy floor, VRAM cap, carbon cap, and
+  time limit before querying the CLI.
+2. Save the JSON recommendation together with the artifact export and CLI version.
+3. Run the recommended configuration and measure actual accuracy, peak VRAM, energy,
+  carbon, and time.
+4. Compare predicted and measured values; large errors indicate that the surrogate
+  needs new training data.
+5. Retrain and revalidate after adding new hardware, tasks, methods, or training
+  budgets.
 
 ## 8. Research Questions
 
