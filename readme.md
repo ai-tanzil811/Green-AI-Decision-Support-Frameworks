@@ -29,6 +29,7 @@ Instead of requiring practitioners to run expensive empirical sweeps prior to se
 | **Working run** | [results/working_run](results/working_run) | Working data, duplicate exports, and the original benchmark archive. |
 | **Surrogate export** | [model/artifacts_export](model/artifacts_export) | Exported surrogate models, validation metrics, feature data, and candidate configuration files used by the CLI recommender. |
 | **CLI package** | [green_peft_cli/green_peft_pkg](green_peft_cli/green_peft_pkg) | Installable `green-peft` command for constraint-aware experiment planning. |
+| **Hugging Face model** | [ai-tanzil/GreenPEFT](https://huggingface.co/ai-tanzil/GreenPEFT) | Published surrogate artifacts and model card. |
 
 ---
 
@@ -153,6 +154,25 @@ you only need recommendation and experiment-planning capabilities:
 cd green_peft_cli/green_peft_pkg
 python -m pip install -e .
 ```
+
+### Hugging Face Upload
+
+Open the published model directly:
+
+[https://huggingface.co/ai-tanzil/GreenPEFT](https://huggingface.co/ai-tanzil/GreenPEFT)
+
+To update the repository from a local clone:
+
+```bash
+git xet install
+git clone https://huggingface.co/ai-tanzil/GreenPEFT
+cd GreenPEFT
+git add .
+git commit -m "Update GreenPEFT surrogate artifacts"
+git push
+```
+
+Hugging Face credentials are required for `git push`.
 
 ---
 
