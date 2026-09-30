@@ -1,0 +1,17 @@
+,greenpeft_kaggle_t4_benchmark,llmenergy_frontier_pretraining,open_llm_perf_leaderboard
+method,0.0,0.0,100.0
+backbone,0.0,3.7,0.0
+family,0.0,0.0,0.0
+params_b,0.0,3.7,0.0
+rank,0.0,0.0,100.0
+quant_bits,0.0,0.0,0.0
+is_adapter_method,0.0,0.0,100.0
+gpu_total_gb,0.0,100.0,100.0
+status,0.0,0.0,0.0
+fits,0.0,0.0,0.0
+trainable_param_pct,0.0,0.0,100.0
+accuracy,0.0,100.0,0.0
+peak_gpu_memory_gb,0.0,100.0,0.0
+energy_kwh,0.0,40.7,100.0
+carbon_kgco2eq,0.0,48.1,100.0
+wall_clock_seconds,0.0,51.9,100.0
