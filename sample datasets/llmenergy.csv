@@ -1,0 +1,28 @@
+Model name,model_parameters_billion,training_tokens_billion,gpu_type,num_gpus,training_hours,data_center_region,PUE,hardware_power_draw_watts_per_gpu,carbon_intensity_gco2_per_kwh,total_energy_kwh,total_carbon_footprint_kgco2e
+GPT-3,175,300,NVIDIA V100,10000,355.2,US East (Northern Virginia),1.1,300,429,1287000,552000
+GPT-4,1800,13000,NVIDIA H100,10000,2160,US East (Northern Virginia),1.15,700,322,16099378,5184000
+PaLM,540,780,Google TPUv4,6144,1200,US Central (Iowa),1.11,418,430,3436000,271400
+BLOOM,176,350,NVIDIA A100 80GB,384,2820,Europe (Finland),1.1,400,57,433196,24700
+DeepSeek-V3,671,14800,NVIDIA H800,2048,1361,US East (South Carolina),1.15,350,560,1123598,629215
+Llama 3.1,405,15600,NVIDIA H100,16000,1928,US East (Northern Virginia),1.15,700,359,24841800,8930000
+Claude 3 Opus,2000,40000,NVIDIA H100,Not disclosed,Not disclosed,US East (Northern Virginia),1.15,700,322,Not disclosed,Not disclosed
+Claude 3 Sonnet,70,Not disclosed,NVIDIA H100,Not disclosed,Not disclosed,US East (Northern Virginia),1.15,700,322,Not disclosed,Not disclosed
+Claude 3 Haiku,20,Not disclosed,NVIDIA H100,Not disclosed,Not disclosed,US East (Northern Virginia),1.15,700,322,Not disclosed,Not disclosed
+Gemini 1.0 Ultra,550,Not disclosed,Google TPUv4,80000,Not disclosed,US Central (Iowa),1.11,170,430,Not disclosed,Not disclosed
+Gemini 1.5 Pro,Not disclosed,Not disclosed,Google TPUv4,Not disclosed,Not disclosed,US Central (Iowa),1.11,170,430,Not disclosed,Not disclosed
+T5,11,500,TPUv3,512,480,US Central (Iowa),1.12,450,545,123900,46700
+GShard,619,1000,TPUv3,1000,74.4,US Central (Iowa),1.09,450,177,36403,4300
+Switch,1500,2000,TPUv3,1000,648,US Central (Iowa),1.1,450,330,320760,59100
+XLM,0.55,7000,V100,512,489.6,US East (Northern Virginia),1.1,300,413,82637,39000
+Chinchilla,70,1400,Not specified,Not specified,Not specified,Not specified,Not specified,Not specified,Not specified,Not specified,Not specified
+GLaM,1200,1600,Not specified,Not specified,Not specified,US Central (Iowa),Not specified,Not specified,Not specified,429000,Not specified
+Falcon 180B,180,3500,A100 40GB,4096,1709,US East (Northern Virginia),1.15,400,322,3222000,1870000
+Mistral 7B,7.3,Not disclosed,NVIDIA A100,500,Not specified,France,1.1,400,59,Not specified,Not specified
+Mixtral 8x7B,47,Not specified,NVIDIA H100,Not specified,Not specified,Not specified,Not specified,700,Not specified,Not specified,Not specified
+Qwen 72B,72,3000,A100,Not specified,Not specified,China,1.25,400,600,Not specified,Not specified
+Yi-34B,34,3000,NVIDIA A800 80GB,128,240,China,1.25,400,600,15360,Not specified
+Grok 3,2700,12800,NVIDIA H100,200000,1000,Memphis Tennessee,1.1,700,322,154000000,49588000
+Gopher,280,300,A100,4480,Not specified,Not specified,Not specified,400,Not specified,1066000,352000
+OPT-175B,175,180,Not specified,Not specified,Not specified,Not specified,Not specified,Not specified,Not specified,324000,Not specified
+Gemma 7B,7,Not disclosed,Not specified,Not specified,Not specified,US Central (Iowa),1.11,Not specified,430,Not specified,Not specified
+Vicuna 7B,7,Not disclosed,Not specified,Not specified,Not specified,Not specified,Not specified,Not specified,Not specified,Not specified,Not disclosed

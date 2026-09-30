@@ -1,34 +1,35 @@
-# Author Profile
+# Hi there, I'm Ashraful Islam Tanzil! 👋
 
-## **Ashraful Islam Tanzil**
-- **Role:** AI Research & Green AI Framework Lead Author
-- **Hugging Face:** [@ai-tanzil](https://huggingface.co/ai-tanzil)
-- **Kaggle:** [@ashrafulislamtanzil](https://www.kaggle.com/ashrafulislamtanzil)
-- **PyPI:** [green-peft](https://pypi.org/project/green-peft/)
-- **DOI:** [10.57967/hf/10504](https://doi.org/10.57967/hf/10504)
+[![CS Undergrad](https://img.shields.io/badge/CS-Undergrad-blue?style=for-the-badge)]()
+
+## About Me
+
+I'm a Computer Science undergraduate student at United International University, passionate about web development and machine learning. I'm currently focused on enhancing my skills in React.js and exploring the world of AI. I'm eager to collaborate on projects related to full-stack web development and machine learning applications.
+
+## Tech Stack
+
+* **Languages:** Python, JavaScript, HTML, CSS, C, C++
+* **Frameworks:** React, Node.js
+* **Tools:** Git, VS Code, npm
+* **Databases:** MySQL
+
+## 📊 GitHub Stats
+
+<p align="center">
+  <a href="https://github.com/ai-tanzil811">
+    <img src="https://github-readme-stats-eight-theta.vercel.app/api?username=ai-tanzil811&show_icons=true&theme=radical" width="48%" alt="Ashraful's GitHub Stats" />
+  </a>
+  <a href="https://github.com/ai-tanzil811">
+    <img src="https://github-readme-stats-eight-theta.vercel.app/api/top-langs/?username=ai-tanzil811&layout=compact&theme=radical" width="48%" alt="Top Langs" />
+  </a>
+</p>
+
+## Connect with Me
+
+* [LinkedIn](https://www.linkedin.com/in/ai-tanzil/)
+* [Twitter](https://x.com/ai_tanzil)
+* [Email](mailto:ahmedtanzil174@gmail.com)
 
 ---
 
-## 📌 Project Artifacts & Resource Links
-
-| Artifact | Link | Description |
-| :--- | :--- | :--- |
-| **Hugging Face Model & Artifacts** | [ai-tanzil/GreenPEFT](https://huggingface.co/ai-tanzil/GreenPEFT) | Published surrogate regressors, configurations, and model card. |
-| **Kaggle Surrogate Dataset** | [GreenPEFT Surrogate Data](https://www.kaggle.com/datasets/ashrafulislamtanzil/greenpeft-surrogate-data) | 60-run empirical benchmark dataset on Tesla T4. |
-| **PyPI Package** | [green-peft 0.1.0](https://pypi.org/project/green-peft/0.1.0/) | Installable CLI package for zero-shot strategy recommendation. |
-| **DOI Metadata** | [10.57967/hf/10504](https://doi.org/10.57967/hf/10504) | Permanent Digital Object Identifier for the GreenPEFT framework. |
-
----
-
-## 📜 Citation
-
-```bibtex
-@misc{ashraful_islam_tanzil_2026,
-    author       = {Ashraful Islam Tanzil},
-    title        = {GreenPEFT: Sustainable Parameter-Efficient Fine-Tuning of Large Language Models via Predictive Zero-Shot Constraint Filtering and Green Efficiency Index (GEI)},
-    year         = {2026},
-    url          = {https://huggingface.co/ai-tanzil/GreenPEFT},
-    doi          = {10.57967/hf/10504},
-    publisher    = {Hugging Face}
-}
-```
+Feel free to explore my repositories and reach out if you have any questions or collaboration ideas!
