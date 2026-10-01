@@ -282,3 +282,41 @@ pipeline passes.
 - **Single device, single task**: one NVIDIA T4, SST-2 classification.
 - **Carbon figures are derived**, applying one static grid intensity (0.65 kgCO₂eq/kWh) uniformly.
   They are linear rescalings of measured energy and carry no independent measurement uncertainty.
+
+---
+
+## 9. Data and model availability
+
+The harmonized dataset and the trained surrogate are published with DOIs. Cite these rather
+than the repository path when referring to the data or the model.
+
+**Dataset** — [greenpeft-surrogate-data](https://www.kaggle.com/dsv/20178095) (Kaggle),
+DOI [`10.34740/KAGGLE/DSV/20178095`](https://doi.org/10.34740/KAGGLE/DSV/20178095)
+
+```bibtex
+@misc{ashraful_islam_tanzil_2026_data,
+    title     = {greenpeft-surrogate-data},
+    url       = {https://www.kaggle.com/dsv/20178095},
+    DOI       = {10.34740/KAGGLE/DSV/20178095},
+    publisher = {Kaggle},
+    author    = {Ashraful Islam Tanzil},
+    year      = {2026}
+}
+```
+
+**Model** — [GreenPEFT-v2](https://huggingface.co/ai-tanzil/GreenPEFT-v2) (Hugging Face,
+revision `148b027`), DOI [`10.57967/hf/10690`](https://doi.org/10.57967/hf/10690)
+
+```bibtex
+@misc{ashraful_islam_tanzil_2026_model,
+    author    = {Ashraful Islam Tanzil},
+    title     = {GreenPEFT-v2 (Revision 148b027)},
+    year      = 2026,
+    url       = {https://huggingface.co/ai-tanzil/GreenPEFT-v2},
+    doi       = {10.57967/hf/10690},
+    publisher = {Hugging Face}
+}
+```
+
+A machine-readable version of both citations is in [`CITATION.cff`](../CITATION.cff) at the
+repository root.

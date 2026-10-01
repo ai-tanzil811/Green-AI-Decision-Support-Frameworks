@@ -16,9 +16,12 @@ Design notes:
   bounds are taken from the FEASIBLE, CONSTRAINT-FILTERED candidate set -- not the whole
   catalog -- because GEI is meant to score trade-offs among options the user could
   actually choose, not options that were already ruled out.
-- A candidate whose predicted VRAM/accuracy/carbon/time we don't trust (feasibility
-  classifier says P(fits) < FEASIBILITY_THRESHOLD) is dropped before scoring, not
-  penalized within GEI -- an infeasible config isn't a worse option, it isn't an option.
+- Feasibility is decided by comparing PREDICTED peak VRAM against the device budget. Earlier
+  versions used a trained feasibility classifier; that model is not present in the v3 bundle,
+  so the budget comparison is now the gate. A candidate over budget is dropped before scoring,
+  not penalized within GEI -- an infeasible config isn't a worse option, it isn't an option.
+  The VRAM regressor is rated PRELIMINARY (see models/model_metadata.json), so this gate is a
+  screening heuristic, not a guarantee; VRAM_SAFETY_MARGIN keeps a headroom band.
 """
 
 from __future__ import annotations
@@ -32,9 +35,12 @@ import numpy as np
 import pandas as pd
 import yaml
 
-CAT_FEATURES = ['method', 'family']
-NUM_FEATURES = ['params_b', 'rank', 'quant_bits', 'is_adapter_method']
-FEASIBILITY_THRESHOLD = 0.5
+from .features import ALL_FEATURES, CAT_FEATURES, NUM_FEATURES, build_pre_run_features
+
+# Predicted VRAM must leave this fraction of the budget free to count as feasible. The VRAM
+# surrogate's out-of-sample error is ~12% interpolating and ~40% extrapolating, so a candidate
+# predicted to land exactly at the ceiling is not a safe recommendation.
+VRAM_SAFETY_MARGIN = 0.10
 
 # Grid/cost assumptions -- mirror Cell 2 defaults. Override via GreenPEFTArtifacts if
 # your notebook used different constants, so predicted carbon/cost stay consistent
@@ -79,38 +85,69 @@ class GreenPEFTArtifacts:
     """
     model_zoo: dict
     method_configs: dict
-    models: dict                      # {'fits':..., 'accuracy':..., 'peak_gpu_memory_gb':..., 'energy_kwh':..., ['wall_clock_seconds':...]}
+    models: dict                      # {'accuracy':..., 'peak_gpu_memory_gb':..., 'energy_kwh':..., 'wall_clock_seconds':...}
     grid_carbon_kg_per_kwh: float = DEFAULT_GRID_CARBON_KG_PER_KWH
     electricity_usd_per_kwh: float = DEFAULT_ELECTRICITY_USD_PER_KWH
     gpu_rental_usd_per_hour: float = DEFAULT_GPU_RENTAL_USD_PER_HOUR
+    schema_version: str = 'unknown'
+    model_status: str = 'unknown'
+
+    @staticmethod
+    def _unpack(bundle) -> tuple[dict, str, float]:
+        """Accept either the v3 bundle (regressors nested, plus metadata) or the older flat
+        {target: estimator} mapping. Returning a flat dict keeps one code path downstream."""
+        if isinstance(bundle, dict) and 'regressors' in bundle:
+            return (dict(bundle['regressors']),
+                    str(bundle.get('schema_version', 'unknown')),
+                    float(bundle.get('carbon_intensity_kg_per_kwh',
+                                     DEFAULT_GRID_CARBON_KG_PER_KWH)))
+        return dict(bundle), 'legacy-flat', DEFAULT_GRID_CARBON_KG_PER_KWH
 
     @classmethod
-    def load(cls, artifacts_dir: str | Path) -> 'GreenPEFTArtifacts':
-        root = Path(artifacts_dir)
-        joblib_path = root / 'results' / 'surrogate_models.joblib'
-        backbones_path = root / 'configs' / 'backbones.yaml'
-        methods_dir = root / 'configs' / 'methods'
+    def load(cls, artifacts_dir: str | Path | None = None) -> 'GreenPEFTArtifacts':
+        """Load the surrogate bundle and the model/method catalog.
 
-        if not joblib_path.exists():
+        With no argument, uses the model and configs shipped inside the installed package.
+        """
+        pkg = Path(__file__).parent / 'data'
+        root = Path(artifacts_dir) if artifacts_dir is not None else pkg
+
+        candidates = [root / 'greenpeft_surrogate_models.joblib',
+                      root / 'results' / 'surrogate_models.joblib',
+                      pkg / 'greenpeft_surrogate_models.joblib']
+        joblib_path = next((p for p in candidates if p.exists()), None)
+        if joblib_path is None:
             raise FileNotFoundError(
-                f'{joblib_path} not found. Run Cell 13 in the notebook and download/export '
-                f'the peft_bench/ folder (or just results/ + configs/) to this location.')
-        if not backbones_path.exists():
-            raise FileNotFoundError(f'{backbones_path} not found (from Cell 3).')
+                'No surrogate bundle found. Looked in:\n  '
+                + '\n  '.join(str(p) for p in candidates))
 
-        models = joblib.load(joblib_path)
+        backbones_path = next((p for p in (root / 'configs' / 'backbones.yaml',
+                                           pkg / 'configs' / 'backbones.yaml') if p.exists()), None)
+        if backbones_path is None:
+            raise FileNotFoundError(f'configs/backbones.yaml not found under {root} or {pkg}')
+        methods_dir = backbones_path.parent / 'methods'
+        if not methods_dir.exists():
+            raise FileNotFoundError(f'{methods_dir} not found')
+
+        models, schema, grid = cls._unpack(joblib.load(joblib_path))
         backbones_yaml = yaml.safe_load(open(backbones_path))
         model_zoo = backbones_yaml.get('model_zoo') or backbones_yaml.get('backbones')
 
         method_configs = {}
-        if methods_dir.exists():
-            for p in methods_dir.glob('*.yaml'):
-                cfg = yaml.safe_load(open(p))
-                method_configs[cfg['method']] = cfg
-        else:
-            raise FileNotFoundError(f'{methods_dir} not found (from Cell 3).')
+        for p in sorted(methods_dir.glob('*.yaml')):
+            cfg = yaml.safe_load(open(p))
+            method_configs[cfg['method']] = cfg
 
-        return cls(model_zoo=model_zoo, method_configs=method_configs, models=models)
+        status = 'unknown'
+        meta = joblib_path.parent / 'model_metadata.json'
+        if meta.exists():
+            try:
+                status = json.load(open(meta))['validation']['status_overall']
+            except (KeyError, ValueError):
+                pass
+
+        return cls(model_zoo=model_zoo, method_configs=method_configs, models=models,
+                   grid_carbon_kg_per_kwh=grid, schema_version=schema, model_status=status)
 
 
 @dataclass
@@ -146,18 +183,9 @@ def build_candidates(artifacts: GreenPEFTArtifacts,
 
 def predict_all(artifacts: GreenPEFTArtifacts, candidates: pd.DataFrame) -> pd.DataFrame:
     """Run every surrogate model over the candidate table; derive carbon and cost."""
-    X = candidates[CAT_FEATURES + NUM_FEATURES]
+    # One shared feature builder for training and inference (workflow 7).
+    X = build_pre_run_features(candidates)
     out = candidates.copy()
-
-    fits_model = artifacts.models.get('fits')
-    if fits_model is not None:
-        proba = fits_model.predict_proba(X)
-        classes = list(fits_model.named_steps['model'].classes_) if hasattr(fits_model, 'named_steps') \
-            else list(fits_model.classes_)
-        fit_idx = classes.index(1) if 1 in classes else -1
-        out['p_fits'] = proba[:, fit_idx]
-    else:
-        out['p_fits'] = np.nan
 
     for target, col in [('accuracy', 'pred_accuracy'),
                         ('peak_gpu_memory_gb', 'pred_peak_vram_gb'),
@@ -179,10 +207,14 @@ def apply_constraints(df: pd.DataFrame, constraints: Constraints,
     violate the user's stated budget. Every drop is explainable -- callers can diff
     df vs the return value to see exactly which rows were cut and why, by re-checking
     each condition."""
-    out = df[df['p_fits'] >= FEASIBILITY_THRESHOLD].copy()
+    out = df.copy()
     vram_cap = constraints.max_vram_gb or gpu_vram_gb
     if vram_cap is not None:
-        out = out[out['pred_peak_vram_gb'] <= vram_cap]
+        # Feasibility gate: predicted peak VRAM must fit inside the budget with headroom.
+        # A NaN prediction means the surrogate produced nothing for this candidate; it is
+        # dropped explicitly rather than by NaN comparison, so the count stays truthful.
+        usable = vram_cap * (1.0 - VRAM_SAFETY_MARGIN)
+        out = out[out['pred_peak_vram_gb'].notna() & (out['pred_peak_vram_gb'] <= usable)]
     if constraints.max_carbon_kgco2eq is not None:
         out = out[out['pred_carbon_kgco2eq'] <= constraints.max_carbon_kgco2eq]
     if constraints.min_accuracy is not None:
@@ -284,13 +316,17 @@ def recommend(artifacts: GreenPEFTArtifacts, constraints: Constraints,
         # Explain WHY nothing survived rather than just returning empty -- this is the
         # difference between a decision engine and a silent failure.
         reasons = []
-        no_fit = predicted[predicted['p_fits'] < FEASIBILITY_THRESHOLD]
-        reasons.append(f"{len(no_fit)}/{len(predicted)} candidates predicted infeasible "
-                       f"(p_fits < {FEASIBILITY_THRESHOLD})")
+        unpredicted = predicted[predicted['pred_peak_vram_gb'].isna()]
+        if len(unpredicted):
+            reasons.append(f"{len(unpredicted)}/{len(predicted)} had no VRAM prediction "
+                           f"(surrogate returned NaN)")
         vram_cap = constraints.max_vram_gb or gpu_vram_gb
         if vram_cap is not None:
-            over = predicted[predicted['pred_peak_vram_gb'] > vram_cap]
-            reasons.append(f"{len(over)}/{len(predicted)} exceed {vram_cap} GB VRAM cap")
+            usable = vram_cap * (1.0 - VRAM_SAFETY_MARGIN)
+            over = predicted[predicted['pred_peak_vram_gb'] > usable]
+            reasons.append(f"{len(over)}/{len(predicted)} predicted above {usable:.1f} GB "
+                           f"usable VRAM ({vram_cap} GB budget minus "
+                           f"{VRAM_SAFETY_MARGIN:.0%} safety margin)")
         if constraints.min_accuracy is not None:
             under = predicted[predicted['pred_accuracy'] < constraints.min_accuracy]
             reasons.append(f"{len(under)}/{len(predicted)} predicted below "
@@ -341,3 +377,15 @@ def explain(result: dict) -> str:
         lines.append('  Note: top GEI pick is not Pareto-optimal under these exact weights -- this can '
                      'happen when weights trade off two close options; check pareto_only for alternatives.')
     return '\n'.join(lines)
+
+
+def read_model_status() -> str:
+    """Read the audited surrogate status without unpickling the bundle.
+
+    Used by the CLI banner, which runs before any real work and must stay cheap.
+    """
+    meta = Path(__file__).parent / 'data' / 'model_metadata.json'
+    try:
+        return json.load(open(meta))['validation']['status_overall']
+    except (OSError, KeyError, ValueError):
+        return ''

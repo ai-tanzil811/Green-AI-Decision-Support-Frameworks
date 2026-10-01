@@ -2,7 +2,9 @@ LICENSE
 README.md
 pyproject.toml
 green_peft/__init__.py
+green_peft/banner.py
 green_peft/cli.py
+green_peft/features.py
 green_peft/recommender.py
 green_peft.egg-info/PKG-INFO
 green_peft.egg-info/SOURCES.txt
@@ -10,3 +12,13 @@ green_peft.egg-info/dependency_links.txt
 green_peft.egg-info/entry_points.txt
 green_peft.egg-info/requires.txt
 green_peft.egg-info/top_level.txt
+green_peft/data/greenpeft_surrogate_models.joblib
+green_peft/data/model_metadata.json
+green_peft/data/configs/backbones.yaml
+green_peft/data/configs/tasks.yaml
+green_peft/data/configs/methods/full_ft.yaml
+green_peft/data/configs/methods/lisa.yaml
+green_peft/data/configs/methods/lora.yaml
+green_peft/data/configs/methods/lora_fa.yaml
+green_peft/data/configs/methods/qlora.yaml
+tests/test_greenpeft.py

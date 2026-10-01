@@ -1,14 +1,22 @@
 Metadata-Version: 2.4
 Name: green-peft
-Version: 0.1.0
+Version: 0.2.0
 Summary: Constraint-aware, zero-shot PEFT strategy recommender using the GreenPEFT surrogate models.
+Author: Ashraful Islam Tanzil
 License-Expression: MIT
-Requires-Python: >=3.9
+Project-URL: Homepage, https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks
+Project-URL: Dataset, https://www.kaggle.com/dsv/20178095
+Project-URL: Model, https://huggingface.co/ai-tanzil/GreenPEFT-v2
+Keywords: peft,lora,qlora,green-ai,sustainability,carbon,llm
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.10
 Description-Content-Type: text/markdown
 License-File: LICENSE
-Requires-Dist: scikit-learn<1.9,>=1.8
-Requires-Dist: pandas<2.3,>=1.5
-Requires-Dist: numpy<2.1,>=1.23
+Requires-Dist: scikit-learn<1.10,>=1.9
+Requires-Dist: pandas<3,>=1.5
+Requires-Dist: numpy>=1.23
 Requires-Dist: joblib>=1.2
 Requires-Dist: pyyaml>=6.0
 Dynamic: license-file

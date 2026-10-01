@@ -23,8 +23,11 @@ import sys
 
 import pandas as pd
 
+from . import __version__
+from .banner import print_banner
 from .recommender import (
     GreenPEFTArtifacts, Constraints, GEI_PROFILES, recommend, explain, build_candidates,
+    read_model_status,
 )
 
 
@@ -102,10 +105,12 @@ def cmd_list_zoo(args):
 def build_parser():
     p = argparse.ArgumentParser(prog='green-peft',
                                 description='Constraint-aware PEFT strategy recommender.')
+    p.add_argument('--no-banner', action='store_true',
+                   help='Suppress the author/project banner (or set GREENPEFT_NO_BANNER=1).')
     sub = p.add_subparsers(dest='command', required=True)
 
     r = sub.add_parser('recommend', help='Recommend a PEFT config under given constraints.')
-    r.add_argument('--artifacts-dir', required=True,
+    r.add_argument('--artifacts-dir', default=None,
                    help='Directory with results/surrogate_models.joblib and configs/.')
     r.add_argument('--vram', type=float, default=None, help='Max VRAM budget in GB.')
     r.add_argument('--carbon', type=float, default=None, help='Max carbon budget in kgCO2eq.')
@@ -124,7 +129,7 @@ def build_parser():
     r.set_defaults(func=cmd_recommend)
 
     z = sub.add_parser('list-zoo', help='List every backbone x method candidate the engine can score.')
-    z.add_argument('--artifacts-dir', required=True)
+    z.add_argument('--artifacts-dir', default=None)
     z.add_argument('--backbones', type=str, default=None)
     z.add_argument('--methods', type=str, default=None)
     z.set_defaults(func=cmd_list_zoo)
@@ -135,6 +140,12 @@ def build_parser():
 def main(argv=None):
     parser = build_parser()
     args = parser.parse_args(argv)
+
+    # Banner goes to stderr, so `green-peft recommend --json | jq` stays clean.
+    # Suppress with --no-banner or GREENPEFT_NO_BANNER=1.
+    if not getattr(args, 'no_banner', False):
+        print_banner(version=__version__, model_status=read_model_status())
+
     try:
         return args.func(args)
     except BrokenPipeError:

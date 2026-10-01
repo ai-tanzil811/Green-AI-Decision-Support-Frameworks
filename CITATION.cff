@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+title: "GreenPEFT: A Multi-Objective Green AI Decision Support Framework"
+message: "If you use this software, dataset or model, please cite the artifacts below."
+type: software
+authors:
+  - family-names: "Islam Tanzil"
+    given-names: "Ashraful"
+repository-code: "https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks"
+license: MIT
+
+references:
+  - type: data
+    title: "greenpeft-surrogate-data"
+    authors:
+      - family-names: "Islam Tanzil"
+        given-names: "Ashraful"
+    year: 2026
+    publisher:
+      name: Kaggle
+    doi: "10.34740/KAGGLE/DSV/20178095"
+    url: "https://www.kaggle.com/dsv/20178095"
+
+  - type: software
+    title: "GreenPEFT-v2 (Revision 148b027)"
+    authors:
+      - family-names: "Islam Tanzil"
+        given-names: "Ashraful"
+    year: 2026
+    publisher:
+      name: Hugging Face
+    doi: "10.57967/hf/10690"
+    url: "https://huggingface.co/ai-tanzil/GreenPEFT-v2"

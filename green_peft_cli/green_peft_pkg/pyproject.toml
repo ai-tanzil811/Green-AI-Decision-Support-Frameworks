@@ -4,22 +4,45 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "green-peft"
-version = "0.1.0"
+version = "0.2.0"
 description = "Constraint-aware, zero-shot PEFT strategy recommender using the GreenPEFT surrogate models."
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
+authors = [{ name = "Ashraful Islam Tanzil" }]
+keywords = ["peft", "lora", "qlora", "green-ai", "sustainability", "carbon", "llm"]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Programming Language :: Python :: 3",
+]
 dependencies = [
-    "scikit-learn>=1.8,<1.9",
-    "pandas>=1.5,<2.3",
-    "numpy>=1.23,<2.1",
+    # The shipped surrogate is pickled with scikit-learn 1.9.x. Loading it under a
+    # different minor version raises InconsistentVersionWarning and can fail outright,
+    # so the floor matches the version the model was fitted with.
+    "scikit-learn>=1.9,<1.10",
+    "pandas>=1.5,<3",
+    "numpy>=1.23",
     "joblib>=1.2",
     "pyyaml>=6.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks"
+Dataset = "https://www.kaggle.com/dsv/20178095"
+Model = "https://huggingface.co/ai-tanzil/GreenPEFT-v2"
 
 [project.scripts]
 green-peft = "green_peft.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["green_peft*"]
+
+[tool.setuptools.package-data]
+green_peft = [
+    "data/*.joblib",
+    "data/*.json",
+    "data/configs/*.yaml",
+    "data/configs/methods/*.yaml",
+]

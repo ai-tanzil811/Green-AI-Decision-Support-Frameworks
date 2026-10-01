@@ -1,0 +1,216 @@
+{
+  "artifact": "new update works/greenpeft_surrogate_models.joblib",
+  "artifact_type": "dict bundle of sklearn Pipelines",
+  "schema_version": "3.0",
+  "sklearn_version": "1.9.1",
+  "targets": [
+    "accuracy",
+    "peak_gpu_memory_gb",
+    "energy_kwh",
+    "wall_clock_seconds"
+  ],
+  "features": [
+    "params_b",
+    "log_params_b",
+    "quant_bits",
+    "rank",
+    "log1p_rank",
+    "is_adapter_method",
+    "adapter_capacity",
+    "trainable_param_pct",
+    "trainable_frac",
+    "trainable_params_b",
+    "weight_bytes_gb",
+    "optimizer_state_gb",
+    "gradient_gb",
+    "memory_proxy_gb",
+    "vram_pressure",
+    "params_x_bits",
+    "log_params_x_bits",
+    "is_quantized",
+    "is_full_finetune",
+    "gpu_total_gb",
+    "method",
+    "family"
+  ],
+  "features_numeric": [
+    "params_b",
+    "log_params_b",
+    "quant_bits",
+    "rank",
+    "log1p_rank",
+    "is_adapter_method",
+    "adapter_capacity",
+    "trainable_param_pct",
+    "trainable_frac",
+    "trainable_params_b",
+    "weight_bytes_gb",
+    "optimizer_state_gb",
+    "gradient_gb",
+    "memory_proxy_gb",
+    "vram_pressure",
+    "params_x_bits",
+    "log_params_x_bits",
+    "is_quantized",
+    "is_full_finetune",
+    "gpu_total_gb"
+  ],
+  "features_categorical": [
+    "method",
+    "family"
+  ],
+  "model_classes": {
+    "accuracy": {
+      "estimator": "Ridge",
+      "wrapped_in": null,
+      "target_transform": null,
+      "alpha": 1.0
+    },
+    "peak_gpu_memory_gb": {
+      "estimator": "Ridge",
+      "wrapped_in": null,
+      "target_transform": null,
+      "alpha": 1.0
+    },
+    "energy_kwh": {
+      "estimator": "Ridge",
+      "wrapped_in": "TransformedTargetRegressor",
+      "target_transform": "log",
+      "alpha": 1.0
+    },
+    "wall_clock_seconds": {
+      "estimator": "Ridge",
+      "wrapped_in": "TransformedTargetRegressor",
+      "target_transform": "log",
+      "alpha": 1.0
+    }
+  },
+  "preprocessor": "ColumnTransformer(median-impute+StandardScaler | constant-impute+OneHot)",
+  "training_rows": 82,
+  "training_configs": 41,
+  "group_column": "config_id",
+  "energy_valid_filter": "energy_measurement_valid == 1",
+  "carbon_formula": "energy_kwh * 0.65",
+  "carbon_is_derived": true,
+  "validation": {
+    "primary_protocol": "GroupKFold(groups=config_id)",
+    "secondary_protocol": "LeaveOneGroupOut(groups=backbone)",
+    "thresholds": {
+      "validated": {
+        "min_r2": 0.7,
+        "max_mape": 15.0
+      },
+      "preliminary": {
+        "min_r2": 0.0,
+        "max_mape": 50.0
+      }
+    },
+    "metrics": {
+      "accuracy": {
+        "protocol": "GroupKFold(k=5, groups=config_id)",
+        "MAE": 0.006089060293435137,
+        "RMSE": 0.009173016290708118,
+        "R2": 0.7641735080873067,
+        "MAPE_pct": 0.6654432515866961
+      },
+      "peak_gpu_memory_gb": {
+        "protocol": "GroupKFold(k=5, groups=config_id)",
+        "MAE": 0.7597642590634892,
+        "RMSE": 1.0430248145191485,
+        "R2": 0.9225055999866509,
+        "MAPE_pct": 11.519000234702057
+      },
+      "energy_kwh": {
+        "protocol": "GroupKFold(k=5, groups=config_id)",
+        "MAE": 5.863191323427388e-05,
+        "RMSE": 7.083362403261885e-05,
+        "R2": 0.996433108958729,
+        "MAPE_pct": 2.6176641691944322
+      },
+      "wall_clock_seconds": {
+        "protocol": "GroupKFold(k=5, groups=config_id)",
+        "MAE": 6.4242444898360445,
+        "RMSE": 7.907081548445538,
+        "R2": 0.9839226113759477,
+        "MAPE_pct": 4.566984907806497
+      }
+    },
+    "per_target_detail": {
+      "accuracy": {
+        "groupkfold_config_id": {
+          "R2": 0.7641735080873067,
+          "MAPE_pct": 0.6654432515866961,
+          "status": "VALIDATED"
+        },
+        "leave_one_tier_out": {
+          "R2": 0.08243681395430502,
+          "MAPE_pct": 1.6131283962114642,
+          "status": "PRELIMINARY"
+        },
+        "status_governing": "PRELIMINARY"
+      },
+      "peak_gpu_memory_gb": {
+        "groupkfold_config_id": {
+          "R2": 0.9225055999866509,
+          "MAPE_pct": 11.519000234702057,
+          "status": "VALIDATED"
+        },
+        "leave_one_tier_out": {
+          "R2": 0.5549715035500351,
+          "MAPE_pct": 39.8639141882774,
+          "status": "PRELIMINARY"
+        },
+        "status_governing": "PRELIMINARY"
+      },
+      "energy_kwh": {
+        "groupkfold_config_id": {
+          "R2": 0.996433108958729,
+          "MAPE_pct": 2.6176641691944322,
+          "status": "VALIDATED"
+        },
+        "leave_one_tier_out": {
+          "R2": 0.896809887076216,
+          "MAPE_pct": 10.573485110681652,
+          "status": "VALIDATED"
+        },
+        "status_governing": "VALIDATED"
+      },
+      "wall_clock_seconds": {
+        "groupkfold_config_id": {
+          "R2": 0.9839226113759477,
+          "MAPE_pct": 4.566984907806497,
+          "status": "VALIDATED"
+        },
+        "leave_one_tier_out": {
+          "R2": 0.5306300006939133,
+          "MAPE_pct": 22.966310215105825,
+          "status": "PRELIMINARY"
+        },
+        "status_governing": "PRELIMINARY"
+      }
+    },
+    "status_per_target": {
+      "accuracy": "PRELIMINARY",
+      "peak_gpu_memory_gb": "PRELIMINARY",
+      "energy_kwh": "VALIDATED",
+      "wall_clock_seconds": "PRELIMINARY"
+    },
+    "status_overall": "PRELIMINARY",
+    "status_rule": "Status is taken from the WEAKER of the two protocols. GroupKFold(config_id) blocks measurement-pass leakage but not scale leakage, so it measures interpolation within already-measured scales; LeaveOneGroupOut(backbone) measures extrapolation to an unseen scale."
+  },
+  "scope": "Feasible PEFT configurations only. Configurations exceeding the 15.6 GB VRAM budget are outside this study and were dropped at ingest, so these models predict cost GIVEN that a configuration runs -- they do not predict whether it will run.",
+  "notes": "Fitted on UNIQUE CONFIGS collapsed from duplicate measurement passes. Energy uses only the \"original\" telemetry pass; the \"remeasured\" pass recorded a flat ~10 W idle floor and was excluded. carbon_kgco2eq = energy_kwh * 0.65 exactly -- derive it, never model it. All metrics are leave-one-tier-out; random k-fold leaks measurement pairs and same-tier configs.",
+  "leakage_guard": [
+    "energy_per_acc_point",
+    "vram_efficiency",
+    "throughput_proxy",
+    "carbon_derived_kg",
+    "accuracy",
+    "peak_gpu_memory_gb",
+    "energy_kwh",
+    "carbon_kgco2eq",
+    "wall_clock_seconds",
+    "status",
+    "fits"
+  ]
+}
