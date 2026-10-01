@@ -26,7 +26,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
 
-ML_READY = ROOT / 'new update works' / 'greenpeft_ml_ready_dataset.csv'
+ML_READY = ROOT / 'data' / 'processed' / 'greenpeft_ml_ready_dataset.csv'
 SWEEP_RAW = ROOT / 'results' / 'canonical_benchmark' / 'metrics' / 'sweep_raw.csv'
 
 CARBON_FACTOR = 0.65          # kgCO2eq per kWh -- project assumption, not a measurement

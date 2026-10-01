@@ -25,7 +25,7 @@ from pathlib import Path
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
-DATASET = ROOT / 'new update works' / 'greenpeft_ml_ready_dataset.csv'
+DATASET = ROOT / 'data' / 'processed' / 'greenpeft_ml_ready_dataset.csv'
 
 # Both copies must stay in step: the repo-level audit record and the one shipped in the wheel.
 METADATA_PATHS = [

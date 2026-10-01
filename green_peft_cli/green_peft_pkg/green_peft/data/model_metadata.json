@@ -1,5 +1,5 @@
 {
-  "artifact": "new update works/greenpeft_surrogate_models.joblib",
+  "artifact": "data/processed/greenpeft_surrogate_models.joblib",
   "artifact_type": "dict bundle of sklearn Pipelines",
   "schema_version": "3.0",
   "sklearn_version": "1.9.1",
@@ -214,7 +214,7 @@
     "fits"
   ],
   "training_envelope": {
-    "derived_from": "new update works/greenpeft_ml_ready_dataset.csv",
+    "derived_from": "data/processed/greenpeft_ml_ready_dataset.csv",
     "n_configs": 41,
     "n_measurement_rows": 82,
     "params_b": {

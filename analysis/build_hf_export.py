@@ -31,7 +31,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from greenpeft_data import ROOT  # noqa: E402
 
 OUT = ROOT / 'results' / 'hf_export'
-BUNDLE = ROOT / 'new update works' / 'greenpeft_surrogate_models.joblib'
+BUNDLE = ROOT / 'data' / 'processed' / 'greenpeft_surrogate_models.joblib'
 METADATA = ROOT / 'models' / 'model_metadata.json'
 CONFIGS = ROOT / 'green_peft_cli' / 'green_peft_pkg' / 'green_peft' / 'data' / 'configs'
 

@@ -1,0 +1,70 @@
+{
+  "n_tiers": 4,
+  "tiers": [
+    "tiny",
+    "small",
+    "medium",
+    "large"
+  ],
+  "feasibility_loto_accuracy": 0.7833333333333333,
+  "feasibility_per_tier": {
+    "tiny": {
+      "n": 15,
+      "score": 0.8,
+      "dummy_score": 1.0,
+      "beats_dummy": false
+    },
+    "small": {
+      "n": 15,
+      "score": 1.0,
+      "dummy_score": 0.8,
+      "beats_dummy": true
+    },
+    "medium": {
+      "n": 15,
+      "score": 0.9333333333333333,
+      "dummy_score": 0.7333333333333333,
+      "beats_dummy": true
+    },
+    "large": {
+      "n": 15,
+      "score": 0.4,
+      "dummy_score": 0.2,
+      "beats_dummy": true
+    }
+  },
+  "regression": {
+    "accuracy": {
+      "ridge_mae": 0.023188457160590762,
+      "ridge_r2": -1.0191827669112654,
+      "gbr_mae": 0.01815349969622412,
+      "gbr_r2": -0.4573045228735386,
+      "best_model": "gbr"
+    },
+    "peak_gpu_memory_gb": {
+      "ridge_mae": 5.050490043765153,
+      "ridge_r2": -1.7107831446276678,
+      "gbr_mae": 3.970319963114679,
+      "gbr_r2": -0.5153891971734792,
+      "best_model": "gbr"
+    },
+    "energy_kwh": {
+      "ridge_mae": 0.0005632811021348012,
+      "ridge_r2": 0.3739690086475401,
+      "gbr_mae": 0.000795090230149065,
+      "gbr_r2": 0.2894028176939366,
+      "best_model": "ridge"
+    },
+    "wall_clock_seconds": {
+      "ridge_mae": 46.44709438601652,
+      "ridge_r2": 0.0266570390560793,
+      "gbr_mae": 33.12266580199766,
+      "gbr_r2": 0.4076871166133481,
+      "best_model": "gbr"
+    }
+  },
+  "kfold_vs_loto_accuracy_mae": {
+    "random_5fold": 0.010000736490803809,
+    "honest_loto": 0.023188457160590762
+  }
+}

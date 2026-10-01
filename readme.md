@@ -6,6 +6,8 @@
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.2%2B-orange.svg)](https://pytorch.org/)
 [![CodeCarbon](https://img.shields.io/badge/CodeCarbon-2.8%2B-brightgreen.svg)](https://codecarbon.io/)
+[![PyPI](https://img.shields.io/badge/PyPI-green--peft%200.3.0-blue.svg)](https://pypi.org/project/green-peft/)
+[![Hugging Face](https://img.shields.io/badge/Hugging%20Face-ai--tanzil%2FGreenPEFT-yellow.svg)](https://huggingface.co/ai-tanzil/GreenPEFT)
 
 ---
 
@@ -17,299 +19,89 @@ Instead of requiring practitioners to run expensive empirical sweeps prior to se
 
 ---
 
+## 🔄 End-to-End Pipeline Overview
+
+The GreenPEFT framework operates across **5 integrated stages**, seamlessly connecting data collection, empirical benchmarking, surrogate regression, constraint-aware decision support, and CLI execution.
+
+```mermaid
+flowchart TD
+    subgraph Stage1 ["Stage 1: Multi-Source Data Harmonization"]
+        A1["Raw Datasets (data/raw/)<br>• surrogate_dataset.csv<br>• Open LLM-Perf Leaderboard<br>• llmenergy.csv"] --> A2["Feature Engineering & Filtering<br>(notebooks/data_preprocessing...)"]
+        A2 --> A3["ML-Ready Harmonized Dataset<br>(data/processed/greenpeft_ml_ready_dataset.csv)<br>477 rows × 46 features"]
+    end
+
+    subgraph Stage2 ["Stage 2: Empirical Benchmarking Sweep"]
+        B1["Backbones (0.5B - 3.0B)<br>• Qwen2.5, TinyLlama, Llama3"] --> B2["PEFT Strategies<br>• Full-FT, LoRA, QLoRA<br>• LoRA-FA, LISA"]
+        B2 --> B3["NVIDIA Tesla T4 Grid Sweep<br>(CodeCarbon + Peak VRAM Tracker)"]
+        B3 --> B4["Canonical Benchmark Artifacts<br>(results/canonical_benchmark/)"]
+    end
+
+    subgraph Stage3 ["Stage 3: Zero-Shot Surrogate Regressor"]
+        C1["Pre-Run Metadata Features<br>(Backbone params, Adapter rank, Quant bits, Dataset size)"] --> C2["Ridge Regressors (surrogate/validate.py)<br>• Peak VRAM (GB)<br>• Energy (kWh)<br>• Wall-Clock Time (s)<br>• Task Accuracy"]
+        C2 --> C3["Audited Artifacts<br>(data/processed/greenpeft_surrogate_models.joblib)<br>+ models/model_metadata.json"]
+    end
+
+    subgraph Stage4 ["Stage 4: Constraint Engine & GEI Scoring"]
+        D1["User Constraints<br>(VRAM, Carbon, Accuracy floor)"] --> D2["Feasibility Filter & Scope Check"]
+        D2 --> D3["Pareto Frontier Extraction"]
+        D3 --> D4["Green Efficiency Index (GEI)<br>Multi-Objective Scoring"]
+        D4 --> D5["Recommended PEFT Strategy"]
+    end
+
+    subgraph Stage5 ["Stage 5: System Interface & Back-Testing"]
+        E1["CLI Tool (green-peft recommend)"] --> E2["Empirical Run Verification<br>(experiments/validate_recommendation.py)"]
+        E2 --> E3["Validation Log & Error Tracking<br>(results/recommendation_validation.csv)"]
+    end
+
+    A3 --> C1
+    B4 --> C1
+    C3 --> D2
+```
+
+### Stage Breakdown:
+1. **Data Harmonization (`data/raw/` → `data/processed/`):** Merges multi-source fine-tuning and inference traces into a unified 477×46 feature dataset with rigorous measurement-validity filtering.
+2. **Empirical Benchmarking (`results/canonical_benchmark/`):** Executes 60 systematic sweeps across 5 PEFT strategies (Full-FT, LoRA, QLoRA, LoRA-FA, LISA) on NVIDIA Tesla T4 GPUs with CodeCarbon tracking.
+3. **Surrogate Regressor (`surrogate/validate.py`):** Fits zero-shot Ridge pipelines using pre-run metadata to estimate Peak VRAM, Energy (kWh), Wall-Clock Time, and Accuracy.
+4. **Decision Engine & GEI (`green_peft/recommender.py`):** Filters infeasible candidates against hard resource constraints, constructs the non-dominated Pareto frontier, and scores survivors using the Green Efficiency Index.
+5. **CLI & Empirical Back-Testing (`green_peft_cli`):** Provides instant CLI recommendations (`green-peft recommend`) and continuous back-testing against measured targets.
+
+---
+
 ## 📑 Core Documentation & Repository Artifacts
 
-| Document / Artifact | File Link | Description & Purpose |
+| Category | File / Path | Description & Purpose |
 | :--- | :--- | :--- |
-| **Benchmark notebook** | [Green_PEFT.ipynb](Green_PEFT.ipynb) | End-to-end notebook for the GreenPEFT benchmark. |
-| **Benchmark log** | [Green_PEFT_log.txt](Green_PEFT_log.txt) | Execution log from the benchmark run. |
-| **Methodology diagram** | [methodology.png](methodology.png) | Overview of the GreenPEFT pipeline. |
-| **Results index** | [results/README.md](results/README.md) | Navigation guide for canonical results, working files, archives, and notebook assets. |
-| **Canonical benchmark** | [results/canonical_benchmark](results/canonical_benchmark) | Configurations, raw runs, aggregate metrics, Pareto fronts, and figures from the 60-run Kaggle T4 benchmark. |
-| **Working run** | [results/working_run](results/working_run) | Working data, duplicate exports, and the original benchmark archive. |
-| **Surrogate export** | [model/artifacts_export](model/artifacts_export) | Exported surrogate models, validation metrics, feature data, and candidate configuration files used by the CLI recommender. |
-| **Surrogate dataset** | [GreenPEFT Surrogate Data on Kaggle](https://www.kaggle.com/datasets/ashrafulislamtanzil/greenpeft-surrogate-data) | Benchmark-derived features and targets used to train the surrogate models. |
-| **CLI package** | [green_peft_cli/green_peft_pkg](green_peft_cli/green_peft_pkg) | Installable `green-peft` command for constraint-aware experiment planning. |
-| **Hugging Face model** | [ai-tanzil/GreenPEFT](https://huggingface.co/ai-tanzil/GreenPEFT) | Published surrogate artifacts and model card. |
+| **Pipeline Reproduction** | [`reproduce.py`](reproduce.py) | Single command to verify and regenerate every derived artifact and test suite. |
+| **Main Research Notebook** | [`notebooks/green-peft.ipynb`](notebooks/green-peft.ipynb) | End-to-end research notebook covering EDA, Pareto frontiers, and surrogate evaluations. |
+| **Preprocessing Notebook** | [`notebooks/data_preprocessing_and_feature_engineering.ipynb`](notebooks/data_preprocessing_and_feature_engineering.ipynb) | Stages 1–8 feature pipeline generating the harmonized ML-ready dataset. |
+| **Benchmark Notebook** | [`notebooks/green_peft_benchmark_execution.ipynb`](notebooks/green_peft_benchmark_execution.ipynb) | Kaggle T4 benchmark execution pipeline notebook. |
+| **Surrogate Audit Report** | [`docs/AUDIT_REPORT.md`](docs/AUDIT_REPORT.md) | Audit analysis, GroupKFold / LOTO evaluation, and surrogate validation status. |
+| **Implementation Report** | [`docs/IMPLEMENTATION_REPORT.md`](docs/IMPLEMENTATION_REPORT.md) | System completeness, audit envelope validation, and empirical scope breakdown. |
+| **Reproduction Guide** | [`docs/PAPER_REPRODUCTION_GUIDE.md`](docs/PAPER_REPRODUCTION_GUIDE.md) | Paper reproduction guide and clean repository manifest. |
+| **Data Provenance Guide** | [`docs/DATA_METHODOLOGY.md`](docs/DATA_METHODOLOGY.md) | Data sources, feature dictionary, and measurement pass filtering rules. |
+| **Audited Model Metadata** | [`models/model_metadata.json`](models/model_metadata.json) | Machine-readable artifact metadata, training envelope, and error bounds. |
+| **CLI Export Bundle** | [`models/artifacts_export/`](models/artifacts_export/) | Portable export bundle containing trained models and configurations for CLI offline use. |
+| **Canonical Benchmark** | [`results/canonical_benchmark/`](results/canonical_benchmark/) | Verified raw JSON runs, aggregate metrics, and figures from the 60-run Kaggle T4 study. |
+| **CLI Package** | [`green_peft_cli/green_peft_pkg/`](green_peft_cli/green_peft_pkg/) | Source code and test suite for the published `green-peft` PyPI package. |
+| **Interactive Dashboard** | [`website/`](website/) | Web interface for constraint exploration and interactive recommendations. |
 
 ---
 
-## 🏗️ Framework Architecture & Pipeline Workflow
+## 📊 Empirical Pilot Findings (NVIDIA Tesla T4)
 
-![GreenPEFT Methodology Pipeline Diagram](methodology.png)
+Below are the empirical findings from the 60-run benchmark grid executed on Kaggle using an **NVIDIA Tesla T4 GPU (16 GB VRAM)** on the SST-2 classification task ($k=3$ random seeds):
 
-
-
-## 🔬 Core Research Questions (RQs)
-
-- **RQ1 (Sustainability Benchmarking):** How do Full Fine-Tuning (Full-FT), LoRA, QLoRA, LoRA-FA, and LISA compare across accuracy, peak VRAM, wall-clock time, energy draw (kWh), carbon emissions ($\text{kgCO}_2\text{eq}$), and monetary cost?
-- **RQ2 (Multi-Objective Trade-offs):** Which PEFT configurations construct the non-dominated Pareto frontier when accuracy is jointly traded off against memory and environmental footprint?
-- **RQ3 (Constraint-Aware Decision Support):** Can a constraint engine reliably prescribe optimal strategies given explicit hardware and carbon budgets?
-- **RQ4 (Predictive Recommendation — Core Novelty):** Can a lightweight surrogate regressor accurately estimate performance metrics from cheap pre-training metadata, enabling zero-shot strategy selection?
-
----
-
-## 📊 Empirical Kaggle Pilot Benchmark (NVIDIA Tesla T4)
-
-![GreenPEFT Benchmark Overview Plot](results/canonical_benchmark/figures/benchmark_overview.png)
-
-Below are the empirical findings from a 60-run benchmark grid executed on Kaggle using an **NVIDIA Tesla T4 GPU (16 GB VRAM)** on the SST-2 classification task ($k=3$ random seeds):
-
-| Strategy | Backbone | Params | Accuracy (mean ± std) | Wall-clock (s) | Peak VRAM (GB) | Energy (kWh) | Carbon (kgCO₂eq) | GEI Score |
+| Strategy | Backbone | Params | Accuracy (mean ± std) | Wall-clock (s) | Peak VRAM (GB) | Energy (kWh) | Carbon ($\text{kgCO}_2\text{eq}$) | GEI Score |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **full_ft** | Qwen2.5-Tiny | 0.5B | **0.9122 ± 0.0117** | 222.77 | 13.48 | 0.00382 | 0.00248 | 0.964 |
 | **lisa** | Qwen2.5-Tiny | 0.5B | 0.5089 ± 0.0165 | **182.87** | **4.84** | **0.00324** | **0.00211** | **0.999** |
 | **lisa** | TinyLlama-Small | 1.1B | 0.6122 ± 0.0901 | 467.91 | 9.43 | 0.00833 | 0.00541 | 0.822 |
 | **lisa** | Qwen2.5-Medium | 1.5B | 0.4889 ± 0.0342 | 636.33 | 14.88 | 0.01124 | 0.00731 | 0.751 |
 
-### Key Takeaways from Pilot Runs:
-1. **Full-FT Memory Ceiling:** Full Fine-Tuning hits a hard VRAM wall at 0.5B parameters ($13.48$ GB peak VRAM). At $\ge 1.1\text{B}$, Full-FT immediately fails with Out-Of-Memory (OOM) errors.
+### Key Takeaways:
+1. **Full-FT Memory Ceiling:** Full Fine-Tuning hits a hard VRAM ceiling at 0.5B parameters ($13.48$ GB peak VRAM). At $\ge 1.1\text{B}$, Full-FT immediately fails with Out-Of-Memory (OOM) errors.
 2. **LISA Hardware Scaling:** LISA enables a 1.5B model to execute within a 16 GB VRAM budget ($14.88$ GB peak), where Full-FT fails completely.
-3. **GEI Dominance:** LISA on 0.5B achieves the highest GEI score ($0.999$) due to its compact $4.84$ GB memory footprint and low carbon footprint.
-
----
-
-## 🛠️ Repository Structure
-
-```text
-├── green-peft.ipynb                    # Research notebook: EDA, comparison, pre-run surrogate
-├── greenpeft_agent_workflow.md         # Work specification this repo is built against
-├── IMPLEMENTATION_REPORT.md            # What is validated, what is preliminary, what is missing
-├── reproduce.py                        # One command to regenerate every derived artifact
-├── methodology.png                     # Pipeline diagram
-├── new update works/
-│   ├── greenpeft_ml_ready_dataset.csv  # Harmonized dataset (477 x 46) -- read-only input
-│   ├── greenpeft_surrogate_models.joblib
-│   └── DATA_METHODOLOGY.md
-├── models/
-│   └── model_metadata.json             # Audited artifact metadata + training envelope
-├── analysis/
-│   ├── greenpeft_data.py               # Shared loaders (pass collapse, feasibility grid)
-│   ├── build_training_envelope.py      # Derives the measured envelope from the dataset
-│   ├── benchmark_analysis.py           # -> results/benchmark/
-│   ├── pareto_analysis.py              # -> results/pareto/
-│   ├── recommendation_scenarios.py     # -> results/recommendations/ (paper Table 4)
-│   └── figures.py                      # Figures A and E
-├── surrogate/
-│   └── validate.py                     # Grouped CV audit -> results/surrogate/
-├── experiments/
-│   ├── validate_recommendation.py      # Predicted vs actual bridge
-│   └── recorded_run.template.json      # Template for recording a real run
-├── green_peft_cli/green_peft_pkg/      # Installable CLI + decision engine
-│   └── green_peft/
-│       ├── features.py                 # Single pre-run feature builder
-│       ├── confidence.py               # Scope, confidence, error bands, plausibility
-│       ├── recommender.py              # Candidates, constraints, Pareto, GEI
-│       └── cli.py
-├── results/
-│   ├── README.md                       # Results navigation guide
-│   ├── canonical_benchmark/            # Verified benchmark source of truth
-│   │   ├── configs/                    # Backbone, task, and method YAML files
-│   │   ├── raw_runs/                   # Individual JSON run logs (60 files)
-│   │   ├── metrics/                    # Aggregate, scored, Pareto, and sweep CSVs
-│   │   └── manifest.json               # Bundle metadata
-│   ├── benchmark/                      # Method/backbone summaries, feasibility, seed variance
-│   ├── surrogate/                      # cv_metrics.csv, OOF predictions, parity plots
-│   ├── pareto/                         # Predicted and measured frontiers
-│   ├── recommendations/                # Example scenarios (paper Table 4)
-│   └── recommendation_validation.csv   # Predicted vs actual
-└── readme.md                           # Project documentation
-```
-
----
-
-## 🚀 Environment Setup & Installation
-
-### 1. Prerequisites
-- Python 3.10+
-- PyTorch 2.2+ with CUDA support
-- GPU with CUDA capabilities (tested on NVIDIA Tesla T4 16GB)
-
-### 2. Install Dependencies & Fix Environment Conflicts
-To prevent dependency locks encountered during initial benchmark sweeps (`torchao` version mismatch and `bitsandbytes` quantization requirements), install updated packages:
-
-```bash
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-pip install --upgrade "peft>=0.10.0" "bitsandbytes>=0.46.1" "torchao>=0.16.0" codecarbon transformers datasets accelerate trl pandas numpy scikit-learn
-```
-
-### 3. Install the recommendation CLI
-
-The CLI does not require PyTorch or a GPU. Install the published package in a
-separate environment:
-
-```bash
-python -m pip install green-peft
-```
-
-Published release:
-
-- [PyPI: green-peft 0.1.0](https://pypi.org/project/green-peft/0.1.0/)
-- [Hugging Face: ai-tanzil/GreenPEFT](https://huggingface.co/ai-tanzil/GreenPEFT)
-- [Kaggle: GreenPEFT Surrogate Data](https://www.kaggle.com/datasets/ashrafulislamtanzil/greenpeft-surrogate-data)
-- [DOI: 10.57967/hf/10504](https://doi.org/10.57967/hf/10504)
-
-Download the versioned surrogate artifacts:
-
-```bash
-git clone https://huggingface.co/ai-tanzil/GreenPEFT
-```
-
-Run the recommender:
-
-```bash
-green-peft recommend \
-    --artifacts-dir ./GreenPEFT \
-    --vram 16 --accuracy 0.90 --profile balanced
-```
-
-For reproducibility, use the same artifact revision documented by the DOI and
-retain the CLI version with every recommendation report.
-
----
-
-## 🎯 Onboarding & Usage Workflow
-
-The result folders and their intended uses are documented in the [results index](results/README.md). The canonical benchmark is described by its [manifest](results/canonical_benchmark/manifest.json).
-
-### Quick Start (Kaggle T4 Setup):
-1. **Upload Notebook:** Import `Green_PEFT.ipynb` into Kaggle.
-2. **Set Accelerator:** Select **GPU T4 x2** in the right panel settings.
-3. **Execute Cells:**
-   - **Cell 1–2:** Verify dependency upgrades and select `RUN_MODE` (`smoke` first, then `real`).
-   - **Cell 10:** Launch the CodeCarbon-tracked benchmark sweep.
-   - **Cell 13–15:** Extract Pareto frontiers, calculate GEI scores, and run the GreenPEFT Decision Engine.
-
-### CLI Recommendation Workflow
-
-The repository includes a current surrogate export at
-`model/artifacts_export`. It contains models trained from the
-benchmark traces, the expanded model catalog in `configs/backbones.yaml`, method
-configurations, and `results/surrogate_cv_metrics.json`.
-
-List the candidate model and method combinations:
-
-```bash
-green-peft list-zoo \
-    --artifacts-dir ./model/artifacts_export
-```
-
-Request a balanced recommendation under explicit resource constraints:
-
-```bash
-green-peft recommend \
-    --artifacts-dir ./model/artifacts_export \
-    --vram 16 --accuracy 0.90 --profile balanced --top-k 5
-```
-
-For automation, request JSON output and select a carbon-constrained profile:
-
-```bash
-green-peft recommend \
-    --artifacts-dir ./model/artifacts_export \
-    --vram 16 --carbon 0.003 --accuracy 0.90 \
-    --profile strict_carbon --json
-```
-
-The CLI predicts accuracy, peak VRAM, energy, carbon, and wall-clock time, filters
-infeasible candidates, then ranks the survivors using Pareto filtering and GEI. It is
-a planning aid: always validate the selected configuration with a measured run before
-using it as a production policy.
-
-#### Evidence level and error bands
-
-Only 4 of the 14 catalog backbones are measured tiers; the rest sit outside the measured
-parameter range or belong to model families never seen in training. Every prediction therefore
-carries a scope, a confidence level, and an error band taken from the surrogate's own
-out-of-sample error:
-
-```text
-predicted peak VRAM  : 5.33 GB   +/-40%  [3.20 to 7.45 GB]
-evidence             : MEDIUM confidence, scope INTERPOLATED_SCALE
-                       (1.7B between measured tiers)
-```
-
-Restrict the search to directly measured configurations with `--min-confidence`:
-
-```bash
-green-peft recommend --vram 16 --accuracy 0.90 --min-confidence HIGH
-```
-
-This changes the answer, and it is meant to. Under a 0.95 accuracy floor the unrestricted
-engine suggests a 7.2B Mistral configuration (LOW confidence, extrapolated well past the
-measured range); restricted to measured cells it suggests qlora on the 3.0B backbone. Both are
-legitimate outputs — they differ in how much evidence stands behind them.
-
-Candidates whose predictions are physically impossible (negative VRAM, or accuracy above 1.0 —
-the linear surrogates extrapolate past those limits far outside the measured range) are dropped
-before scoring and reported in the output, never silently discarded.
-
-#### Recording a real run
-
-```bash
-cp experiments/recorded_run.template.json my_run.json   # fill in the measured values
-python experiments/validate_recommendation.py --record my_run.json
-```
-
-This appends predicted-vs-actual errors to `results/recommendation_validation.csv`. It is the
-only path that produces new out-of-sample evidence; `--from-benchmark` back-tests against
-already-measured configurations and is recorded as `in_sample=True`.
-
-`--artifacts-dir` is optional: the package ships its own surrogate bundle and catalog, so
-`green-peft recommend --vram 16` works straight after install. Pass the flag only to point at a
-different export.
-
-The published CLI release is `green-peft==0.3.0` and the published artifact bundle
-is `ai-tanzil/GreenPEFT`. The CLI and artifact bundle should be treated as a matched
-release pair.
-
-### Current Surrogate Validation
-
-Two protocols are reported for every target, because they answer different questions.
-`GroupKFold(groups=config_base)` measures **interpolation** — a new seed of a configuration
-whose method and scale were both measured. `LeaveOneGroupOut(groups=backbone)` measures
-**extrapolation** to an unseen model scale. The governing status is the weaker of the two,
-since a surrogate used to screen unmeasured candidates is bounded by the extrapolation case.
-
-Reproduced independently in `green-peft.ipynb` from pre-run features only, on the 41 canonical
-configurations (Ridge selected per target on extrapolation performance):
-
-| Target | Interp. R² | Extrap. R² | Interp. MAPE | Extrap. MAPE | Status |
-| :--- | ---: | ---: | ---: | ---: | :--- |
-| Energy (kWh) | 0.882 | **0.897** | 11.1% | 10.6% | **VALIDATED** |
-| Peak VRAM (GB) | 0.790 | 0.585 | 18.4% | 37.6% | PRELIMINARY |
-| Wall-clock (s) | 0.622 | 0.545 | 17.0% | 22.5% | PRELIMINARY |
-| Accuracy | 0.390 | 0.084 | 1.3% | 1.6% | PRELIMINARY |
-| **Overall** | | | | | **PRELIMINARY** |
-
-Energy is the only target that clears the project's thresholds under both protocols. Accuracy
-extrapolates poorly: it spans only 0.086 across the entire benchmark, so there is little signal
-to fit beyond the parameter-count trend.
-
-These results support shortlist generation and experiment planning, but not automatic
-production approval. The evidence base is SST-2 classification on a single Tesla T4, with 41
-successful runs and 19 OOM records across 60 attempts, over 0.5–3.0B parameters and two model
-families. Predictions for catalog entries outside that envelope are extrapolations, and the CLI
-now labels each one — see the `evidence` line and the `confidence` / `scope` columns in its
-output.
-
-> **Measurement caveat.** The dataset contains two measurement passes per configuration. The
-> `remeasured` pass recorded a flat ~10 W implied power — the NVML idle floor, not loaded
-> training power — and is flagged `energy_measurement_valid == 0`. Pooling the passes
-> understates mean energy by ~42%. Every figure above uses the valid pass only. Carbon is
-> **derived** as `energy_kwh × 0.65`, never measured independently.
-
-### Reproducing the derived artifacts
-
-```bash
-python reproduce.py           # regenerate every table, figure and metric
-python reproduce.py --check   # verify recorded artifacts match the data, write nothing
-python reproduce.py --list    # show the steps
-```
-
-The dataset and the `.joblib` bundle are read-only inputs; no step modifies them.
-See `IMPLEMENTATION_REPORT.md` for what is validated, what remains preliminary, and which
-additional experiments would actually change the picture.
+3. **GEI Dominance:** LISA on 0.5B achieves the highest GEI score ($0.999$) due to its compact $4.84$ GB memory footprint and minimal carbon emissions.
 
 ---
 
@@ -329,28 +121,128 @@ Weights satisfy $\sum w_i = 1$ based on user preference profiles:
 
 ---
 
-## 🗺️ Strategic Roadmap (Tiers 1–3)
+## 📁 Clean Repository Structure
 
-- [x] **Tier 1 — Core Methodology:** Establish CodeCarbon tracking, run empirical Kaggle pilot, identify OOM boundaries, fix LISA hyperparameter configs (`layer_sample_prob=0.5`).
-- [x] **Tier 2 — Analytical Upgrades (initial):** Train and export surrogate regressors on empirical traces. DoRA/GaLore integration and AHP weight derivation remain open.
-- [x] **Tier 3 — Systems Tooling (initial):** Package the open-source CLI tool (`green-peft recommend --vram 16 --carbon 0.05`) and export reusable surrogate artifacts. Cross-hardware transfer and production hardening remain open.
+```text
+.
+├── README.md                           # Main documentation & pipeline overview
+├── LICENSE                             # MIT License
+├── CITATION.cff                        # Citation metadata
+├── reproduce.py                        # Single command to reproduce all artifacts & tests
+├── data/                               # Harmonized & raw datasets
+│   ├── raw/                            # Source datasets (surrogate_dataset, LLM-Perf, etc.)
+│   └── processed/                      # Harmonized 477x46 dataset & surrogate bundle (.joblib)
+├── notebooks/                          # Categorized research & execution notebooks
+│   ├── green-peft.ipynb                # Primary research & surrogate evaluation notebook
+│   ├── green_peft_benchmark_execution.ipynb  # Kaggle T4 empirical benchmark execution notebook
+│   ├── data_preprocessing_and_feature_engineering.ipynb # Feature pipeline (Stages 1–8)
+│   └── legacy/                         # Historical audit notebooks
+├── docs/                               # Comprehensive project documentation & reports
+│   ├── AUDIT_REPORT.md                 # Surrogate audit & cross-validation metrics
+│   ├── IMPLEMENTATION_REPORT.md        # System implementation & validation status
+│   ├── PAPER_REPRODUCTION_GUIDE.md     # Step-by-step reproduction guide & file manifest
+│   ├── DATA_METHODOLOGY.md             # Data harmonization rules & feature dictionary
+│   ├── greenpeft_agent_workflow.md     # Agent specification & task roadmap
+│   ├── progress_summary.md             # Development summary & milestones
+│   ├── context.md                      # Strategic project context
+│   └── author.md                       # Author profile & contact
+├── analysis/                           # Reproduction & analysis pipeline scripts
+│   ├── greenpeft_data.py               # Shared data loader & canonical filtering
+│   ├── build_training_envelope.py      # Measured envelope builder for metadata
+│   ├── benchmark_analysis.py           # Summary table generator
+│   ├── pareto_analysis.py              # Pareto frontier extractor
+│   ├── recommendation_scenarios.py     # Recommendation scenario builder (Table 4)
+│   ├── figures.py                      # Publication figure generators
+│   └── build_hf_export.py              # Model card & HF export package builder
+├── surrogate/                          # Surrogate validation
+│   └── validate.py                     # Grouped CV & extrapolation auditor
+├── experiments/                        # Empirical validation & back-testing
+│   ├── validate_recommendation.py      # Predicted vs actual empirical back-testing
+│   └── recorded_run.template.json      # Template for logging new empirical runs
+├── models/                             # Audited model metadata & CLI export bundle
+│   ├── model_metadata.json             # Machine-readable model envelope & audit record
+│   └── artifacts_export/               # Export bundle used by CLI recommender
+├── green_peft_cli/                     # Installable green-peft CLI package
+│   └── green_peft_pkg/                 # Package source, pyproject.toml & pytest suite
+├── results/                            # Canonical & derived experimental outputs
+│   ├── canonical_benchmark/            # Source-of-truth 60-run Kaggle T4 sweep
+│   ├── benchmark/                      # Feasibility matrix & summary tables
+│   ├── pareto/                         # Pareto frontiers & candidate sets
+│   ├── recommendations/                # Decision scenario JSON/CSV outputs
+│   ├── surrogate/                      # CV metrics & actual vs predicted figures
+│   ├── hf_export/                      # Published HuggingFace artifact export
+│   └── recommendation_validation.csv   # Predicted vs actual validation log
+└── website/                            # Interactive Web UI dashboard
+```
+
+---
+
+## 🚀 Quickstart & Installation
+
+### 1. Installation
+
+Install the published CLI package directly from PyPI:
+
+```bash
+pip install green-peft
+```
+
+Or install locally from source:
+
+```bash
+pip install -e green_peft_cli/green_peft_pkg
+```
+
+### 2. Run Constraint-Aware Recommendation CLI
+
+Request a balanced recommendation under explicit resource constraints:
+
+```bash
+green-peft recommend --vram 16 --accuracy 0.90 --profile balanced
+```
+
+Request a strict carbon-constrained recommendation with JSON output:
+
+```bash
+green-peft recommend --vram 16 --carbon 0.003 --accuracy 0.90 --profile strict_carbon --json
+```
+
+List available candidate backbones and methods in the zoo:
+
+```bash
+green-peft list-zoo --artifacts-dir ./models/artifacts_export
+```
+
+### 3. Reproduce All Derived Artifacts
+
+Run the single-command reproduction pipeline to verify all tables, figures, and unit tests:
+
+```bash
+python reproduce.py
+```
+
+Run in `--check` mode to verify recorded artifacts without mutating the workspace:
+
+```bash
+python reproduce.py --check
+```
 
 ---
 
 ## 📜 Citation
 
-If you use **GreenPEFT** in your research, please cite the archived Hugging Face
-revision [f21ab54](https://huggingface.co/ai-tanzil/GreenPEFT/tree/f21ab54):
-
-[DOI: 10.57967/hf/10504](https://doi.org/10.57967/hf/10504)
+If you use **GreenPEFT** in your research, please cite:
 
 ```bibtex
 @misc{ashraful_islam_tanzil_2026,
     author       = {Ashraful Islam Tanzil},
-    title        = {GreenPEFT (Revision f21ab54)},
+    title        = {GreenPEFT: A Multi-Objective Green AI Decision Support Framework},
     year         = {2026},
     url          = {https://huggingface.co/ai-tanzil/GreenPEFT},
     doi          = {10.57967/hf/10504},
     publisher    = {Hugging Face}
 }
 ```
+
+---
+*License: [MIT License](LICENSE)*
