@@ -1,11 +1,33 @@
 /* ============================================================================
-   GreenPEFT — Hand-Crafted SVG Charts (Monochrome, Fast, Zero Dependencies)
+   GreenPEFT — Hand-Crafted SVG Charts (Monochrome Dark & Light Adaptive)
    ============================================================================ */
 
 window.GPCharts = (function () {
   'use strict';
 
   const NS = 'http://www.w3.org/2000/svg';
+
+  function isDarkMode() {
+    return document.documentElement.getAttribute('data-theme') !== 'light';
+  }
+
+  function getThemeColors() {
+    const dark = isDarkMode();
+    return {
+      ink: dark ? '#FFFFFF' : '#000000',
+      inkMuted: dark ? '#A3A3A3' : '#4D4D4D',
+      inkDim: dark ? '#767676' : '#767676',
+      grid: dark ? '#222222' : '#EDEDED',
+      border: dark ? '#262626' : '#EDEDED',
+      pointFeasible: dark ? '#FFFFFF' : '#000000',
+      pointFiltered: dark ? '#2E2E2E' : '#D4D4D4',
+      pointFilteredStroke: dark ? '#444444' : '#A3A3A3',
+      pointStroke: dark ? '#000000' : '#FFFFFF',
+      vramLine: dark ? '#FFFFFF' : '#000000',
+      vramHandle: dark ? '#FFFFFF' : '#000000',
+      vramGrip: dark ? '#000000' : '#FFFFFF'
+    };
+  }
 
   function createSvgEl(tag, attrs, text) {
     const el = document.createElementNS(NS, tag);
@@ -25,17 +47,20 @@ window.GPCharts = (function () {
   /* --------------------------------------------------------------------------
      1. Hero Interactive Scatter Plot (with Draggable VRAM Line)
      ----------------------------------------------------------------------- */
+  let heroChartInstance = null;
+
   function initHeroScatter(containerEl, onVramChange) {
     if (!containerEl) return;
     containerEl.innerHTML = '';
 
+    const colors = getThemeColors();
     const width = 520;
     const height = 340;
     const margin = { top: 24, right: 32, bottom: 44, left: 54 };
     const innerW = width - margin.left - margin.right;
     const innerH = height - margin.top - margin.bottom;
 
-    // VRAM Domain: 0 to 24 GB; Accuracy Domain: 0.86 to 0.98
+    // VRAM Domain: 0 to 20 GB; Accuracy Domain: 0.86 to 0.97
     const xMin = 0, xMax = 20;
     const yMin = 0.86, yMax = 0.97;
 
@@ -50,7 +75,6 @@ window.GPCharts = (function () {
       return margin.top + innerH - ((val - yMin) / (yMax - yMin)) * innerH;
     }
 
-    // 12 Representative candidate points from measured/surrogate benchmarks
     const pointsData = [
       { id: 'qlora_tiny',   method: 'QLoRA',   backbone: '0.5B Tiny',   vram: 2.76,  acc: 0.912, gei: 0.687, labelSide: 'top' },
       { id: 'lora_fa_tiny', method: 'LoRA-FA', backbone: '0.5B Tiny',   vram: 4.30,  acc: 0.916, gei: 0.759, labelSide: 'bottom' },
@@ -81,14 +105,14 @@ window.GPCharts = (function () {
       const y = scaleY(t);
       gridG.appendChild(createSvgEl('line', {
         x1: margin.left, x2: width - margin.right, y1: y, y2: y,
-        stroke: '#EDEDED', 'stroke-width': '1'
+        stroke: colors.grid, 'stroke-width': '1'
       }));
       gridG.appendChild(createSvgEl('text', {
         x: margin.left - 8, y: y + 4,
         'text-anchor': 'end',
         'font-family': 'JetBrains Mono',
         'font-size': '11',
-        fill: '#767676'
+        fill: colors.inkDim
       }, t.toFixed(2)));
     });
 
@@ -97,14 +121,14 @@ window.GPCharts = (function () {
       const x = scaleX(t);
       gridG.appendChild(createSvgEl('line', {
         x1: x, x2: x, y1: margin.top, y2: height - margin.bottom,
-        stroke: '#EDEDED', 'stroke-width': '1'
+        stroke: colors.grid, 'stroke-width': '1'
       }));
       gridG.appendChild(createSvgEl('text', {
         x: x, y: height - margin.bottom + 18,
         'text-anchor': 'middle',
         'font-family': 'JetBrains Mono',
         'font-size': '11',
-        fill: '#767676'
+        fill: colors.inkDim
       }, t + 'G'));
     });
 
@@ -114,7 +138,7 @@ window.GPCharts = (function () {
       'text-anchor': 'end',
       'font-family': 'JetBrains Mono',
       'font-size': '11',
-      fill: '#000000',
+      fill: colors.ink,
       'font-weight': '500'
     }, 'Peak VRAM (GB) →'));
 
@@ -124,7 +148,7 @@ window.GPCharts = (function () {
       transform: 'rotate(-90)',
       'font-family': 'JetBrains Mono',
       'font-size': '11',
-      fill: '#000000',
+      fill: colors.ink,
       'font-weight': '500'
     }, 'Accuracy →'));
 
@@ -132,12 +156,12 @@ window.GPCharts = (function () {
     gridG.appendChild(createSvgEl('line', {
       x1: margin.left, x2: width - margin.right,
       y1: height - margin.bottom, y2: height - margin.bottom,
-      stroke: '#000000', 'stroke-width': '1'
+      stroke: colors.ink, 'stroke-width': '1'
     }));
     gridG.appendChild(createSvgEl('line', {
       x1: margin.left, x2: margin.left,
       y1: margin.top, y2: height - margin.bottom,
-      stroke: '#000000', 'stroke-width': '1'
+      stroke: colors.ink, 'stroke-width': '1'
     }));
 
     svg.appendChild(gridG);
@@ -163,8 +187,8 @@ window.GPCharts = (function () {
       // Dot
       const circle = createSvgEl('circle', {
         cx: cx, cy: cy, r: 5,
-        fill: '#000000',
-        stroke: '#FFFFFF',
+        fill: colors.pointFeasible,
+        stroke: colors.pointStroke,
         'stroke-width': '1.5'
       });
       pg.appendChild(circle);
@@ -177,11 +201,10 @@ window.GPCharts = (function () {
         'font-family': 'JetBrains Mono',
         'font-size': '9.5',
         'font-weight': '500',
-        fill: '#000000'
+        fill: colors.ink
       }, p.method);
       pg.appendChild(lbl);
 
-      // Tooltip triggers
       pg.addEventListener('mouseenter', (e) => showTooltip(e, p));
       pg.addEventListener('focus', (e) => showTooltip(e, p));
       pg.addEventListener('mouseleave', hideTooltip);
@@ -203,7 +226,7 @@ window.GPCharts = (function () {
     const vramLine = createSvgEl('line', {
       x1: scaleX(currentVram), x2: scaleX(currentVram),
       y1: margin.top, y2: height - margin.bottom,
-      stroke: '#000000',
+      stroke: colors.vramLine,
       'stroke-width': '1.5',
       'stroke-dasharray': '3,3'
     });
@@ -215,7 +238,7 @@ window.GPCharts = (function () {
       x: scaleX(currentVram) - handleW / 2,
       y: margin.top - 6,
       width: handleW, height: handleH,
-      fill: '#000000',
+      fill: colors.vramHandle,
       rx: '2',
       tabindex: '0',
       role: 'slider',
@@ -230,12 +253,12 @@ window.GPCharts = (function () {
     const grip1 = createSvgEl('line', {
       x1: scaleX(currentVram) - 2, x2: scaleX(currentVram) - 2,
       y1: margin.top - 1, y2: margin.top + 9,
-      stroke: '#FFFFFF', 'stroke-width': '1'
+      stroke: colors.vramGrip, 'stroke-width': '1'
     });
     const grip2 = createSvgEl('line', {
       x1: scaleX(currentVram) + 2, x2: scaleX(currentVram) + 2,
       y1: margin.top - 1, y2: margin.top + 9,
-      stroke: '#FFFFFF', 'stroke-width': '1'
+      stroke: colors.vramGrip, 'stroke-width': '1'
     });
     vramLineG.appendChild(grip1);
     vramLineG.appendChild(grip2);
@@ -247,7 +270,7 @@ window.GPCharts = (function () {
       'font-family': 'JetBrains Mono',
       'font-size': '10',
       'font-weight': '600',
-      fill: '#000000'
+      fill: colors.ink
     }, `${currentVram.toFixed(1)} GB`);
     vramLineG.appendChild(tagText);
 
@@ -258,6 +281,7 @@ window.GPCharts = (function () {
     function updateVramThreshold(vramVal, triggerCallback) {
       currentVram = Math.max(2, Math.min(20, vramVal));
       const px = scaleX(currentVram);
+      const c = getThemeColors();
 
       vramLine.setAttribute('x1', px);
       vramLine.setAttribute('x2', px);
@@ -276,12 +300,12 @@ window.GPCharts = (function () {
         if (isFeasible) {
           feasibleCount++;
           pt.group.style.opacity = '1';
-          pt.circle.setAttribute('fill', '#000000');
-          pt.label.setAttribute('fill', '#000000');
+          pt.circle.setAttribute('fill', c.pointFeasible);
+          pt.label.setAttribute('fill', c.ink);
         } else {
-          pt.group.style.opacity = '0.22';
-          pt.circle.setAttribute('fill', '#A3A3A3');
-          pt.label.setAttribute('fill', '#A3A3A3');
+          pt.group.style.opacity = '0.25';
+          pt.circle.setAttribute('fill', c.pointFiltered);
+          pt.label.setAttribute('fill', c.inkDim);
         }
       });
 
@@ -342,11 +366,16 @@ window.GPCharts = (function () {
     // Initial run
     updateVramThreshold(16.0, false);
 
-    return {
+    heroChartInstance = {
       setVram: function (val) {
         updateVramThreshold(val, false);
+      },
+      rebuild: function () {
+        initHeroScatter(containerEl, onVramChange);
       }
     };
+
+    return heroChartInstance;
   }
 
   /* --------------------------------------------------------------------------
@@ -356,6 +385,7 @@ window.GPCharts = (function () {
     if (!containerEl) return;
     containerEl.innerHTML = '';
 
+    const colors = getThemeColors();
     const width = 520;
     const height = 340;
     const margin = { top: 24, right: 28, bottom: 44, left: 54 };
@@ -384,14 +414,14 @@ window.GPCharts = (function () {
       const y = scaleY(t);
       svg.appendChild(createSvgEl('line', {
         x1: margin.left, x2: width - margin.right, y1: y, y2: y,
-        stroke: '#EDEDED', 'stroke-width': '1'
+        stroke: colors.grid, 'stroke-width': '1'
       }));
       svg.appendChild(createSvgEl('text', {
         x: margin.left - 8, y: y + 4,
         'text-anchor': 'end',
         'font-family': 'JetBrains Mono',
         'font-size': '11',
-        fill: '#767676'
+        fill: colors.inkDim
       }, t.toFixed(2)));
     });
 
@@ -399,14 +429,14 @@ window.GPCharts = (function () {
       const x = scaleX(t);
       svg.appendChild(createSvgEl('line', {
         x1: x, x2: x, y1: margin.top, y2: height - margin.bottom,
-        stroke: '#EDEDED', 'stroke-width': '1'
+        stroke: colors.grid, 'stroke-width': '1'
       }));
       svg.appendChild(createSvgEl('text', {
         x: x, y: height - margin.bottom + 18,
         'text-anchor': 'middle',
         'font-family': 'JetBrains Mono',
         'font-size': '11',
-        fill: '#767676'
+        fill: colors.inkDim
       }, t + ' GB'));
     });
 
@@ -414,12 +444,12 @@ window.GPCharts = (function () {
     svg.appendChild(createSvgEl('line', {
       x1: margin.left, x2: width - margin.right,
       y1: height - margin.bottom, y2: height - margin.bottom,
-      stroke: '#000000', 'stroke-width': '1'
+      stroke: colors.ink, 'stroke-width': '1'
     }));
     svg.appendChild(createSvgEl('line', {
       x1: margin.left, x2: margin.left,
       y1: margin.top, y2: height - margin.bottom,
-      stroke: '#000000', 'stroke-width': '1'
+      stroke: colors.ink, 'stroke-width': '1'
     }));
 
     // Axis Labels
@@ -428,7 +458,7 @@ window.GPCharts = (function () {
       'text-anchor': 'end',
       'font-family': 'JetBrains Mono',
       'font-size': '11',
-      fill: '#000000',
+      fill: colors.ink,
       'font-weight': '500'
     }, 'Peak VRAM (GB) →'));
 
@@ -438,11 +468,10 @@ window.GPCharts = (function () {
       transform: 'rotate(-90)',
       'font-family': 'JetBrains Mono',
       'font-size': '11',
-      fill: '#000000',
+      fill: colors.ink,
       'font-weight': '500'
     }, 'Accuracy (SST-2) →'));
 
-    // Measured evidence rows from repository
     const measuredPoints = (window.GREENPEFT_EVIDENCE && window.GREENPEFT_EVIDENCE.measured) || [
       { method: 'lora', backbone: 'small', accuracy: 0.9438, peak_gpu_memory_gb: 9.43, gei_balanced: 0.792 },
       { method: 'qlora', backbone: 'small', accuracy: 0.9381, peak_gpu_memory_gb: 3.96, gei_balanced: 0.789 },
@@ -470,32 +499,30 @@ window.GPCharts = (function () {
         style: 'cursor: pointer;'
       });
 
-      // Distinct shape per method
       if (pt.method === 'lisa') {
         g.appendChild(createSvgEl('rect', {
           x: cx - 4, y: cy - 4, width: 8, height: 8,
-          fill: '#000000', stroke: '#FFFFFF', 'stroke-width': '1.2'
+          fill: colors.pointFeasible, stroke: colors.pointStroke, 'stroke-width': '1.2'
         }));
       } else if (pt.method === 'lora') {
         g.appendChild(createSvgEl('path', {
           d: `M${cx},${cy - 5} L${cx + 5},${cy + 4} L${cx - 5},${cy + 4} Z`,
-          fill: '#000000', stroke: '#FFFFFF', 'stroke-width': '1.2'
+          fill: colors.pointFeasible, stroke: colors.pointStroke, 'stroke-width': '1.2'
         }));
       } else if (pt.method === 'qlora') {
         g.appendChild(createSvgEl('path', {
           d: `M${cx - 5},${cy - 4} L${cx + 5},${cy - 4} L${cx},${cy + 5} Z`,
-          fill: '#000000', stroke: '#FFFFFF', 'stroke-width': '1.2'
+          fill: colors.pointFeasible, stroke: colors.pointStroke, 'stroke-width': '1.2'
         }));
       } else if (pt.method === 'lora_fa') {
         g.appendChild(createSvgEl('path', {
           d: `M${cx},${cy - 5} L${cx + 5},${cy} L${cx},${cy + 5} L${cx - 5},${cy} Z`,
-          fill: '#000000', stroke: '#FFFFFF', 'stroke-width': '1.2'
+          fill: colors.pointFeasible, stroke: colors.pointStroke, 'stroke-width': '1.2'
         }));
       } else {
-        // full_ft circle
         g.appendChild(createSvgEl('circle', {
           cx: cx, cy: cy, r: 4.5,
-          fill: '#000000', stroke: '#FFFFFF', 'stroke-width': '1.2'
+          fill: colors.pointFeasible, stroke: colors.pointStroke, 'stroke-width': '1.2'
         }));
       }
 
@@ -519,14 +546,14 @@ window.GPCharts = (function () {
     const x16 = scaleX(16.0);
     svg.appendChild(createSvgEl('line', {
       x1: x16, x2: x16, y1: margin.top, y2: height - margin.bottom,
-      stroke: '#A3A3A3', 'stroke-width': '1', 'stroke-dasharray': '2,2'
+      stroke: colors.inkDim, 'stroke-width': '1', 'stroke-dasharray': '2,2'
     }));
     svg.appendChild(createSvgEl('text', {
       x: x16 - 4, y: margin.top + 14,
       'text-anchor': 'end',
       'font-family': 'JetBrains Mono',
       'font-size': '10',
-      fill: '#767676'
+      fill: colors.inkDim
     }, '16 GB T4 limit'));
 
     containerEl.appendChild(svg);
@@ -535,10 +562,13 @@ window.GPCharts = (function () {
   /* --------------------------------------------------------------------------
      3. Why It Matters: Section 3 Beat 3 (Filter First vs Run Everything)
      ----------------------------------------------------------------------- */
+  let filterSvgInstance = null;
+
   function initFilterToggleSvg(containerEl) {
     if (!containerEl) return;
     containerEl.innerHTML = '';
 
+    const colors = getThemeColors();
     const width = 480;
     const height = 240;
     const margin = { top: 20, right: 24, bottom: 32, left: 44 };
@@ -552,7 +582,6 @@ window.GPCharts = (function () {
       'aria-label': 'Visual comparison: unguided grid sweep vs Pareto filtered shortlist'
     });
 
-    // 12 points across 2D plane: X = Cost/Energy, Y = Accuracy
     const candidateDots = [
       { x: 30,  y: 40, isPareto: false, name: 'Config A' },
       { x: 50,  y: 85, isPareto: true,  name: 'QLoRA 1.1B' },
@@ -572,12 +601,12 @@ window.GPCharts = (function () {
     svg.appendChild(createSvgEl('line', {
       x1: margin.left, x2: width - margin.right,
       y1: height - margin.bottom, y2: height - margin.bottom,
-      stroke: '#EDEDED', 'stroke-width': '1'
+      stroke: colors.grid, 'stroke-width': '1'
     }));
     svg.appendChild(createSvgEl('line', {
       x1: margin.left, x2: margin.left,
       y1: margin.top, y2: height - margin.bottom,
-      stroke: '#EDEDED', 'stroke-width': '1'
+      stroke: colors.grid, 'stroke-width': '1'
     }));
 
     svg.appendChild(createSvgEl('text', {
@@ -585,7 +614,7 @@ window.GPCharts = (function () {
       'text-anchor': 'end',
       'font-family': 'JetBrains Mono',
       'font-size': '10',
-      fill: '#767676'
+      fill: colors.inkDim
     }, 'Compute cost / VRAM →'));
 
     svg.appendChild(createSvgEl('text', {
@@ -594,14 +623,14 @@ window.GPCharts = (function () {
       transform: 'rotate(-90)',
       'font-family': 'JetBrains Mono',
       'font-size': '10',
-      fill: '#767676'
+      fill: colors.inkDim
     }, 'Accuracy →'));
 
     // Connecting Pareto frontier line
     const paretoPath = createSvgEl('path', {
-      d: 'M 94 70 L 164 56 L 224 48',
+      d: 'M 102 70 L 176 56 L 244 48',
       fill: 'none',
-      stroke: '#000000',
+      stroke: colors.ink,
       'stroke-width': '1.5',
       'stroke-dasharray': '3,3',
       style: 'opacity: 0; transition: opacity 220ms ease;'
@@ -616,8 +645,8 @@ window.GPCharts = (function () {
 
       const dot = createSvgEl('circle', {
         cx: cx, cy: cy, r: 5,
-        fill: '#000000',
-        stroke: '#FFFFFF',
+        fill: colors.pointFeasible,
+        stroke: colors.pointStroke,
         'stroke-width': '1.5',
         style: 'transition: all 220ms ease;'
       });
@@ -628,7 +657,7 @@ window.GPCharts = (function () {
         'font-family': 'JetBrains Mono',
         'font-size': '10',
         'font-weight': '600',
-        fill: '#000000',
+        fill: colors.ink,
         style: 'opacity: 0; transition: opacity 220ms ease;'
       }, d.name);
 
@@ -640,26 +669,26 @@ window.GPCharts = (function () {
     containerEl.appendChild(svg);
 
     function setState(mode) {
+      const c = getThemeColors();
       if (mode === 'greenpeft') {
         paretoPath.style.opacity = '1';
         dotElements.forEach(item => {
           if (item.data.isPareto) {
-            item.dot.setAttribute('fill', '#000000');
+            item.dot.setAttribute('fill', c.pointFeasible);
             item.dot.setAttribute('r', '6');
             item.dot.style.opacity = '1';
             item.label.style.opacity = '1';
           } else {
-            item.dot.setAttribute('fill', '#D4D4D4');
+            item.dot.setAttribute('fill', c.pointFiltered);
             item.dot.setAttribute('r', '4');
-            item.dot.style.opacity = '0.25';
+            item.dot.style.opacity = '0.2';
             item.label.style.opacity = '0';
           }
         });
       } else {
-        // Run everything
         paretoPath.style.opacity = '0';
         dotElements.forEach(item => {
-          item.dot.setAttribute('fill', '#000000');
+          item.dot.setAttribute('fill', c.pointFeasible);
           item.dot.setAttribute('r', '5');
           item.dot.style.opacity = '0.7';
           item.label.style.opacity = '0';
@@ -669,13 +698,18 @@ window.GPCharts = (function () {
 
     setState('run_all');
 
-    return {
-      setState: setState
+    filterSvgInstance = {
+      setState: setState,
+      rebuild: function () {
+        initFilterToggleSvg(containerEl);
+      }
     };
+
+    return filterSvgInstance;
   }
 
   /* --------------------------------------------------------------------------
-     4. Tooltip System (Single Instance, Keyboard & Hover Accessible)
+     4. Tooltip System (Single Instance, Accessible)
      ----------------------------------------------------------------------- */
   let tooltipEl = null;
 
@@ -732,6 +766,13 @@ window.GPCharts = (function () {
     initEvidenceScatter: initEvidenceScatter,
     initFilterToggleSvg: initFilterToggleSvg,
     showTooltip: showTooltip,
-    hideTooltip: hideTooltip
+    hideTooltip: hideTooltip,
+    refreshTheme: function () {
+      if (heroChartInstance && heroChartInstance.rebuild) heroChartInstance.rebuild();
+      const evidenceMount = document.getElementById('evidence-scatter-mount');
+      if (evidenceMount) initEvidenceScatter(evidenceMount);
+      const filterMount = document.getElementById('filter-dots-mount');
+      if (filterMount) initFilterToggleSvg(filterMount);
+    }
   };
 })();

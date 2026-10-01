@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,7 +8,7 @@
   <meta name="description" content="Pick sustainable parameter-efficient fine-tuning (PEFT) strategies for LLMs before running expensive benchmark sweeps. Zero-shot surrogate regressors, hardware/accuracy constraints, Pareto filtering, and Green Efficiency Index.">
   <meta name="author" content="Ashraful Islam Tanzil">
   <meta name="keywords" content="GreenPEFT, Green AI, PEFT, LoRA, QLoRA, LISA, LoRA-FA, Green Efficiency Index, surrogate model, Pareto frontier, CodeCarbon, sustainable machine learning">
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#0A0A0A">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
@@ -47,9 +47,15 @@
         <a class="nav-link" href="#cli">06 CLI</a>
         <a class="nav-link" href="#research">07 Research</a>
       </nav>
-      <a class="btn btn--ghost btn--sm" href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks" target="_blank" rel="noopener">
-        GitHub
-      </a>
+      <div class="nav-actions">
+        <button type="button" class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle color theme">
+          <span id="theme-toggle-icon">☀</span>
+          <span id="theme-toggle-text">Light</span>
+        </button>
+        <a class="btn btn--ghost btn--sm" href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks" target="_blank" rel="noopener">
+          GitHub
+        </a>
+      </div>
     </div>
   </header>
 
@@ -684,7 +690,7 @@ Alternatives:
 
           <!-- Left Column: Author Profile -->
           <div class="author-profile">
-            <img class="author-avatar" src="https://gravatar.com/crownelectronic4c6790a6af" alt="Ashraful Islam Tanzil" width="72" height="72">
+            <img class="author-avatar" src="assets/author.jpg" alt="Ashraful Islam Tanzil" width="84" height="84" onerror="this.onerror=null; this.src='https://secure.gravatar.com/avatar/crownelectronic4c6790a6af?s=200';">
             <div>
               <h3 class="author-name">Ashraful Islam Tanzil</h3>
               <p class="caption-mono" style="margin-top: 4px;">Researcher · Green AI &amp; Efficient LLM Systems</p>
