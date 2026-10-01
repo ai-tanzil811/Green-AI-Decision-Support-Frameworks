@@ -210,7 +210,7 @@ const GPCharts = (function () {
     const byKey = opts.byKey;              // "backbone|method" -> candidate
     const state = opts.state;              // "backbone|method" -> 'pass'|'vram'|'acc'|'bad'|'other'
 
-    const LEFT = 108, TOP = 26, CW = 56, CH = 18, GX = 4, GY = 3.5;
+    const LEFT = 126, TOP = 26, CW = 56, CH = 18, GX = 4, GY = 3.5;
     const W = LEFT + methods.length * CW + (methods.length - 1) * GX + 8;
     const H = TOP + backbones.length * CH + (backbones.length - 1) * GY + 8;
 
@@ -229,10 +229,10 @@ const GPCharts = (function () {
       const y = TOP + r * (CH + GY);
 
       s.appendChild(el('text', {
-        class: 'cgate-label', x: LEFT - 32, y: y + CH / 2 + 3, 'text-anchor': 'end'
+        class: 'cgate-label', x: LEFT - 48, y: y + CH / 2 + 3, 'text-anchor': 'end'
       }, b.key.replace(/_/g, '-')));
       s.appendChild(el('text', {
-        class: 'cgate-label', x: LEFT - 8, y: y + CH / 2 + 3, 'text-anchor': 'end',
+        class: 'cgate-label', x: LEFT - 6, y: y + CH / 2 + 3, 'text-anchor': 'end',
         style: 'fill:#4c6358'
       }, b.params_b + 'B'));
 

@@ -1082,4 +1082,4 @@ button.ctrl__val:hover { color: var(--cyan-glow); }
 
 /* Matrix cells keep their shape when the table scrolls sideways. */
 .matrix td { min-width: 92px; }
-.matrix th[scope="row"] { min-width: 108px; }
+.matrix th[scope="row"] { min-width: 112px; }
