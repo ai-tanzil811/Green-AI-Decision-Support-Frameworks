@@ -1,0 +1,20 @@
+# Only website/ is published. Everything else is research payload that would
+# make every deployment upload hundreds of megabytes for no benefit.
+.venv/
+__pycache__/
+*.py[cod]
+.git/
+.pytest_cache/
+
+analysis/
+data/
+docs/
+experiments/
+green_peft_cli/
+model/
+models/
+notebooks/
+results/
+surrogate/
+reproduce.py
+methodology.png
