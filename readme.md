@@ -72,20 +72,47 @@ Below are the empirical findings from a 60-run benchmark grid executed on Kaggle
 ## 🛠️ Repository Structure
 
 ```text
-├── Green_PEFT.ipynb                    # Master benchmark notebook
-├── Green_PEFT_log.txt                  # Benchmark execution log
+├── green-peft.ipynb                    # Research notebook: EDA, comparison, pre-run surrogate
+├── greenpeft_agent_workflow.md         # Work specification this repo is built against
+├── IMPLEMENTATION_REPORT.md            # What is validated, what is preliminary, what is missing
+├── reproduce.py                        # One command to regenerate every derived artifact
 ├── methodology.png                     # Pipeline diagram
+├── new update works/
+│   ├── greenpeft_ml_ready_dataset.csv  # Harmonized dataset (477 x 46) -- read-only input
+│   ├── greenpeft_surrogate_models.joblib
+│   └── DATA_METHODOLOGY.md
+├── models/
+│   └── model_metadata.json             # Audited artifact metadata + training envelope
+├── analysis/
+│   ├── greenpeft_data.py               # Shared loaders (pass collapse, feasibility grid)
+│   ├── build_training_envelope.py      # Derives the measured envelope from the dataset
+│   ├── benchmark_analysis.py           # -> results/benchmark/
+│   ├── pareto_analysis.py              # -> results/pareto/
+│   ├── recommendation_scenarios.py     # -> results/recommendations/ (paper Table 4)
+│   └── figures.py                      # Figures A and E
+├── surrogate/
+│   └── validate.py                     # Grouped CV audit -> results/surrogate/
+├── experiments/
+│   ├── validate_recommendation.py      # Predicted vs actual bridge
+│   └── recorded_run.template.json      # Template for recording a real run
+├── green_peft_cli/green_peft_pkg/      # Installable CLI + decision engine
+│   └── green_peft/
+│       ├── features.py                 # Single pre-run feature builder
+│       ├── confidence.py               # Scope, confidence, error bands, plausibility
+│       ├── recommender.py              # Candidates, constraints, Pareto, GEI
+│       └── cli.py
 ├── results/
 │   ├── README.md                       # Results navigation guide
 │   ├── canonical_benchmark/            # Verified benchmark source of truth
 │   │   ├── configs/                    # Backbone, task, and method YAML files
 │   │   ├── raw_runs/                   # Individual JSON run logs (60 files)
-│   │   ├── figures/                    # Benchmark visualizations
 │   │   ├── metrics/                    # Aggregate, scored, Pareto, and sweep CSVs
 │   │   └── manifest.json               # Bundle metadata
-│   ├── working_run/                    # Working data and retained exports
-│   ├── notebook_assets/                # Notebook-rendered support files
-│   └── cache/                          # Download/cache metadata
+│   ├── benchmark/                      # Method/backbone summaries, feasibility, seed variance
+│   ├── surrogate/                      # cv_metrics.csv, OOF predictions, parity plots
+│   ├── pareto/                         # Predicted and measured frontiers
+│   ├── recommendations/                # Example scenarios (paper Table 4)
+│   └── recommendation_validation.csv   # Predicted vs actual
 └── readme.md                           # Project documentation
 ```
 
@@ -189,27 +216,100 @@ infeasible candidates, then ranks the survivors using Pareto filtering and GEI. 
 a planning aid: always validate the selected configuration with a measured run before
 using it as a production policy.
 
-The published CLI release is `green-peft==0.1.0` and the published artifact bundle
+#### Evidence level and error bands
+
+Only 4 of the 14 catalog backbones are measured tiers; the rest sit outside the measured
+parameter range or belong to model families never seen in training. Every prediction therefore
+carries a scope, a confidence level, and an error band taken from the surrogate's own
+out-of-sample error:
+
+```text
+predicted peak VRAM  : 5.33 GB   +/-40%  [3.20 to 7.45 GB]
+evidence             : MEDIUM confidence, scope INTERPOLATED_SCALE
+                       (1.7B between measured tiers)
+```
+
+Restrict the search to directly measured configurations with `--min-confidence`:
+
+```bash
+green-peft recommend --vram 16 --accuracy 0.90 --min-confidence HIGH
+```
+
+This changes the answer, and it is meant to. Under a 0.95 accuracy floor the unrestricted
+engine suggests a 7.2B Mistral configuration (LOW confidence, extrapolated well past the
+measured range); restricted to measured cells it suggests qlora on the 3.0B backbone. Both are
+legitimate outputs — they differ in how much evidence stands behind them.
+
+Candidates whose predictions are physically impossible (negative VRAM, or accuracy above 1.0 —
+the linear surrogates extrapolate past those limits far outside the measured range) are dropped
+before scoring and reported in the output, never silently discarded.
+
+#### Recording a real run
+
+```bash
+cp experiments/recorded_run.template.json my_run.json   # fill in the measured values
+python experiments/validate_recommendation.py --record my_run.json
+```
+
+This appends predicted-vs-actual errors to `results/recommendation_validation.csv`. It is the
+only path that produces new out-of-sample evidence; `--from-benchmark` back-tests against
+already-measured configurations and is recorded as `in_sample=True`.
+
+`--artifacts-dir` is optional: the package ships its own surrogate bundle and catalog, so
+`green-peft recommend --vram 16` works straight after install. Pass the flag only to point at a
+different export.
+
+The published CLI release is `green-peft==0.2.0` and the published artifact bundle
 is `ai-tanzil/GreenPEFT`. The CLI and artifact bundle should be treated as a matched
 release pair.
 
 ### Current Surrogate Validation
 
-The exported models use leave-one-tier-out validation across four backbone tiers.
-The recorded feasibility accuracy is **0.7833**. Regression MAE and the selected model
-for each target are:
+Two protocols are reported for every target, because they answer different questions.
+`GroupKFold(groups=config_base)` measures **interpolation** — a new seed of a configuration
+whose method and scale were both measured. `LeaveOneGroupOut(groups=backbone)` measures
+**extrapolation** to an unseen model scale. The governing status is the weaker of the two,
+since a surrogate used to screen unmeasured candidates is bounded by the extrapolation case.
 
-| Target | Selected model | MAE | Leave-one-tier-out R² |
-| :--- | :--- | ---: | ---: |
-| Accuracy | Gradient boosting | 0.0182 | -0.4573 |
-| Peak VRAM (GB) | Gradient boosting | 3.9703 | -0.5154 |
-| Energy (kWh) | Ridge | 0.000563 | 0.3740 |
-| Wall-clock time (s) | Gradient boosting | 33.12 | 0.4077 |
+Reproduced independently in `green-peft.ipynb` from pre-run features only, on the 41 canonical
+configurations (Ridge selected per target on extrapolation performance):
+
+| Target | Interp. R² | Extrap. R² | Interp. MAPE | Extrap. MAPE | Status |
+| :--- | ---: | ---: | ---: | ---: | :--- |
+| Energy (kWh) | 0.882 | **0.897** | 11.1% | 10.6% | **VALIDATED** |
+| Peak VRAM (GB) | 0.790 | 0.585 | 18.4% | 37.6% | PRELIMINARY |
+| Wall-clock (s) | 0.622 | 0.545 | 17.0% | 22.5% | PRELIMINARY |
+| Accuracy | 0.390 | 0.084 | 1.3% | 1.6% | PRELIMINARY |
+| **Overall** | | | | | **PRELIMINARY** |
+
+Energy is the only target that clears the project's thresholds under both protocols. Accuracy
+extrapolates poorly: it spans only 0.086 across the entire benchmark, so there is little signal
+to fit beyond the parameter-count trend.
 
 These results support shortlist generation and experiment planning, but not automatic
-production approval. Predictions for catalog entries that were not directly benchmarked
-are extrapolations. The current evidence base is primarily SST-2 classification on a
-Tesla T4, with 41 successful runs and 19 OOM records across 60 attempts.
+production approval. The evidence base is SST-2 classification on a single Tesla T4, with 41
+successful runs and 19 OOM records across 60 attempts, over 0.5–3.0B parameters and two model
+families. Predictions for catalog entries outside that envelope are extrapolations, and the CLI
+now labels each one — see the `evidence` line and the `confidence` / `scope` columns in its
+output.
+
+> **Measurement caveat.** The dataset contains two measurement passes per configuration. The
+> `remeasured` pass recorded a flat ~10 W implied power — the NVML idle floor, not loaded
+> training power — and is flagged `energy_measurement_valid == 0`. Pooling the passes
+> understates mean energy by ~42%. Every figure above uses the valid pass only. Carbon is
+> **derived** as `energy_kwh × 0.65`, never measured independently.
+
+### Reproducing the derived artifacts
+
+```bash
+python reproduce.py           # regenerate every table, figure and metric
+python reproduce.py --check   # verify recorded artifacts match the data, write nothing
+python reproduce.py --list    # show the steps
+```
+
+The dataset and the `.joblib` bundle are read-only inputs; no step modifies them.
+See `IMPLEMENTATION_REPORT.md` for what is validated, what remains preliminary, and which
+additional experiments would actually change the picture.
 
 ---
 

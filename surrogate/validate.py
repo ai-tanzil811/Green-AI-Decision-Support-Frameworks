@@ -336,6 +336,21 @@ meta = {
     'leakage_guard': LEAKY_COLUMNS,
 }
 mp_path = os.path.join(MODELS_DIR, 'model_metadata.json')
-json.dump(meta, open(mp_path, 'w'), indent=2)
+
+# Carry forward the training envelope rather than dropping it. It is derived separately by
+# analysis/build_training_envelope.py and read by green_peft.confidence to decide how far a
+# candidate sits outside the measured region; rewriting this file wholesale would silently
+# disable every scope and error-band label in the CLI.
+if os.path.exists(mp_path):
+    try:
+        with open(mp_path, encoding='utf-8') as f:
+            previous = json.load(f)
+        if 'training_envelope' in previous:
+            meta['training_envelope'] = previous['training_envelope']
+    except ValueError:
+        pass
+
+with open(mp_path, 'w', encoding='utf-8') as f:
+    json.dump(meta, f, indent=2)
 print(f'\n  wrote models/model_metadata.json')
 print('\nAUDIT COMPLETE — checkpoint reached (workflow 32). Stop before new decision logic.')

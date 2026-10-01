@@ -1,0 +1,16 @@
+[
+  {
+    "_comment": "TEMPLATE -- not data. Copy this file, replace every actual_* value with numbers from a real run, then: python experiments/validate_recommendation.py --record your_file.json",
+    "method": "lora",
+    "backbone": "small",
+    "family": "llama",
+    "params_b": 1.1,
+    "rank": 16,
+    "quant_bits": 16,
+    "actual_accuracy": null,
+    "actual_peak_gpu_memory_gb": null,
+    "actual_energy_kwh": null,
+    "actual_wall_clock_seconds": null,
+    "notes": "hardware, task, epochs, batch size -- anything needed to reproduce the run"
+  }
+]

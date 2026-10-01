@@ -212,5 +212,59 @@
     "wall_clock_seconds",
     "status",
     "fits"
-  ]
+  ],
+  "training_envelope": {
+    "derived_from": "new update works/greenpeft_ml_ready_dataset.csv",
+    "n_configs": 41,
+    "n_measurement_rows": 82,
+    "params_b": {
+      "min": 0.5,
+      "max": 3.0
+    },
+    "families": [
+      "llama",
+      "qwen"
+    ],
+    "methods": [
+      "full_ft",
+      "lisa",
+      "lora",
+      "lora_fa",
+      "qlora"
+    ],
+    "quant_bits": [
+      4,
+      16,
+      32
+    ],
+    "rank": [
+      0.0,
+      16.0
+    ],
+    "gpu_total_gb": 15.6,
+    "backbone_tiers": {
+      "large": 3.0,
+      "medium": 1.5,
+      "small": 1.1,
+      "tiny": 0.5
+    },
+    "measured_cells": [
+      "full_ft|tiny",
+      "lisa|medium",
+      "lisa|small",
+      "lisa|tiny",
+      "lora_fa|medium",
+      "lora_fa|small",
+      "lora_fa|tiny",
+      "lora|medium",
+      "lora|small",
+      "lora|tiny",
+      "qlora|large",
+      "qlora|medium",
+      "qlora|small",
+      "qlora|tiny"
+    ],
+    "task": "SST-2 classification",
+    "note": "Scope of direct evidence. A candidate outside this envelope is an extrapolation; see green_peft/confidence.py. The leave-one-tier-out protocol only ever held out a tier INSIDE the params_b range, so error bands do not cover candidates beyond it."
+  }
 }

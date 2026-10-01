@@ -25,6 +25,7 @@ import pandas as pd
 
 from . import __version__
 from .banner import print_banner
+from .confidence import annotate as annotate_confidence
 from .recommender import (
     GreenPEFTArtifacts, Constraints, GEI_PROFILES, recommend, explain, build_candidates,
     read_model_status,
@@ -51,6 +52,7 @@ def cmd_recommend(args):
         max_carbon_kgco2eq=args.carbon,
         min_accuracy=args.accuracy,
         max_time_seconds=args.time,
+        min_confidence=args.min_confidence,
     )
     weights = _parse_weights(args.weights) if args.weights else None
     profile = args.profile if weights is None else None
@@ -68,6 +70,11 @@ def cmd_recommend(args):
         payload = {
             'n_candidates': result['n_candidates'], 'n_feasible': result['n_feasible'],
             'profile': result['profile'], 'weights': result['weights'],
+            # Consumers need the surrogate's audited status and whether scope/confidence is
+            # present, or they cannot tell a measured prediction from an extrapolation.
+            'model_status': result.get('model_status'),
+            'has_confidence': result.get('has_confidence', False),
+            'scope_summary': result.get('scope_summary') or None,
         }
         if result['ranked'] is not None:
             payload['ranked'] = json.loads(result['ranked'].to_json(orient='records'))
@@ -81,8 +88,10 @@ def cmd_recommend(args):
     if result['ranked'] is not None and args.top_k > 1:
         print(f"\nTop {min(args.top_k, len(result['ranked']))} by GEI:")
         cols = ['backbone', 'method', 'pred_accuracy', 'pred_peak_vram_gb',
-               'pred_carbon_kgco2eq', 'gei', 'on_pareto_front']
-        with pd.option_context('display.width', 120, 'display.float_format', '{:.4f}'.format):
+                'pred_carbon_kgco2eq', 'gei', 'on_pareto_front']
+        # Scope sits next to the numbers it qualifies, not in a footnote.
+        cols += [c for c in ('confidence', 'scope') if c in result['ranked'].columns]
+        with pd.option_context('display.width', 160, 'display.float_format', '{:.4f}'.format):
             print(result['ranked'][cols].to_string(index=False))
     return 0
 
@@ -96,9 +105,25 @@ def cmd_list_zoo(args):
     candidates = build_candidates(artifacts,
                                   args.backbones.split(',') if args.backbones else None,
                                   args.methods.split(',') if args.methods else None)
-    with pd.option_context('display.width', 120):
-        print(candidates[['backbone', 'model_id', 'family', 'params_b', 'method']]
-              .drop_duplicates(subset=['backbone', 'method']).to_string(index=False))
+    cols = ['backbone', 'model_id', 'family', 'params_b', 'method']
+
+    # Label each candidate's evidence level here too, so it is clear before any
+    # recommendation runs how much of the zoo lies outside the measured envelope.
+    if artifacts.envelope is not None:
+        candidates = annotate_confidence(candidates, artifacts.envelope)
+        cols += ['confidence', 'scope']
+
+    out = candidates[cols].drop_duplicates(subset=['backbone', 'method'])
+    with pd.option_context('display.width', 160):
+        print(out.to_string(index=False))
+
+    if 'scope' in out.columns:
+        env = artifacts.envelope
+        print(f'\nMeasured envelope: {env.params_b_min:g}-{env.params_b_max:g}B, '
+              f'families {sorted(env.families)}, '
+              f'{len(env.measured_cells)} directly measured (method, scale) cells.')
+        print('Scope tally: ' + ', '.join(
+            f'{n} {s}' for s, n in out['scope'].value_counts().items()))
     return 0
 
 
@@ -124,6 +149,11 @@ def build_parser():
                    help='Comma-separated backbone keys to consider (default: whole model_zoo).')
     r.add_argument('--methods', type=str, default=None,
                    help='Comma-separated method keys to consider (default: all configured methods).')
+    r.add_argument('--min-confidence', choices=['LOW', 'MEDIUM', 'HIGH'], default=None,
+                   help='Only consider candidates at or above this evidence level. '
+                        'HIGH = the (method, scale) cell was measured directly; '
+                        'MEDIUM = inside the measured parameter range and model family. '
+                        'Default: consider everything and report each scope.')
     r.add_argument('--top-k', type=int, default=3, help='How many ranked candidates to show.')
     r.add_argument('--json', action='store_true', help='Emit machine-readable JSON instead of text.')
     r.set_defaults(func=cmd_recommend)

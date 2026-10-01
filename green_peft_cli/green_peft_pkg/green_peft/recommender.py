@@ -22,6 +22,9 @@ Design notes:
   not penalized within GEI -- an infeasible config isn't a worse option, it isn't an option.
   The VRAM regressor is rated PRELIMINARY (see models/model_metadata.json), so this gate is a
   screening heuristic, not a guarantee; VRAM_SAFETY_MARGIN keeps a headroom band.
+- Because candidates may sit outside the measured envelope, every prediction carries a scope
+  and confidence label plus a measured error band (see confidence.py). A bare point estimate
+  for an unmeasured family or scale would overstate what the surrogate knows.
 """
 
 from __future__ import annotations
@@ -35,6 +38,7 @@ import numpy as np
 import pandas as pd
 import yaml
 
+from .confidence import TrainingEnvelope, annotate as annotate_confidence, summarize as summarize_scope
 from .features import ALL_FEATURES, CAT_FEATURES, NUM_FEATURES, build_pre_run_features
 
 # Predicted VRAM must leave this fraction of the budget free to count as feasible. The VRAM
@@ -91,6 +95,9 @@ class GreenPEFTArtifacts:
     gpu_rental_usd_per_hour: float = DEFAULT_GPU_RENTAL_USD_PER_HOUR
     schema_version: str = 'unknown'
     model_status: str = 'unknown'
+    # None when metadata carries no training_envelope: predictions then ship without bands
+    # rather than with invented ones.
+    envelope: Optional[TrainingEnvelope] = None
 
     @staticmethod
     def _unpack(bundle) -> tuple[dict, str, float]:
@@ -139,15 +146,25 @@ class GreenPEFTArtifacts:
             method_configs[cfg['method']] = cfg
 
         status = 'unknown'
-        meta = joblib_path.parent / 'model_metadata.json'
-        if meta.exists():
+        envelope = None
+        meta_path = next((p for p in (joblib_path.parent / 'model_metadata.json',
+                                      pkg / 'model_metadata.json') if p.exists()), None)
+        if meta_path is not None:
             try:
-                status = json.load(open(meta))['validation']['status_overall']
-            except (KeyError, ValueError):
-                pass
+                meta = json.load(open(meta_path, encoding='utf-8'))
+            except ValueError:
+                meta = {}
+            status = meta.get('validation', {}).get('status_overall', 'unknown')
+            try:
+                envelope = TrainingEnvelope.from_metadata(meta)
+            except (KeyError, ValueError, TypeError):
+                # No envelope recorded: run analysis/build_training_envelope.py. Predictions
+                # still work, they just carry no scope/confidence columns.
+                envelope = None
 
         return cls(model_zoo=model_zoo, method_configs=method_configs, models=models,
-                   grid_carbon_kg_per_kwh=grid, schema_version=schema, model_status=status)
+                   grid_carbon_kg_per_kwh=grid, schema_version=schema, model_status=status,
+                   envelope=envelope)
 
 
 @dataclass
@@ -156,6 +173,13 @@ class Constraints:
     max_carbon_kgco2eq: Optional[float] = None
     min_accuracy: Optional[float] = None
     max_time_seconds: Optional[float] = None
+    # Optional evidence floor: 'HIGH' keeps only directly measured (method, scale) cells,
+    # 'MEDIUM' also allows interpolation inside the measured range. Default None keeps
+    # everything and reports the scope instead of hiding it.
+    min_confidence: Optional[str] = None
+
+
+CONFIDENCE_ORDER = ['LOW', 'MEDIUM', 'HIGH']
 
 
 def build_candidates(artifacts: GreenPEFTArtifacts,
@@ -198,6 +222,12 @@ def predict_all(artifacts: GreenPEFTArtifacts, candidates: pd.DataFrame) -> pd.D
     hours = out['pred_wall_clock_s'].fillna(0) / 3600.0
     out['pred_cost_usd'] = (out['pred_energy_kwh'] * artifacts.electricity_usd_per_kwh
                             + hours * artifacts.gpu_rental_usd_per_hour)
+
+    # Scope / confidence / error bands. Half the candidate zoo lies outside the measured
+    # envelope, so this is not optional decoration -- it is what stops the engine presenting
+    # a 7.6B extrapolation with the same authority as a measured 1.5B cell.
+    if artifacts.envelope is not None:
+        out = annotate_confidence(out, artifacts.envelope)
     return out
 
 
@@ -208,6 +238,13 @@ def apply_constraints(df: pd.DataFrame, constraints: Constraints,
     df vs the return value to see exactly which rows were cut and why, by re-checking
     each condition."""
     out = df.copy()
+
+    # Physically impossible predictions are dropped first. A negative VRAM prediction would
+    # otherwise satisfy every budget and then rescale the GEI memory objective for everyone
+    # else; accuracy above 1.0 would win any accuracy floor outright.
+    if 'implausible' in out.columns:
+        out = out[out['implausible'] == '']
+
     vram_cap = constraints.max_vram_gb or gpu_vram_gb
     if vram_cap is not None:
         # Feasibility gate: predicted peak VRAM must fit inside the budget with headroom.
@@ -221,6 +258,10 @@ def apply_constraints(df: pd.DataFrame, constraints: Constraints,
         out = out[out['pred_accuracy'] >= constraints.min_accuracy]
     if constraints.max_time_seconds is not None:
         out = out[out['pred_wall_clock_s'] <= constraints.max_time_seconds]
+    if constraints.min_confidence is not None and 'confidence' in out.columns:
+        floor = CONFIDENCE_ORDER.index(constraints.min_confidence.upper())
+        out = out[out['confidence'].map(
+            lambda c: CONFIDENCE_ORDER.index(c) if c in CONFIDENCE_ORDER else -1) >= floor]
     return out
 
 
@@ -311,11 +352,20 @@ def recommend(artifacts: GreenPEFTArtifacts, constraints: Constraints,
         'n_candidates': len(predicted), 'n_feasible': len(filtered),
         'constraints': constraints, 'profile': profile, 'weights': weights,
         'ranked': None, 'pareto_only': None, 'dropped_summary': None,
+        'model_status': artifacts.model_status,
+        'scope_summary': summarize_scope(filtered),
+        'has_confidence': 'confidence' in predicted.columns,
+        'n_implausible': (int((predicted['implausible'] != '').sum())
+                          if 'implausible' in predicted.columns else 0),
     }
     if filtered.empty:
         # Explain WHY nothing survived rather than just returning empty -- this is the
         # difference between a decision engine and a silent failure.
         reasons = []
+        if result['n_implausible']:
+            reasons.append(f"{result['n_implausible']}/{len(predicted)} produced physically "
+                           f"impossible predictions (negative VRAM/energy/time, or accuracy "
+                           f"above 1.0) -- the regressors extrapolated outside the measured range")
         unpredicted = predicted[predicted['pred_peak_vram_gb'].isna()]
         if len(unpredicted):
             reasons.append(f"{len(unpredicted)}/{len(predicted)} had no VRAM prediction "
@@ -331,6 +381,13 @@ def recommend(artifacts: GreenPEFTArtifacts, constraints: Constraints,
             under = predicted[predicted['pred_accuracy'] < constraints.min_accuracy]
             reasons.append(f"{len(under)}/{len(predicted)} predicted below "
                            f"{constraints.min_accuracy} accuracy floor")
+        if constraints.min_confidence is not None and 'confidence' in predicted.columns:
+            floor = CONFIDENCE_ORDER.index(constraints.min_confidence.upper())
+            below = predicted[predicted['confidence'].map(
+                lambda c: CONFIDENCE_ORDER.index(c) if c in CONFIDENCE_ORDER else -1) < floor]
+            reasons.append(f"{len(below)}/{len(predicted)} below the "
+                           f"{constraints.min_confidence.upper()} confidence floor "
+                           f"(outside the measured envelope)")
         result['dropped_summary'] = reasons
         return result
 
@@ -354,20 +411,61 @@ def explain(result: dict) -> str:
         return '\n'.join(lines)
 
     top = result['ranked'].iloc[0]
+
+    def band(col, fmt, unit=''):
+        """Render a prediction with its measured error band, when one is available."""
+        value = top[col]
+        suffix = f' {unit}' if unit else ''
+        if pd.isna(value):
+            return '(not predicted)'
+        lo, hi = f'{col}_lo', f'{col}_hi'
+        if lo in top.index and not pd.isna(top[lo]):
+            return (f'{value:{fmt}}{suffix}   +/-{top[f"{col}_band_pct"]:.0f}%  '
+                    f'[{top[lo]:{fmt}} to {top[hi]:{fmt}}{suffix}]')
+        return f'{value:{fmt}}{suffix}'
+
     lines = [
         f"Recommendation ({result['profile']} profile, weights={result['weights']}):",
         f"  {top['method']} on {top['backbone']} ({top['model_id']}, {top['params_b']}B params)",
-        f"  predicted accuracy   : {top['pred_accuracy']:.4f}",
-        f"  predicted peak VRAM  : {top['pred_peak_vram_gb']:.2f} GB",
-        f"  predicted energy     : {top['pred_energy_kwh']:.6f} kWh",
-        f"  predicted carbon     : {top['pred_carbon_kgco2eq']:.6f} kgCO2eq",
-        f"  predicted wall-clock : {top['pred_wall_clock_s']:.1f} s"
+        f"  predicted accuracy   : {band('pred_accuracy', '.4f')}",
+        f"  predicted peak VRAM  : {band('pred_peak_vram_gb', '.2f', 'GB')}",
+        f"  predicted energy     : {band('pred_energy_kwh', '.6f', 'kWh')}",
+        f"  predicted carbon     : {top['pred_carbon_kgco2eq']:.6f} kgCO2eq   derived as energy x "
+        f"{DEFAULT_GRID_CARBON_KG_PER_KWH:g}, not modelled",
+        f"  predicted wall-clock : {band('pred_wall_clock_s', '.1f', 's')}"
         if not pd.isna(top['pred_wall_clock_s']) else "  predicted wall-clock : (no time model trained)",
         f"  GEI score            : {top['gei']:.4f}"
         + ('  [on Pareto front]' if top['on_pareto_front'] else '  [dominated by another feasible option -- see note below]'),
-        f"  {result['n_feasible']}/{result['n_candidates']} candidates satisfied all constraints, "
-        f"{result['pareto_only'].shape[0]} of those are Pareto-optimal.",
     ]
+
+    if 'confidence' in top.index and isinstance(top.get('confidence'), str):
+        lines += [
+            f"  evidence             : {top['confidence']} confidence, scope {top['scope']}",
+            f"                         ({top['scope_reason']})",
+        ]
+        if top.get('scope_caveat'):
+            lines.append(f"  WARNING              : {top['scope_caveat']}")
+
+    lines.append(
+        f"  {result['n_feasible']}/{result['n_candidates']} candidates satisfied all constraints, "
+        f"{result['pareto_only'].shape[0]} of those are Pareto-optimal.")
+
+    if result.get('scope_summary'):
+        lines.append(f"  feasible set by scope: {result['scope_summary']}")
+
+    if result.get('n_implausible'):
+        lines.append(
+            f"  {result['n_implausible']}/{result['n_candidates']} candidates were dropped before "
+            "scoring for physically impossible\n  predictions (negative VRAM, or accuracy above "
+            "1.0) -- the linear surrogates extrapolate past those\n  limits well outside the "
+            "measured range. Run `green-peft list-zoo` to see which.")
+
+    status = result.get('model_status', 'unknown')
+    if status and status != 'VALIDATED':
+        lines.append(
+            f"  Surrogate status is {status}: error bands above are out-of-sample measurements, "
+            "not calibrated\n  prediction intervals. Treat this as a shortlist to validate, "
+            "not an approval to skip measuring.")
     if not result.get('time_objective_used', True):
         lines.append('  Note: no wall-clock surrogate is in this artifacts export, so GEI and the '
                      'Pareto front were computed over accuracy/VRAM/carbon only (weights renormalized '

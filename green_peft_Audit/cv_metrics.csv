@@ -1,0 +1,5 @@
+target,n_rows,n_groups,n_folds,mae,rmse,r2,validation_strategy,energy_valid_filter
+accuracy,82,41,5,0.005445809289854746,0.00873003124620436,0.7864006841826603,"GroupKFold(n_splits=5, group=config_id)",False
+peak_gpu_memory_gb,82,41,5,0.8926281612742791,1.2000459531015137,0.8974166701912184,"GroupKFold(n_splits=5, group=config_id)",False
+energy_kwh,41,41,5,0.00017290331601742617,0.0003415496989448018,0.9170686504485239,"GroupKFold(n_splits=5, group=config_id)",True
+wall_clock_seconds,82,41,5,5.409396663351901,6.5672120035915285,0.9889096526896064,"GroupKFold(n_splits=5, group=config_id)",False

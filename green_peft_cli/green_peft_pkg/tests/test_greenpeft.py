@@ -20,7 +20,8 @@ from green_peft.features import (ALL_FEATURES, LEAKY_COLUMNS,         # noqa: E4
                                  estimate_trainable_param_pct)
 from green_peft.recommender import (Constraints, GreenPEFTArtifacts,  # noqa: E402
                                     VRAM_SAFETY_MARGIN, apply_constraints,
-                                    build_candidates, pareto_front, predict_all)
+                                    build_candidates, explain, pareto_front,
+                                    predict_all, recommend, score_gei)
 
 CONFIG = pd.DataFrame([{'method': 'lora', 'family': 'qwen', 'params_b': 1.5,
                         'rank': 16, 'quant_bits': 16}])
@@ -139,3 +140,117 @@ def test_banner_goes_to_stderr_so_json_stays_parseable():
                        env={**__import__('os').environ, 'PYTHONPATH': str(root)})
     json.loads(r.stdout)                      # raises if the banner leaked into stdout
     assert 'GreenPEFT' in r.stderr
+
+
+# ---------------------------------------------------------------- scope & confidence
+def test_training_envelope_is_recorded_and_matches_the_dataset():
+    """The envelope must be derived, not hand-maintained (workflow section 26)."""
+    art = GreenPEFTArtifacts.load()
+    assert art.envelope is not None, (
+        'no training_envelope in model_metadata.json -- '
+        'run analysis/build_training_envelope.py')
+    env = art.envelope
+    assert env.params_b_min == 0.5 and env.params_b_max == 3.0
+    assert env.families == frozenset({'qwen', 'llama'})
+    assert len(env.measured_cells) == 14
+
+
+@pytest.mark.parametrize('params_b,family,method,expected', [
+    (1.1, 'llama', 'lora', 'MEASURED'),              # a cell that was actually measured
+    (1.1, 'llama', 'full_ft', 'UNSEEN_METHOD_SCALE'),  # full_ft only ever ran at 0.5B
+    (1.7, 'llama', 'lora', 'INTERPOLATED_SCALE'),    # between the 1.5B and 3.0B tiers
+    (2.7, 'phi2', 'qlora', 'UNSEEN_FAMILY'),         # family never trained on
+    (7.6, 'qwen', 'qlora', 'OUT_OF_RANGE_SCALE'),    # beyond the measured range
+])
+def test_scope_classification(params_b, family, method, expected):
+    env = GreenPEFTArtifacts.load().envelope
+    assert env.classify(params_b, family, method)['scope'] == expected
+
+
+def test_out_of_range_candidates_are_flagged_as_lower_bound():
+    """Leave-one-tier-out never left 0.5-3.0B, so beyond it the band understates the error."""
+    art = GreenPEFTArtifacts.load()
+    pred = predict_all(art, build_candidates(art))
+    beyond = pred[pred['scope'] == 'OUT_OF_RANGE_SCALE']
+    assert len(beyond), 'the zoo should contain candidates outside the measured range'
+    assert beyond['scope_caveat'].str.contains('LOWER BOUND').all()
+    assert (beyond['confidence'] == 'LOW').all()
+
+
+def test_error_bands_widen_outside_the_measured_envelope():
+    """An extrapolation must not be reported with the same precision as a measured cell."""
+    art = GreenPEFTArtifacts.load()
+    pred = predict_all(art, build_candidates(art))
+    measured = pred[pred['scope'] == 'MEASURED']['pred_peak_vram_gb_band_pct'].iloc[0]
+    extrapolated = pred[pred['scope'] == 'UNSEEN_FAMILY']['pred_peak_vram_gb_band_pct'].iloc[0]
+    assert extrapolated > measured, (
+        f'extrapolated band ({extrapolated}%) must exceed measured band ({measured}%)')
+
+
+def test_bands_bracket_the_point_estimate():
+    art = GreenPEFTArtifacts.load()
+    pred = predict_all(art, build_candidates(art))
+    for col in ['pred_accuracy', 'pred_peak_vram_gb', 'pred_energy_kwh', 'pred_wall_clock_s']:
+        assert (pred[f'{col}_lo'] <= pred[col]).all()
+        assert (pred[col] <= pred[f'{col}_hi']).all()
+
+
+def test_min_confidence_keeps_only_measured_cells():
+    art = GreenPEFTArtifacts.load()
+    pred = predict_all(art, build_candidates(art))
+    kept = apply_constraints(pred, Constraints(min_confidence='HIGH'))
+    assert len(kept), 'at least the measured cells should survive a HIGH floor'
+    assert (kept['scope'] == 'MEASURED').all()
+    assert len(kept) < len(pred), 'the floor must actually exclude something'
+
+
+def test_recommendation_surfaces_confidence_in_its_output():
+    """A point estimate with no evidence label is exactly what workflow section 13 forbids."""
+    root = Path(__file__).resolve().parents[1]
+    r = subprocess.run([sys.executable, '-m', 'green_peft.cli', '--no-banner',
+                        'recommend', '--vram', '16', '--accuracy', '0.90'],
+                       cwd=root, capture_output=True, text=True,
+                       env={**__import__('os').environ, 'PYTHONPATH': str(root)})
+    assert r.returncode == 0, r.stderr
+    assert 'evidence' in r.stdout and 'confidence' in r.stdout
+    assert 'PRELIMINARY' in r.stdout, 'the audited surrogate status must be stated'
+
+
+def test_json_output_reports_status_and_scope():
+    root = Path(__file__).resolve().parents[1]
+    r = subprocess.run([sys.executable, '-m', 'green_peft.cli', 'recommend',
+                        '--vram', '16', '--json'],
+                       cwd=root, capture_output=True, text=True,
+                       env={**__import__('os').environ, 'PYTHONPATH': str(root)})
+    payload = json.loads(r.stdout)
+    assert payload['has_confidence'] is True
+    assert payload['model_status'] == 'PRELIMINARY'
+    assert payload['ranked'][0]['confidence'] in {'LOW', 'MEDIUM', 'HIGH'}
+
+
+def test_physically_impossible_predictions_are_dropped_not_scored():
+    """Ridge extrapolates linearly: the 0.135B zoo entries draw negative VRAM and the 7.6B
+    entries draw accuracy above 1.0. A negative VRAM prediction satisfies every budget and
+    then rescales the GEI memory objective for every other candidate, so it must not survive
+    into scoring."""
+    art = GreenPEFTArtifacts.load()
+    pred = predict_all(art, build_candidates(art))
+
+    flagged = pred[pred['implausible'] != '']
+    assert len(flagged), 'the zoo should contain at least one non-physical extrapolation'
+    assert (flagged['pred_peak_vram_gb'] <= 0).any() or (flagged['pred_accuracy'] > 1).any()
+
+    kept = apply_constraints(pred, Constraints(max_vram_gb=16.0))
+    assert (kept['pred_peak_vram_gb'] > 0).all(), 'negative VRAM survived the feasibility gate'
+    assert (kept['pred_accuracy'] <= 1.0).all(), 'accuracy above 1.0 survived the gate'
+    assert len(kept) < len(apply_constraints(pred.drop(columns=['implausible']),
+                                             Constraints(max_vram_gb=16.0))), \
+        'the plausibility check must actually exclude candidates'
+
+
+def test_implausible_candidates_are_reported_not_hidden():
+    """Workflow section 12: every dropped candidate needs a stated reason."""
+    art = GreenPEFTArtifacts.load()
+    res = recommend(art, Constraints(max_vram_gb=16.0), profile='balanced')
+    assert res['n_implausible'] > 0
+    assert str(res['n_implausible']) in explain(res)
