@@ -48,10 +48,14 @@
         <a class="nav-link" href="#research">07 Research</a>
       </nav>
       <div class="nav-actions">
-        <button type="button" class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle color theme">
-          <span id="theme-toggle-icon">☀</span>
-          <span id="theme-toggle-text">Light</span>
-        </button>
+        <div class="theme-switch-wrap" role="radiogroup" aria-label="Theme switcher">
+          <button type="button" class="theme-switch-btn is-active" data-theme-val="dark" id="btn-theme-dark" aria-pressed="true">
+            <span>🌙</span> Dark
+          </button>
+          <button type="button" class="theme-switch-btn" data-theme-val="light" id="btn-theme-light" aria-pressed="false">
+            <span>☀</span> Light
+          </button>
+        </div>
         <a class="btn btn--ghost btn--sm" href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks" target="_blank" rel="noopener">
           GitHub
         </a>
@@ -70,7 +74,7 @@
 
           <!-- Left Column: Copy & Actions -->
           <div class="hero-text">
-            <div class="eyebrow">GREENPEFT · v1.0 · MIT</div>
+            <div class="eyebrow"><span class="eyebrow-dot"></span> GREENPEFT · v1.0 · MIT OPEN SOURCE</div>
             <h1 class="display-hero">
               Choose how to fine-tune an LLM before you spend the energy to find out.
             </h1>
@@ -84,17 +88,12 @@
             </div>
 
             <div class="cred-strip">
-              <span>Python 3.10+</span>
-              <span>·</span>
-              <span>PyTorch 2.2+</span>
-              <span>·</span>
-              <span>CodeCarbon</span>
-              <span>·</span>
-              <span>MIT</span>
-              <span>·</span>
-              <a href="https://pypi.org/project/green-peft/" target="_blank" rel="noopener">PyPI</a>
-              <span>·</span>
-              <a href="https://huggingface.co/ai-tanzil/GreenPEFT-v2" target="_blank" rel="noopener">Hugging Face</a>
+              <span class="cred-pill">Python 3.10+</span>
+              <span class="cred-pill">PyTorch 2.2+</span>
+              <span class="cred-pill">CodeCarbon</span>
+              <span class="cred-pill">MIT</span>
+              <a class="cred-pill" href="https://pypi.org/project/green-peft/" target="_blank" rel="noopener">PyPI · green-peft</a>
+              <a class="cred-pill" href="https://huggingface.co/ai-tanzil/GreenPEFT-v2" target="_blank" rel="noopener">Hugging Face</a>
             </div>
           </div>
 
@@ -104,10 +103,17 @@
               <span class="hero-visual-title">Pareto Frontier · Accuracy vs VRAM</span>
               <span class="hero-visual-vram-readout" id="hero-vram-readout">16.0 GB (13 feasible)</span>
             </div>
+            <div class="hero-presets-bar">
+              <span class="caption-mono" style="margin-right: 2px;">GPU Presets:</span>
+              <button type="button" class="preset-chip" data-vram="8">8 GB (RTX 4060)</button>
+              <button type="button" class="preset-chip" data-vram="12">12 GB (RTX 4070)</button>
+              <button type="button" class="preset-chip is-active" data-vram="16">16 GB (Tesla T4)</button>
+              <button type="button" class="preset-chip" data-vram="24">24 GB (RTX 4090)</button>
+            </div>
             <div class="hero-scatter-container" id="hero-scatter-mount" role="region" aria-label="Interactive candidate scatter plot"></div>
             <div class="hero-footnote">
-              <span>Drag the vertical dashed line to filter candidates in real time</span>
-              <span class="caption-mono">Hover for metrics</span>
+              <span>Drag the vertical dashed line or click a GPU preset</span>
+              <span class="caption-mono">Hover points for telemetry</span>
             </div>
           </div>
 
@@ -141,36 +147,40 @@
             <div class="slider-group">
               <div class="slider-header">
                 <label class="slider-label" for="sl-vram">Max VRAM</label>
-                <span class="slider-val" id="sl-vram-val">16 GB</span>
+                <span class="slider-val-pill" id="sl-vram-val">16 GB</span>
               </div>
               <input type="range" id="sl-vram" min="4" max="48" step="1" value="16" aria-label="Maximum VRAM in Gigabytes">
+              <p class="slider-hint">Target GPU ceiling. 10% safety margin applied (usable: 14.4 GB).</p>
             </div>
 
             <!-- Min Accuracy Slider -->
             <div class="slider-group">
               <div class="slider-header">
                 <label class="slider-label" for="sl-acc">Min Accuracy</label>
-                <span class="slider-val" id="sl-acc-val">0.90</span>
+                <span class="slider-val-pill" id="sl-acc-val">0.90</span>
               </div>
               <input type="range" id="sl-acc" min="0.70" max="0.99" step="0.005" value="0.90" aria-label="Minimum Accuracy threshold">
+              <p class="slider-hint">Performance floor on SST-2 text classification.</p>
             </div>
 
             <!-- Carbon Budget Slider -->
             <div class="slider-group">
               <div class="slider-header">
                 <label class="slider-label" for="sl-carbon">Carbon Budget</label>
-                <span class="slider-val" id="sl-carbon-val">0.25 kg</span>
+                <span class="slider-val-pill" id="sl-carbon-val">0.25 kg</span>
               </div>
               <input type="range" id="sl-carbon" min="0.01" max="1.00" step="0.01" value="0.25" aria-label="Carbon budget in kilograms of CO2 equivalent">
+              <p class="slider-hint">Max estimated kgCO₂e emissions per run.</p>
             </div>
 
             <!-- Runtime Limit Slider -->
             <div class="slider-group">
               <div class="slider-header">
                 <label class="slider-label" for="sl-time">Runtime Limit</label>
-                <span class="slider-val" id="sl-time-val">60 min</span>
+                <span class="slider-val-pill" id="sl-time-val">60 min</span>
               </div>
               <input type="range" id="sl-time" min="5" max="240" step="5" value="60" aria-label="Runtime limit in minutes">
+              <p class="slider-hint">Maximum acceptable wall-clock training duration.</p>
             </div>
 
             <!-- Preference Profile Segmented Control -->
@@ -179,10 +189,11 @@
                 <span class="slider-label">Preference Profile</span>
               </div>
               <div class="segmented-control" role="radiogroup" aria-label="Optimization profile">
-                <button type="button" class="segmented-btn profile-btn" data-profile="balanced" aria-pressed="true">Balanced</button>
-                <button type="button" class="segmented-btn profile-btn" data-profile="strict_carbon" aria-pressed="false">Strict Carbon</button>
-                <button type="button" class="segmented-btn profile-btn" data-profile="high_accuracy" aria-pressed="false">High Accuracy</button>
+                <button type="button" class="segmented-btn profile-btn" data-profile="balanced" aria-pressed="true">⚖ Balanced</button>
+                <button type="button" class="segmented-btn profile-btn" data-profile="strict_carbon" aria-pressed="false">🌱 Strict Carbon</button>
+                <button type="button" class="segmented-btn profile-btn" data-profile="high_accuracy" aria-pressed="false">🎯 High Accuracy</button>
               </div>
+              <p class="slider-hint" id="profile-weights-hint">Active weights: 35% Accuracy · 25% Memory · 25% Carbon · 15% Time</p>
             </div>
 
             <!-- Optional Backbone Dropdown -->
