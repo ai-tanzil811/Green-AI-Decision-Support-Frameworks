@@ -12,10 +12,10 @@ const CANDIDATES = [
     strategy: "QLoRA",
     backbone: "Qwen2.5-3B (3.0B params)",
     accuracy: 0.9484,
-    vram: 7.45,
+    vram: 7.4517,
     energy: 0.00601,
     carbon: 0.00391,
-    time: 520,
+    time: 333.23,
     quant: "4-bit (NF4)"
   },
   {
@@ -24,9 +24,9 @@ const CANDIDATES = [
     backbone: "Qwen2.5-1.5B (1.5B params)",
     accuracy: 0.9478,
     vram: 12.28,
-    energy: 0.00218,
+    energy: 0.00218027,
     carbon: 0.00142,
-    time: 410,
+    time: 125.405,
     quant: "FP16"
   },
   {
@@ -35,9 +35,9 @@ const CANDIDATES = [
     backbone: "Qwen2.5-1.5B (1.5B params)",
     accuracy: 0.9434,
     vram: 6.78,
-    energy: 0.00344,
+    energy: 0.00343594,
     carbon: 0.00223,
-    time: 380,
+    time: 193.623,
     quant: "4-bit (NF4)"
   },
   {
@@ -45,10 +45,10 @@ const CANDIDATES = [
     strategy: "LoRA",
     backbone: "TinyLlama-1.1B (1.1B params)",
     accuracy: 0.9438,
-    vram: 9.74,
+    vram: 9.7357,
     energy: 0.00177,
     carbon: 0.00115,
-    time: 340,
+    time: 101.08,
     quant: "FP16"
   },
   {
@@ -57,20 +57,20 @@ const CANDIDATES = [
     backbone: "Qwen2.5-0.5B (0.5B params)",
     accuracy: 0.9174,
     vram: 4.65,
-    energy: 0.00122,
-    carbon: 0.00079,
-    time: 190,
+    energy: 0.00122188,
+    carbon: 0.00079422,
+    time: 106.547,
     quant: "FP16"
   },
   {
     name: "LISA + Qwen2.5-0.5B",
     strategy: "LISA",
     backbone: "Qwen2.5-0.5B (0.5B params)",
-    accuracy: 0.9122,
-    vram: 4.84,
-    energy: 0.00324,
-    carbon: 0.00211,
-    time: 183,
+    accuracy: 0.8868,
+    vram: 5.423,
+    energy: 0.00125948,
+    carbon: 0.00081867,
+    time: 70.127,
     quant: "FP16"
   },
   {
@@ -78,21 +78,21 @@ const CANDIDATES = [
     strategy: "QLoRA",
     backbone: "Qwen2.5-0.5B (0.5B params)",
     accuracy: 0.9117,
-    vram: 3.07,
-    energy: 0.00215,
-    carbon: 0.00140,
-    time: 210,
+    vram: 3.071,
+    energy: 0.0021472,
+    carbon: 0.00139568,
+    time: 164.01,
     quant: "4-bit (NF4)"
   },
   {
     name: "Full Fine-Tuning + Qwen2.5-0.5B",
     strategy: "Full-FT",
     backbone: "Qwen2.5-0.5B (0.5B params)",
-    accuracy: 0.9122,
-    vram: 13.48,
-    energy: 0.00382,
-    carbon: 0.00248,
-    time: 223,
+    accuracy: 0.9052,
+    vram: 11.4383,
+    energy: 0.00239441,
+    carbon: 0.00155637,
+    time: 132.283,
     quant: "FP16"
   }
 ];

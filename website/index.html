@@ -36,7 +36,7 @@
         <li><a href="#quickstart" class="nav-link">CLI Quickstart</a></li>
         <li><a href="#author" class="nav-link">Author & Citation</a></li>
       </ul>
-      <a href="https://huggingface.co/ai-tanzil/GreenPEFT" target="_blank" class="btn-nav">HuggingFace Model 🤗</a>
+      <a href="https://huggingface.co/ai-tanzil/GreenPEFT-v2" target="_blank" class="btn-nav">HuggingFace Model 🤗</a>
     </div>
   </header>
 
@@ -58,7 +58,7 @@
 
       <!-- One-Click CTA Quick Action Cards -->
       <div class="cta-grid">
-        <a href="https://huggingface.co/ai-tanzil/GreenPEFT" target="_blank" class="cta-card">
+        <a href="https://huggingface.co/ai-tanzil/GreenPEFT-v2" target="_blank" class="cta-card">
           <div class="cta-icon">🤗</div>
           <div class="cta-title">HuggingFace Model</div>
           <div class="cta-desc">Published surrogate regressors & model card</div>
@@ -70,10 +70,10 @@
           <div class="cta-desc">60-run empirical T4 benchmark surrogate data</div>
         </a>
 
-        <a href="https://pypi.org/project/green-peft/0.1.0/" target="_blank" class="cta-card">
+        <a href="https://pypi.org/project/green-peft/0.3.0/" target="_blank" class="cta-card">
           <div class="cta-icon">📦</div>
           <div class="cta-title">PyPI Package</div>
-          <div class="cta-desc"><code>pip install green-peft==0.1.0</code></div>
+          <div class="cta-desc"><code>pip install green-peft==0.3.0</code></div>
         </a>
 
         <a href="https://doi.org/10.57967/hf/10504" target="_blank" class="cta-card">
@@ -102,16 +102,16 @@
           <div class="stat-label">Zero-Shot Strategy Prescription Time</div>
         </div>
         <div class="stat-box">
-          <div class="stat-value">65%+</div>
-          <div class="stat-label">Potential Carbon & VRAM Savings</div>
+          <div class="stat-value">41 Configs</div>
+          <div class="stat-label">Unique configurations in the surrogate envelope</div>
         </div>
         <div class="stat-box">
           <div class="stat-value">60 Grid Runs</div>
           <div class="stat-label">Tesla T4 Empirical Evidence Base</div>
         </div>
         <div class="stat-box">
-          <div class="stat-value">0 Sweeps</div>
-          <div class="stat-label">Required Before Model Selection</div>
+          <div class="stat-value">0.65</div>
+          <div class="stat-label">kgCO₂e per kWh carbon factor</div>
         </div>
       </div>
     </div>
@@ -178,16 +178,16 @@
               </div>
               <div class="rec-metric-item">
                 <div class="rec-metric-name">Carbon Emissions</div>
-                <div class="rec-metric-val" id="rec-carbon">1.42 gCO₂</div>
+                <div class="rec-metric-val" id="rec-carbon">1.42 gCO₂e</div>
               </div>
               <div class="rec-metric-item">
                 <div class="rec-metric-name">Green Efficiency Index</div>
-                <div class="rec-metric-val gei-highlight" id="rec-gei">0.895</div>
+                <div class="rec-metric-val gei-highlight" id="rec-gei">--</div>
               </div>
             </div>
 
             <div class="rec-explanation" id="rec-desc">
-              Prescribed under <strong>Balanced Profile</strong>. Satisfies peak VRAM constraint (12.28 GB ≤ 16 GB) and accuracy floor (94.78% ≥ 90%).
+              Measured reference under <strong>Balanced Profile</strong>. Satisfies peak VRAM constraint (12.28 GB ≤ 16 GB) and accuracy floor (94.78% ≥ 90%). Predictions remain preliminary outside the measured envelope.
             </div>
           </div>
 
@@ -246,7 +246,7 @@
       <div class="section-header">
         <h2 class="section-title">📊 Empirical Pilot Benchmark (NVIDIA Tesla T4)</h2>
         <p class="section-desc">
-          Evaluated across 60 execution runs on Kaggle using SST-2 sentiment classification ($k=3$ random seeds).
+          Canonical aggregate of 60 Kaggle execution runs on SST-2 classification across four backbone tiers and five PEFT methods.
         </p>
       </div>
 
@@ -270,19 +270,19 @@
               <td><strong>LoRA</strong></td>
               <td>Qwen2.5-1.5B</td>
               <td>1.5B</td>
-              <td>0.9478 ± 0.0051</td>
-              <td>410.12</td>
+              <td>0.9478 ± 0.0024</td>
+              <td>125.41</td>
               <td>12.28 GB</td>
               <td>0.00218</td>
               <td>0.00142</td>
-              <td><span class="tag-winner">0.895</span></td>
+              <td><span class="tag-winner">1.039</span></td>
             </tr>
             <tr>
               <td><strong>QLoRA</strong></td>
               <td>Qwen2.5-3B</td>
               <td>3.0B</td>
-              <td>0.9484 ± 0.0042</td>
-              <td>520.45</td>
+              <td>0.9484 ± 0.0012</td>
+              <td>333.23</td>
               <td>7.45 GB</td>
               <td>0.00601</td>
               <td>0.00391</td>
@@ -292,8 +292,8 @@
               <td><strong>QLoRA</strong></td>
               <td>Qwen2.5-1.5B</td>
               <td>1.5B</td>
-              <td>0.9434 ± 0.0089</td>
-              <td>380.20</td>
+              <td>0.9434 ± 0.0029</td>
+              <td>193.62</td>
               <td>6.78 GB</td>
               <td>0.00344</td>
               <td>0.00223</td>
@@ -303,8 +303,8 @@
               <td><strong>LoRA</strong></td>
               <td>TinyLlama-1.1B</td>
               <td>1.1B</td>
-              <td>0.9438 ± 0.0075</td>
-              <td>340.10</td>
+              <td>0.9438 ± 0.0050</td>
+              <td>101.08</td>
               <td>9.74 GB</td>
               <td>0.00177</td>
               <td>0.00115</td>
@@ -314,34 +314,34 @@
               <td><strong>LoRA</strong></td>
               <td>Qwen2.5-0.5B</td>
               <td>0.5B</td>
-              <td>0.9174 ± 0.0102</td>
-              <td>190.50</td>
+              <td>0.9174 ± 0.0012</td>
+              <td>106.55</td>
               <td>4.65 GB</td>
               <td>0.00122</td>
               <td>0.00079</td>
-              <td><span class="tag-winner">0.920</span></td>
+              <td><span class="tag-winner">1.413</span></td>
             </tr>
             <tr>
               <td><strong>LISA</strong></td>
               <td>Qwen2.5-0.5B</td>
               <td>0.5B</td>
-              <td>0.9122 ± 0.0117</td>
-              <td>182.87</td>
-              <td>4.84 GB</td>
-              <td>0.00324</td>
-              <td>0.00211</td>
-              <td><span class="tag-winner">0.999</span></td>
+              <td>0.8868 ± 0.0220</td>
+              <td>70.13</td>
+              <td>5.42 GB</td>
+              <td>0.00126</td>
+              <td>0.00082</td>
+              <td><span class="tag-winner">1.429</span></td>
             </tr>
             <tr>
               <td><strong>Full-FT</strong></td>
               <td>Qwen2.5-0.5B</td>
               <td>0.5B</td>
-              <td>0.9122 ± 0.0117</td>
-              <td>222.77</td>
-              <td>13.48 GB</td>
-              <td>0.00382</td>
-              <td>0.00248</td>
-              <td>0.764</td>
+              <td>0.9052 ± 0.0063</td>
+              <td>132.28</td>
+              <td>11.44 GB</td>
+              <td>0.00239</td>
+              <td>0.00156</td>
+              <td>0.961</td>
             </tr>
             <tr>
               <td><strong>Full-FT</strong></td>
@@ -349,13 +349,48 @@
               <td>≥ 1.1B</td>
               <td>-- (OOM Error)</td>
               <td>--</td>
-              <td>&gt; 16.0 GB</td>
+              <td>&gt; 15.6 GB</td>
               <td>--</td>
               <td>--</td>
               <td><span class="tag-oom">OOM FAILED</span></td>
             </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Validation Scope Section -->
+  <section id="evidence" class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">🔎 Evidence Boundary</h2>
+        <p class="section-desc">
+          GreenPEFT is an experiment-planning and shortlist tool. Its audit separates interpolation performance from genuine scale extrapolation.
+        </p>
+      </div>
+
+      <div class="pipeline-grid">
+        <div class="pipeline-card">
+          <div class="step-number">VALIDATED</div>
+          <h3 class="step-title">Energy Prediction</h3>
+          <p class="step-desc">Leave-one-tier-out R² 0.897 with 10.6% MAPE. Carbon is derived from energy using the 0.65 kgCO₂e/kWh factor.</p>
+        </div>
+        <div class="pipeline-card">
+          <div class="step-number">PRELIMINARY</div>
+          <h3 class="step-title">Accuracy, VRAM & Time</h3>
+          <p class="step-desc">These targets perform well within measured configuration groups but weaken when an unseen backbone tier is held out.</p>
+        </div>
+        <div class="pipeline-card">
+          <div class="step-number">SCOPE</div>
+          <h3 class="step-title">0.5B to 3.0B</h3>
+          <p class="step-desc">The training envelope covers Qwen and Llama families, five PEFT methods, and a 15.6 GB feasible VRAM ceiling.</p>
+        </div>
+        <div class="pipeline-card">
+          <div class="step-number">NEXT STEP</div>
+          <h3 class="step-title">Measure the Winner</h3>
+          <p class="step-desc">Use the recommendation to plan a run, then compare predicted values with measured results and retain the validation record.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -376,8 +411,8 @@
       </div>
 
       <div class="code-box">
-        <button class="copy-btn" data-copy="git clone https://huggingface.co/ai-tanzil/GreenPEFT">Copy</button>
-        <div><span class="cmd-prompt">$</span> git clone https://huggingface.co/ai-tanzil/GreenPEFT</div>
+        <button class="copy-btn" data-copy="git clone https://huggingface.co/ai-tanzil/GreenPEFT-v2">Copy</button>
+        <div><span class="cmd-prompt">$</span> git clone https://huggingface.co/ai-tanzil/GreenPEFT-v2</div>
       </div>
 
       <div class="code-box">
@@ -402,9 +437,9 @@
           </p>
 
           <div class="author-links">
-            <a href="https://huggingface.co/ai-tanzil" target="_blank" class="author-link-btn">🤗 Hugging Face</a>
+            <a href="https://huggingface.co/ai-tanzil/GreenPEFT-v2" target="_blank" class="author-link-btn">🤗 Hugging Face Model</a>
             <a href="https://www.kaggle.com/ashrafulislamtanzil" target="_blank" class="author-link-btn">📊 Kaggle Profile</a>
-            <a href="https://pypi.org/project/green-peft/0.1.0/" target="_blank" class="author-link-btn">📦 PyPI Package</a>
+            <a href="https://pypi.org/project/green-peft/0.3.0/" target="_blank" class="author-link-btn">📦 PyPI Package v0.3.0</a>
             <a href="https://doi.org/10.57967/hf/10504" target="_blank" class="author-link-btn">📄 DOI: 10.57967/hf/10504</a>
           </div>
 
@@ -412,13 +447,13 @@
           <div style="margin-top: 1.5rem;">
             <div style="font-size: 0.88rem; font-weight: 700; color: var(--primary-light); margin-bottom: 0.5rem;">📜 BibTeX Citation</div>
             <div class="code-box" style="margin-bottom: 0; font-size: 0.8rem;">
-              <button class="copy-btn" data-copy="@misc{ashraful_islam_tanzil_2026, author = {Ashraful Islam Tanzil}, title = {GreenPEFT: Sustainable Parameter-Efficient Fine-Tuning of Large Language Models via Predictive Zero-Shot Constraint Filtering and Green Efficiency Index (GEI)}, year = {2026}, url = {https://huggingface.co/ai-tanzil/GreenPEFT}, doi = {10.57967/hf/10504}, publisher = {Hugging Face}}">Copy BibTeX</button>
+              <button class="copy-btn" data-copy="@misc{ashraful_islam_tanzil_2026, author = {Ashraful Islam Tanzil}, title = {GreenPEFT: Sustainable Parameter-Efficient Fine-Tuning of Large Language Models via Predictive Zero-Shot Constraint Filtering and Green Efficiency Index (GEI)}, year = {2026}, url = {https://huggingface.co/ai-tanzil/GreenPEFT-v2}, doi = {10.57967/hf/10504}, publisher = {Hugging Face}}">Copy BibTeX</button>
 <pre style="margin: 0; white-space: pre-wrap;">
 @misc{ashraful_islam_tanzil_2026,
     author       = {Ashraful Islam Tanzil},
     title        = {GreenPEFT: Sustainable PEFT via Zero-Shot Constraint Filtering and GEI},
     year         = {2026},
-    url          = {https://huggingface.co/ai-tanzil/GreenPEFT},
+    url          = {https://huggingface.co/ai-tanzil/GreenPEFT-v2},
     doi          = {10.57967/hf/10504},
     publisher    = {Hugging Face}
 }</pre>
@@ -433,7 +468,7 @@
   <footer class="footer">
     <div class="container">
       <p>© 2026 <strong>GreenPEFT Project</strong> • Created by <a href="https://huggingface.co/ai-tanzil" target="_blank">Ashraful Islam Tanzil</a> • Released under MIT License</p>
-      <p style="margin-top: 0.4rem; font-size: 0.8rem; color: var(--text-dim);">Designed for high-performance static hosting on Netlify.com</p>
+      <p style="margin-top: 0.4rem; font-size: 0.8rem; color: var(--text-dim);">United International University</p>
     </div>
   </footer>
 
