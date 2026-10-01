@@ -187,17 +187,26 @@ Two further limits worth stating in the paper:
 
 ### A documentation inconsistency left in place
 
-`model_metadata.json`'s free-text `notes` field says the models were "fitted on UNIQUE CONFIGS
-collapsed from duplicate measurement passes" and that "all metrics are leave-one-tier-out".
-Neither matches `cv_metrics.csv`, which records `n_rows=82, n_groups=41` for accuracy, VRAM and
-wall-clock — both passes, uncollapsed — and reports GroupKFold as the primary protocol. Only
-`energy_kwh` is at 41 rows. The numeric fields are correct; the prose summary is not.
+`model_metadata.json`'s free-text `notes` field makes two claims. Inspecting the bundle itself
+settles which is true:
 
-This was **not** edited, because correcting it means deciding whether to retrain the shipped
-`.joblib` on collapsed configurations (Rule 2: do not silently change the dataset definition).
-That is a decision for the project owner. The recommendation is to retrain on the 41 canonical
-configurations and regenerate the metadata, which would make the prose true and bring the
-shipped artifact in line with the notebook.
+- *"Fitted on UNIQUE CONFIGS collapsed from duplicate measurement passes"* — **true**. The
+  bundle records `training_rows = {'regressor_configs': 41}`, so the four regressors were fitted
+  on the 41 collapsed configurations, not on the 82 raw rows. The models themselves are sound.
+- *"All metrics are leave-one-tier-out"* — **false**. `cv_metrics.csv` reports
+  `GroupKFold(config_id)` as the primary protocol and records `n_rows=82, n_groups=41` for
+  accuracy, VRAM and wall-clock. Only `energy_kwh` was evaluated at 41 rows.
+
+So the defect is narrower than the prose suggests: the **fit** is correct, the **validation** was
+run on the uncollapsed frame for three of four targets, and `GroupKFold(config_id)` does not
+separate seeds in any case. The interpolation figures in the metadata are therefore optimistic;
+the leave-one-tier-out figures are not affected and are the ones to quote.
+
+Nothing here was edited, because correcting it means re-running the validation (and deciding
+whether to regenerate the shipped metadata), which touches the published artifact — a decision
+for the project owner under Rule 2. The recommendation is to re-run CV on the 41 canonical
+configurations grouped by `config_base`, as `green-peft.ipynb` section 8 now does, and
+regenerate the metadata from that. The `.joblib` weights themselves need no change.
 
 ---
 

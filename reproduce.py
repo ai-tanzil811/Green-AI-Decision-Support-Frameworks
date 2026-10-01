@@ -10,6 +10,7 @@ Runs, in dependency order:
     4. analysis/pareto_analysis.py            frontiers -> results/pareto/
     5. analysis/recommendation_scenarios.py   Table 4 -> results/recommendations/
     6. analysis/figures.py                    Figures A and E
+    6b. analysis/build_hf_export.py           model card + bundle -> results/hf_export/
     7. experiments/validate_recommendation.py predicted vs actual back-test
     8. pytest                                 the test suite
 
@@ -43,6 +44,7 @@ STEPS = [
     ('pareto frontiers', [PY, 'analysis/pareto_analysis.py'], False),
     ('recommendation scenarios', [PY, 'analysis/recommendation_scenarios.py'], False),
     ('figures', [PY, 'analysis/figures.py'], False),
+    ('hugging face export', [PY, 'analysis/build_hf_export.py'], False),
     ('recommendation back-test',
      [PY, 'experiments/validate_recommendation.py', '--from-benchmark', '--replace'], False),
     ('tests', [PY, '-m', 'pytest', 'green_peft_cli/green_peft_pkg/tests', '-q'], True),
