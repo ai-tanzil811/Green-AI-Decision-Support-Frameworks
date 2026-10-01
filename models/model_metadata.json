@@ -2,7 +2,7 @@
   "artifact": "new update works/greenpeft_surrogate_models.joblib",
   "artifact_type": "dict bundle of sklearn Pipelines",
   "schema_version": "3.0",
-  "sklearn_version": "1.9.1",
+  "sklearn_version": "1.8.0",
   "targets": [
     "accuracy",
     "peak_gpu_memory_gb",
@@ -108,38 +108,38 @@
     "metrics": {
       "accuracy": {
         "protocol": "GroupKFold(k=5, groups=config_id)",
-        "MAE": 0.006089060293435137,
-        "RMSE": 0.009173016290708118,
-        "R2": 0.7641735080873067,
-        "MAPE_pct": 0.6654432515866961
+        "MAE": 0.00618506217977069,
+        "RMSE": 0.00921364793344569,
+        "R2": 0.7620797061980903,
+        "MAPE_pct": 0.6756034584433236
       },
       "peak_gpu_memory_gb": {
         "protocol": "GroupKFold(k=5, groups=config_id)",
-        "MAE": 0.7597642590634892,
-        "RMSE": 1.0430248145191485,
-        "R2": 0.9225055999866509,
-        "MAPE_pct": 11.519000234702057
+        "MAE": 0.766981519875616,
+        "RMSE": 1.0410064913219872,
+        "R2": 0.9228052235666442,
+        "MAPE_pct": 11.98166261843998
       },
       "energy_kwh": {
         "protocol": "GroupKFold(k=5, groups=config_id)",
-        "MAE": 5.863191323427388e-05,
-        "RMSE": 7.083362403261885e-05,
-        "R2": 0.996433108958729,
-        "MAPE_pct": 2.6176641691944322
+        "MAE": 5.794553606192043e-05,
+        "RMSE": 6.993280336040218e-05,
+        "R2": 0.9965232553511711,
+        "MAPE_pct": 2.5920661860763463
       },
       "wall_clock_seconds": {
         "protocol": "GroupKFold(k=5, groups=config_id)",
-        "MAE": 6.4242444898360445,
-        "RMSE": 7.907081548445538,
-        "R2": 0.9839226113759477,
-        "MAPE_pct": 4.566984907806497
+        "MAE": 6.3985225907400896,
+        "RMSE": 7.856770077100409,
+        "R2": 0.9841265560793406,
+        "MAPE_pct": 4.54709550753098
       }
     },
     "per_target_detail": {
       "accuracy": {
         "groupkfold_config_id": {
-          "R2": 0.7641735080873067,
-          "MAPE_pct": 0.6654432515866961,
+          "R2": 0.7620797061980903,
+          "MAPE_pct": 0.6756034584433236,
           "status": "VALIDATED"
         },
         "leave_one_tier_out": {
@@ -151,8 +151,8 @@
       },
       "peak_gpu_memory_gb": {
         "groupkfold_config_id": {
-          "R2": 0.9225055999866509,
-          "MAPE_pct": 11.519000234702057,
+          "R2": 0.9228052235666442,
+          "MAPE_pct": 11.98166261843998,
           "status": "VALIDATED"
         },
         "leave_one_tier_out": {
@@ -164,8 +164,8 @@
       },
       "energy_kwh": {
         "groupkfold_config_id": {
-          "R2": 0.996433108958729,
-          "MAPE_pct": 2.6176641691944322,
+          "R2": 0.9965232553511711,
+          "MAPE_pct": 2.5920661860763463,
           "status": "VALIDATED"
         },
         "leave_one_tier_out": {
@@ -177,8 +177,8 @@
       },
       "wall_clock_seconds": {
         "groupkfold_config_id": {
-          "R2": 0.9839226113759477,
-          "MAPE_pct": 4.566984907806497,
+          "R2": 0.9841265560793406,
+          "MAPE_pct": 4.54709550753098,
           "status": "VALIDATED"
         },
         "leave_one_tier_out": {
