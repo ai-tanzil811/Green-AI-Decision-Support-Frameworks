@@ -1,0 +1,37 @@
+{
+ "n_configurations": 41,
+ "n_cells_measured": 14,
+ "n_cells_complete": 13,
+ "n_runs_complete": 39,
+ "cells_excluded_from_primary": [
+  "lora|medium (n=2)"
+ ],
+ "implied_power_original": {
+  "mean": 59.86273095849896,
+  "sd": 8.24247425507526,
+  "min": 38.38198729164748,
+  "max": 65.57682347156204
+ },
+ "implied_power_remeasured": {
+  "mean": 9.972504259233467,
+  "sd": 0.0995804017592705,
+  "min": 9.846968925114622,
+  "max": 10.234940577249576
+ },
+ "energy_cv_valid_pass": 0.5093027447627925,
+ "energy_cv_pooled": 0.9364649940572575,
+ "dataset_shape": [
+  477,
+  46
+ ],
+ "accuracy_range": [
+  0.8635,
+  0.9495
+ ],
+ "governing_status_recomputed": {
+  "accuracy": "PRELIMINARY",
+  "energy_kwh": "VALIDATED",
+  "peak_gpu_memory_gb": "PRELIMINARY",
+  "wall_clock_seconds": "PRELIMINARY"
+ }
+}

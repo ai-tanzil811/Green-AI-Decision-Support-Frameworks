@@ -1,858 +1,774 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GreenPEFT — Decide how to fine-tune before you spend the energy</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GreenPEFT — A Multi-Objective Green AI Decision Support Framework</title>
 
-<meta name="description" content="GreenPEFT is a multi-objective decision support framework for parameter-efficient fine-tuning. Zero-shot surrogate regressors estimate accuracy, peak VRAM, energy, carbon and wall-clock time, then constraint filtering, Pareto analysis and the Green Efficiency Index rank the candidates — before any run starts.">
-<meta name="author" content="Ashraful Islam Tanzil">
-<meta name="keywords" content="GreenPEFT, Green AI, PEFT, LoRA, QLoRA, LISA, LoRA-FA, Green Efficiency Index, surrogate model, Pareto frontier, CodeCarbon, sustainable machine learning">
-<meta name="theme-color" content="#04120c">
+  <meta name="description" content="Pick sustainable parameter-efficient fine-tuning (PEFT) strategies for LLMs before running expensive benchmark sweeps. Zero-shot surrogate regressors, hardware/accuracy constraints, Pareto filtering, and Green Efficiency Index.">
+  <meta name="author" content="Ashraful Islam Tanzil">
+  <meta name="keywords" content="GreenPEFT, Green AI, PEFT, LoRA, QLoRA, LISA, LoRA-FA, Green Efficiency Index, surrogate model, Pareto frontier, CodeCarbon, sustainable machine learning">
+  <meta name="theme-color" content="#000000">
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="GreenPEFT — A Multi-Objective Green AI Decision Support Framework">
-<meta property="og:description" content="Predict accuracy, VRAM, energy, carbon and runtime for PEFT strategies before fine-tuning. Constraint filtering, Pareto frontiers and the Green Efficiency Index, grounded in a 60-run Tesla T4 benchmark.">
-<meta property="og:image" content="figures/figE_pareto_frontier.png">
-<meta name="twitter:card" content="summary_large_image">
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="GreenPEFT — A Multi-Objective Green AI Decision Support Framework">
+  <meta property="og:description" content="Choose how to fine-tune an LLM before you spend the energy to find out. Surrogate regressors, hardware constraints, and Pareto filtering.">
+  <meta name="twitter:card" content="summary_large_image">
 
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2304120c'/%3E%3Cpath d='M6 26C6 16 12 8.5 26 6c-1.5 13-9 19-20 20z' fill='%234fbdaf'/%3E%3C/svg%3E">
+  <!-- Favicon (Monochrome SVG) -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='8' fill='%23FFFFFF'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%23000000'/%3E%3C/svg%3E">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-<a class="skip" href="#main">Skip to content</a>
+  <a class="skip-link" href="#recommender">Skip to content</a>
 
-<!-- ======================================================= HEADER ====== -->
-<header class="site-header">
-  <div class="wrap site-header__bar">
-    <a class="brand" href="#top">
-      <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true">
-        <path d="M6 26C6 16 12 8.5 26 6c-1.5 13-9 19-20 20z" fill="#4fbdaf"/>
-        <path d="M6 26c3-6.5 8-11.5 14-14.5" stroke="#04120c" stroke-width="1.8" fill="none"/>
-      </svg>
-      <span class="brand__name">Green<em>PEFT</em></span>
-    </a>
-    <nav class="nav" aria-label="Sections">
-      <a href="#lab">Lab</a>
-      <a href="#why">Why</a>
-      <a href="#pipeline">Architecture</a>
-      <a href="#evidence">Evidence</a>
-      <a href="#gei">GEI</a>
-      <a href="#scope">Scope</a>
-      <a href="#cli">CLI</a>
-      <a href="#research">Research</a>
-    </nav>
-    <a class="header-cta" href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks" target="_blank" rel="noopener">
-      Repository
-    </a>
-    <div class="progress" id="progress" aria-hidden="true"></div>
-  </div>
-</header>
-
-<main id="main">
-<span id="top"></span>
-
-<!-- ========================================================= HERO ====== -->
-<section class="band band--forest hero">
-  <div class="wrap">
-    <div class="hero__grid">
-
-      <div>
-        <div class="hero__eyebrow">
-          <span class="kicker">Multi-objective decision support</span>
-          <span class="badge badge--warn" title="Validation status recorded in models/model_metadata.json">Surrogate status: preliminary</span>
-        </div>
-
-        <h1 class="display-xl">
-          Choose how to fine-tune an LLM <span class="hl">before</span> you spend the energy to find out.
-        </h1>
-
-        <p class="lead hero__sub">
-          GreenPEFT estimates accuracy, peak VRAM, energy, carbon and wall-clock time for every
-          candidate PEFT configuration from pre-run metadata alone. It then filters against your
-          hardware and accuracy constraints, extracts the Pareto frontier, and ranks what survives
-          with the Green Efficiency Index — so a sweep becomes a shortlist.
-        </p>
-
-        <div class="hero__cta">
-          <a class="btn btn--primary" href="#lab">
-            Try the recommender
-            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-          <a class="btn btn--ghost" href="#evidence">Explore the research</a>
-        </div>
-
-        <div class="credmarks">
-          <span>Python 3.10+</span>
-          <span>PyTorch 2.2+</span>
-          <span>CodeCarbon 2.8+</span>
-          <span>MIT License</span>
-          <a href="https://pypi.org/project/green-peft/" target="_blank" rel="noopener">PyPI · green-peft</a>
-          <a href="https://huggingface.co/ai-tanzil/GreenPEFT-v2" target="_blank" rel="noopener">Hugging Face artifacts</a>
-        </div>
-      </div>
-
-      <div class="cascade" id="cascade">
-        <div class="cascade__head">
-          <span class="label">Constraint cascade · 16 GB · accuracy ≥ 0.90 · balanced</span>
-          <span class="cascade__live"><i></i> live</span>
-        </div>
-        <div id="cascade-mount" role="img"
-             aria-label="Constraint cascade: the 70-candidate catalogue is reduced gate by gate — physically plausible predictions, then the VRAM budget, then the accuracy floor — leaving a feasible set that is ranked by Green Efficiency Index."></div>
-        <p class="cascade__foot" id="cascade-foot"></p>
-      </div>
-
+  <!-- =========================================================================
+       Navigation Bar
+       ====================================================================== -->
+  <header class="nav-bar">
+    <div class="container nav-wrap">
+      <a class="brand-link" href="#hero">
+        <span>GREENPEFT</span>
+      </a>
+      <nav class="nav-links" aria-label="Main Navigation">
+        <a class="nav-link" href="#recommender">01 Recommender</a>
+        <a class="nav-link" href="#why">02 Why</a>
+        <a class="nav-link" href="#pipeline">03 Architecture</a>
+        <a class="nav-link" href="#evidence">04 Evidence</a>
+        <a class="nav-link" href="#trust">05 Trust</a>
+        <a class="nav-link" href="#cli">06 CLI</a>
+        <a class="nav-link" href="#research">07 Research</a>
+      </nav>
+      <a class="btn btn--ghost btn--sm" href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks" target="_blank" rel="noopener">
+        GitHub
+      </a>
     </div>
-  </div>
-</section>
+  </header>
 
-<!-- ========================================================== LAB ====== -->
-<section class="band band--forest" id="lab">
-  <div class="wrap">
-    <header class="sec-head">
-      <div>
-        <div class="sec-head__id"><span class="n">01</span><span class="label">Recommendation lab</span></div>
-        <h2 class="display-l">A decision engine you can turn the dials on.</h2>
-      </div>
-      <p class="lead">
-        Every number below comes from the same surrogate bundle the <span class="inline-code">green-peft</span>
-        CLI ships with. Move a constraint and the feasibility gate, the Pareto test and the GEI
-        normalisation all re-run in the browser — the arithmetic is identical, only the surrogate
-        inference was done ahead of time.
-      </p>
-    </header>
+  <main id="main-content">
 
-    <div class="lab">
+    <!-- =======================================================================
+         Section 1: Hero (Interactive Split Layout)
+         ==================================================================== -->
+    <section class="band" id="hero">
+      <div class="container">
+        <div class="hero-split">
 
-      <!-- ---------------- controls ---------------- -->
-      <form class="lab__controls panel" id="lab-form" autocomplete="off">
-        <div class="panel__head">
-          <span class="label">Constraints</span>
-          <button type="button" class="btn btn--ghost btn--sm" id="reset-btn">Reset</button>
-        </div>
-
-        <div class="ctrl">
-          <div class="ctrl__head">
-            <label class="ctrl__name" for="c-vram">Max VRAM</label>
-            <output class="ctrl__val" id="c-vram-out">16<span class="u">GB</span></output>
-          </div>
-          <input type="range" id="c-vram" min="4" max="48" step="1" value="16">
-          <p class="ctrl__hint" id="c-vram-hint"></p>
-        </div>
-
-        <div class="ctrl">
-          <div class="ctrl__head">
-            <label class="ctrl__name" for="c-acc">Accuracy floor</label>
-            <output class="ctrl__val" id="c-acc-out">0.900</output>
-          </div>
-          <input type="range" id="c-acc" min="0.80" max="0.97" step="0.005" value="0.90">
-          <p class="ctrl__hint">SST-2 validation accuracy. Candidates predicted below this are dropped.</p>
-        </div>
-
-        <div class="ctrl">
-          <div class="ctrl__head">
-            <label class="toggle" for="c-carbon-on">
-              <input type="checkbox" id="c-carbon-on">
-              <span class="toggle__box" aria-hidden="true"></span>
-              Carbon budget
-            </label>
-            <output class="ctrl__val" id="c-carbon-out">off</output>
-          </div>
-          <input type="range" id="c-carbon" min="0.0005" max="0.01" step="0.0001" value="0.003" disabled
-                 aria-label="Maximum carbon in kilograms of CO2 equivalent">
-          <p class="ctrl__hint">kgCO₂eq per training run, derived as energy × 0.65 kgCO₂eq/kWh.</p>
-        </div>
-
-        <div class="ctrl">
-          <div class="ctrl__head">
-            <label class="toggle" for="c-time-on">
-              <input type="checkbox" id="c-time-on">
-              <span class="toggle__box" aria-hidden="true"></span>
-              Runtime limit
-            </label>
-            <output class="ctrl__val" id="c-time-out">off</output>
-          </div>
-          <input type="range" id="c-time" min="60" max="900" step="10" value="300" disabled
-                 aria-label="Maximum wall-clock time in seconds">
-          <p class="ctrl__hint">Wall-clock seconds for a 300-step run at batch size 8.</p>
-        </div>
-
-        <div class="ctrl">
-          <div class="ctrl__head"><span class="ctrl__name" id="lbl-profile">Preference profile</span></div>
-          <div class="seg" role="group" aria-labelledby="lbl-profile" id="c-profile">
-            <button type="button" data-profile="balanced" aria-pressed="true">Balanced</button>
-            <button type="button" data-profile="strict_carbon" aria-pressed="false">Strict carbon</button>
-            <button type="button" data-profile="high_accuracy" aria-pressed="false">High accuracy</button>
-          </div>
-          <p class="ctrl__hint" id="c-profile-hint"></p>
-        </div>
-
-        <div class="ctrl">
-          <div class="ctrl__head"><span class="ctrl__name" id="lbl-conf">Evidence floor</span></div>
-          <div class="seg" role="group" aria-labelledby="lbl-conf" id="c-conf">
-            <button type="button" data-conf="" aria-pressed="true">Any</button>
-            <button type="button" data-conf="MEDIUM" aria-pressed="false">In-envelope</button>
-            <button type="button" data-conf="HIGH" aria-pressed="false">Measured</button>
-          </div>
-          <p class="ctrl__hint" id="c-conf-hint"></p>
-        </div>
-
-        <div class="ctrl">
-          <div class="ctrl__head">
-            <span class="ctrl__name" id="lbl-method">Methods</span>
-            <button type="button" class="ctrl__val" id="method-all">all</button>
-          </div>
-          <div class="chips" id="c-methods" role="group" aria-labelledby="lbl-method"></div>
-        </div>
-
-        <div class="ctrl">
-          <div class="ctrl__head">
-            <span class="ctrl__name" id="lbl-bb">Backbones</span>
-            <button type="button" class="ctrl__val" id="bb-all">all</button>
-          </div>
-          <div class="chips" id="c-backbones" role="group" aria-labelledby="lbl-bb"></div>
-        </div>
-      </form>
-
-      <!-- ---------------- output ---------------- -->
-      <div class="stack-md">
-
-        <div class="panel rec" id="rec-panel" aria-live="polite"></div>
-
-        <div class="panel">
-          <div class="panel__head">
-            <span class="label">Top alternatives by GEI</span>
-            <span class="label" id="alts-note"></span>
-          </div>
-          <div class="alts" id="alts"></div>
-        </div>
-
-        <div class="cols-2">
-          <div class="panel">
-            <div class="panel__head"><span class="label">Objective trade-off</span></div>
-            <div class="panel__body">
-              <div class="sbars" id="sbars"></div>
-              <div class="legend mt-md">
-                <span><svg viewBox="0 0 11 11" aria-hidden="true"><rect width="11" height="11" rx="1" fill="#4fbdaf"/></svg>accuracy</span>
-                <span><svg viewBox="0 0 11 11" aria-hidden="true"><rect width="11" height="11" rx="1" fill="#78b0d8"/></svg>memory</span>
-                <span><svg viewBox="0 0 11 11" aria-hidden="true"><rect width="11" height="11" rx="1" fill="#d7a13f"/></svg>carbon</span>
-                <span><svg viewBox="0 0 11 11" aria-hidden="true"><rect width="11" height="11" rx="1" fill="#b08fd0"/></svg>time</span>
-              </div>
-              <p class="chart-card__note mt-sm">
-                Each bar is one candidate's GEI, split into its four weighted contributions
-                <span class="mono">wᵢ · Ŝᵢ</span>. Normalisation uses the feasible set only.
-              </p>
-            </div>
-          </div>
-
-          <div class="panel">
-            <div class="panel__head"><span class="label">Predicted accuracy vs peak VRAM</span></div>
-            <div class="panel__body">
-              <div id="lab-scatter"></div>
-              <div class="legend mt-sm">
-                <span><svg viewBox="0 0 11 11" aria-hidden="true"><circle cx="5.5" cy="5.5" r="4" fill="#4fbdaf"/></svg>feasible</span>
-                <span><svg viewBox="0 0 11 11" aria-hidden="true"><circle cx="5.5" cy="5.5" r="3.6" fill="none" stroke="#6e8378" stroke-width="1.4"/></svg>filtered out</span>
-                <span><svg viewBox="0 0 11 11" aria-hidden="true"><circle cx="5.5" cy="5.5" r="4.6" fill="#d7a13f"/></svg>recommended</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <p class="chart-card__note">
-          Predictions are point estimates from Ridge surrogates carrying measured out-of-sample error
-          bands — not guarantees, and not calibrated prediction intervals. Validate a shortlisted
-          candidate with a real run before committing to it.
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ========================================================== WHY ====== -->
-<section class="band band--paper" id="why">
-  <div class="rules" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-  <div class="wrap">
-    <header class="sec-head">
-      <div>
-        <div class="sec-head__id"><span class="n">02</span><span class="label">The problem</span></div>
-        <h2 class="display-l">Trial and error is the most expensive way to learn what will not fit.</h2>
-      </div>
-      <p class="lead">
-        A fine-tuning sweep spends real memory, real wattage and real hours to discover facts that
-        were largely determined the moment the configuration was written down.
-      </p>
-    </header>
-
-    <div class="cols-3 mt-lg">
-      <article class="stage reveal">
-        <span class="stage__n">01</span>
-        <h3>Decisions are made by running everything.</h3>
-        <p>
-          The pilot grid in this repository attempted 60 runs across five PEFT strategies and four
-          backbone scales. Nineteen ended in an out-of-memory error — close to a third of the
-          attempts spent confirming that a configuration was never viable on the device.
-        </p>
-      </article>
-      <article class="stage reveal">
-        <span class="stage__n">02</span>
-        <h3>The objectives genuinely conflict.</h3>
-        <p>
-          Full fine-tuning reached 0.9052 accuracy on the 0.5 B backbone but needed 11.13 GB and
-          could not run at all above it. QLoRA completed every attempted cell and used as little as
-          2.76 GB, yet took the longest wall-clock time at each scale. No single row wins on all
-          four axes.
-        </p>
-      </article>
-      <article class="stage reveal">
-        <span class="stage__n">03</span>
-        <h3>Constraints can be answered before the run.</h3>
-        <p>
-          Peak VRAM, energy and runtime are largely a function of parameter count, adapter rank and
-          quantisation width — all known in advance. GreenPEFT fits surrogates on that metadata and
-          turns a budget into a ranked, inspectable shortlist in well under a second.
-        </p>
-      </article>
-    </div>
-
-    <div class="shift mt-lg reveal">
-      <div class="shift__panel">
-        <div class="gridcells" id="shift-before" aria-hidden="true"></div>
-        <div class="shift__cap">
-          <h3>Run everything</h3>
-          <p>60 attempted runs · 19 out-of-memory · 5 strategies × 4 scales × 3 seeds on one T4.</p>
-        </div>
-      </div>
-
-      <svg class="shift__arrow" width="46" height="18" viewBox="0 0 46 18" fill="none" aria-hidden="true">
-        <path d="M0 9h40M34 3l6 6-6 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-
-      <div class="shift__panel">
-        <div class="gridcells" id="shift-after" aria-hidden="true"></div>
-        <div class="shift__cap">
-          <h3>Filter first, validate second</h3>
-          <p>Infeasible cells are predicted away; what remains is a handful of candidates worth measuring.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===================================================== PIPELINE ====== -->
-<section class="band band--forest" id="pipeline">
-  <div class="wrap">
-    <header class="sec-head">
-      <div>
-        <div class="sec-head__id"><span class="n">03</span><span class="label">Framework architecture</span></div>
-        <h2 class="display-l">Five stages, from raw telemetry to a ranked recommendation.</h2>
-      </div>
-      <p class="lead">
-        Each stage writes artifacts the next one reads, and every derived file in the repository is
-        regenerated by a single command. Nothing in the chain is a step you have to take on faith.
-      </p>
-    </header>
-
-    <div class="pipeline" id="pipeline-diagram">
-      <div id="pipeline-mount" aria-hidden="true"></div>
-
-      <ol class="pipeline-stack" id="pipeline-stack">
-        <li class="pstep">
-          <span class="pstep__n">Stage 01</span>
-          <h3 class="pstep__t">Multi-source data harmonisation</h3>
-          <div class="pstep__io">
-            <div><h4>Inputs</h4><ul><li>surrogate_dataset.csv</li><li>Open LLM-Perf leaderboard</li><li>llmenergy.csv</li></ul></div>
-            <div><h4>Outputs</h4><ul><li>477 × 46 ML-ready table</li><li>measurement-pass flags</li></ul></div>
-          </div>
-        </li>
-        <li class="pstep">
-          <span class="pstep__n">Stage 02</span>
-          <h3 class="pstep__t">Empirical benchmarking</h3>
-          <div class="pstep__io">
-            <div><h4>Inputs</h4><ul><li>backbones 0.5–3.0 B</li><li>full_ft · lora · qlora · lora_fa · lisa</li><li>seeds 13 · 42 · 2024</li></ul></div>
-            <div><h4>Outputs</h4><ul><li>60 raw runs on a Tesla T4</li><li>peak VRAM · energy · accuracy · time</li></ul></div>
-          </div>
-        </li>
-        <li class="pstep">
-          <span class="pstep__n">Stage 03</span>
-          <h3 class="pstep__t">Zero-shot surrogate regression</h3>
-          <div class="pstep__io">
-            <div><h4>Inputs</h4><ul><li>params_b · adapter rank · quant_bits</li><li>dataset size · family · method</li></ul></div>
-            <div><h4>Outputs</h4><ul><li>accuracy · peak VRAM</li><li>energy kWh · wall-clock s</li><li>per-target error bands</li></ul></div>
-          </div>
-        </li>
-        <li class="pstep">
-          <span class="pstep__n">Stage 04</span>
-          <h3 class="pstep__t">Constraint filtering and Pareto optimisation</h3>
-          <div class="pstep__io">
-            <div><h4>Inputs</h4><ul><li>VRAM · accuracy · carbon · time budgets</li><li>evidence floor</li></ul></div>
-            <div><h4>Outputs</h4><ul><li>feasible set</li><li>non-dominated frontier</li><li>GEI ranking</li></ul></div>
-          </div>
-        </li>
-        <li class="pstep">
-          <span class="pstep__n">Stage 05</span>
-          <h3 class="pstep__t">CLI recommendation and empirical back-testing</h3>
-          <div class="pstep__io">
-            <div><h4>Inputs</h4><ul><li>green-peft recommend</li><li>recorded real runs</li></ul></div>
-            <div><h4>Outputs</h4><ul><li>ranked shortlist with scope labels</li><li>predicted-vs-actual validation log</li></ul></div>
-          </div>
-        </li>
-      </ol>
-    </div>
-  </div>
-</section>
-
-<!-- ===================================================== EVIDENCE ====== -->
-<section class="band band--paper" id="evidence">
-  <div class="rules" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-  <div class="wrap">
-    <header class="sec-head">
-      <div>
-        <div class="sec-head__id"><span class="n">04</span><span class="label">Benchmark evidence</span></div>
-        <h2 class="display-l">Sixty runs on one Tesla T4, reported in full.</h2>
-      </div>
-      <p class="lead">
-        The surrogates are fitted on a single, deliberately narrow empirical study: SST-2
-        classification, 300 training steps at batch size 8, three seeds per cell. Everything here is
-        read from the artifacts in <span class="inline-code">results/</span>.
-      </p>
-    </header>
-
-    <div class="statline" id="bench-stats"></div>
-
-    <div class="cols-2 mt-lg">
-      <div class="chart-card">
-        <div class="chart-card__head">
-          <h3 class="chart-card__title">Accuracy versus peak VRAM</h3>
-          <span class="label">measured · mean over seeds</span>
-        </div>
-        <div id="chart-acc-vram"></div>
-        <p class="chart-card__note">
-          The 15.6 GB usable budget on a 16 GB T4 is the wall every configuration had to fit under.
-          LISA on the 1.5 B backbone lands at 15.21 GB — inside the budget, where full fine-tuning
-          could not run at all beyond 0.5 B.
-        </p>
-      </div>
-
-      <div class="chart-card">
-        <div class="chart-card__head">
-          <h3 class="chart-card__title">Energy versus accuracy</h3>
-          <span class="label">valid telemetry pass only</span>
-        </div>
-        <div id="chart-energy-acc"></div>
-        <p class="chart-card__note">
-          Filled markers are non-dominated across all four objectives (accuracy, VRAM, carbon,
-          time). This view projects two of those axes, so a filled point can look dominated here.
-        </p>
-      </div>
-    </div>
-
-    <div class="mt-lg">
-      <div class="chart-card__head" style="margin-bottom:16px">
-        <h3 class="chart-card__title">Candidate feasibility matrix — what actually completed</h3>
-        <span class="label">3 seeds per cell · 16 GB Tesla T4</span>
-      </div>
-      <div class="tbl-scroll">
-        <table class="matrix" id="feasibility-matrix">
-          <caption>
-            Successful runs out of three attempts per (strategy, backbone) cell.
-            Source: <span class="mono">results/benchmark/feasibility_matrix.csv</span>.
-          </caption>
-        </table>
-      </div>
-      <div class="legend mt-sm">
-        <span><svg viewBox="0 0 11 11" aria-hidden="true"><rect width="11" height="11" rx="1" fill="rgba(79,189,175,.3)" stroke="#1e6f66"/></svg>all seeds completed</span>
-        <span><svg viewBox="0 0 11 11" aria-hidden="true"><rect width="11" height="11" rx="1" fill="rgba(215,161,63,.3)" stroke="#8a6414"/></svg>partial — some seeds OOM</span>
-        <span><svg viewBox="0 0 11 11" aria-hidden="true"><rect width="11" height="11" rx="1" fill="rgba(196,103,74,.25)" stroke="#9a3f23"/></svg>all seeds out of memory</span>
-      </div>
-    </div>
-
-    <div class="panel mt-lg" style="border-left:2px solid var(--accent)">
-      <div class="panel__body">
-        <span class="kicker">Worked example</span>
-        <h3 class="display-m mt-sm">LISA fits a 1.5 B backbone inside 16 GB. Full fine-tuning does not.</h3>
-        <p class="prose mt-sm">
-          Full fine-tuning completed all three seeds at 0.5 B, peaking at <strong>11.13 GB</strong>,
-          then went out of memory on every attempt at 1.1 B, 1.5 B and 3.0 B — nine failed runs and
-          a 0.75 OOM rate for the strategy. LISA, which samples and updates a subset of layers per
-          step, completed the 1.5 B cell at <strong>15.21 GB peak VRAM</strong> and
-          <strong>0.9381 accuracy</strong> in 140.95 s. That is the trade the framework exists to
-          surface: the strategy that is not the most accurate in the abstract can be the only one
-          that clears the hardware constraint you actually have.
-        </p>
-      </div>
-    </div>
-
-    <div class="mt-lg">
-      <div class="chart-card__head" style="margin-bottom:16px">
-        <h3 class="chart-card__title">Strategy comparison — all measured configurations</h3>
-        <span class="label">select a column header to sort</span>
-      </div>
-      <div class="tbl-scroll">
-        <table class="tbl" id="measured-table">
-          <caption>
-            Mean over completed seeds. Energy uses the valid telemetry pass only; carbon is derived
-            as energy × 0.65 kgCO₂eq/kWh, never modelled.
-            Source: <span class="mono">results/pareto/pareto_measured.csv</span>.
-          </caption>
-        </table>
-      </div>
-    </div>
-
-    <div class="mt-lg">
-      <div class="chart-card__head" style="margin-bottom:18px">
-        <h3 class="chart-card__title">Repository figures</h3>
-        <span class="label">generated by python reproduce.py</span>
-      </div>
-      <div class="figstrip" id="figstrip"></div>
-    </div>
-  </div>
-</section>
-
-<!-- ========================================================== GEI ====== -->
-<section class="band band--forest" id="gei">
-  <div class="wrap">
-    <header class="sec-head">
-      <div>
-        <div class="sec-head__id"><span class="n">05</span><span class="label">Green Efficiency Index</span></div>
-        <h2 class="display-l">One score, four objectives, weights you choose.</h2>
-      </div>
-      <p class="lead">
-        GEI is a weighted sum of four min–max normalised objectives. The normalisation bounds come
-        from the feasible set — options already ruled out should not stretch the scale for the ones
-        still on the table.
-      </p>
-    </header>
-
-    <div class="gei">
-      <div class="stack-md">
-        <div class="panel">
-          <div class="panel__head"><span class="label">Definition</span></div>
-          <div class="panel__body">
-            <p class="formula">
-              <span class="t">GEI(c)</span><span class="op">=</span><span class="w">w<sub>acc</sub></span>·<span class="s">Ŝ<sub>acc</sub></span><span class="op">+</span><span class="w">w<sub>mem</sub></span>·<span class="s">Ŝ<sub>mem</sub></span><span class="op">+</span><span class="w">w<sub>C</sub></span>·<span class="s">Ŝ<sub>C</sub></span><span class="op">+</span><span class="w">w<sub>T</sub></span>·<span class="s">Ŝ<sub>T</sub></span>
+          <!-- Left Column: Copy & Actions -->
+          <div class="hero-text">
+            <div class="eyebrow">GREENPEFT · v1.0 · MIT</div>
+            <h1 class="display-hero">
+              Choose how to fine-tune an LLM before you spend the energy to find out.
+            </h1>
+            <p class="body-lead">
+              Zero-shot surrogate regressors estimate accuracy, peak VRAM, energy, carbon, and runtime before any benchmark sweep begins.
             </p>
-            <div class="formula__norm">
-              <span class="s">Ŝ<sub>acc</sub></span> = (acc − acc<sub>min</sub>) ⁄ (acc<sub>max</sub> − acc<sub>min</sub>)<br>
-              <span class="s">Ŝ<sub>M</sub></span> = 1 − (M − M<sub>min</sub>) ⁄ (M<sub>max</sub> − M<sub>min</sub>) &nbsp;<span class="faint">for M ∈ {mem, C, T}</span><br>
-              <span class="faint">Σ wᵢ = 1 · bounds from the feasible set · higher is better</span>
+
+            <div class="hero-actions">
+              <a class="btn btn--primary" href="#recommender">Try the recommender</a>
+              <a class="btn btn--ghost" href="#evidence">Explore the research</a>
+            </div>
+
+            <div class="cred-strip">
+              <span>Python 3.10+</span>
+              <span>·</span>
+              <span>PyTorch 2.2+</span>
+              <span>·</span>
+              <span>CodeCarbon</span>
+              <span>·</span>
+              <span>MIT</span>
+              <span>·</span>
+              <a href="https://pypi.org/project/green-peft/" target="_blank" rel="noopener">PyPI</a>
+              <span>·</span>
+              <a href="https://huggingface.co/ai-tanzil/GreenPEFT-v2" target="_blank" rel="noopener">Hugging Face</a>
             </div>
           </div>
-        </div>
 
-        <div class="panel">
-          <div class="panel__head">
-            <span class="label">Weights</span>
-            <div class="seg" role="group" aria-label="Preference profile" id="gei-profile">
-              <button type="button" data-profile="balanced" aria-pressed="true">Balanced</button>
-              <button type="button" data-profile="strict_carbon" aria-pressed="false">Strict carbon</button>
-              <button type="button" data-profile="high_accuracy" aria-pressed="false">High accuracy</button>
+          <!-- Right Column: Interactive Scatter Plot with Draggable VRAM Line -->
+          <div class="hero-visual">
+            <div class="hero-visual-head">
+              <span class="hero-visual-title">Pareto Frontier · Accuracy vs VRAM</span>
+              <span class="hero-visual-vram-readout" id="hero-vram-readout">16.0 GB (13 feasible)</span>
+            </div>
+            <div class="hero-scatter-container" id="hero-scatter-mount" role="region" aria-label="Interactive candidate scatter plot"></div>
+            <div class="hero-footnote">
+              <span>Drag the vertical dashed line to filter candidates in real time</span>
+              <span class="caption-mono">Hover for metrics</span>
             </div>
           </div>
-          <div class="panel__body">
-            <div class="wbars" id="gei-weights"></div>
-          </div>
+
         </div>
       </div>
+    </section>
 
-      <div class="panel">
-        <div class="panel__head">
-          <span class="label">Measured configurations, ranked by GEI</span>
-          <span class="label" id="gei-rank-note">balanced</span>
-        </div>
-        <div class="rank" id="gei-rank" aria-live="polite"></div>
-        <p class="cascade__foot">
-          Scored on the 14 directly measured cells rather than on surrogate predictions. Changing the
-          profile reorders real results; the Δ column shows each configuration's move against the
-          balanced baseline. Source: <span class="mono">results/pareto/pareto_measured.csv</span>.
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
+    <!-- =======================================================================
+         Section 2: Recommendation Lab (Centerpiece — Fully Interactive)
+         ==================================================================== -->
+    <section class="band" id="recommender">
+      <div class="container">
 
-<!-- ======================================================== SCOPE ====== -->
-<section class="band band--paper" id="scope">
-  <div class="rules" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-  <div class="wrap">
-    <header class="sec-head">
-      <div>
-        <div class="sec-head__id"><span class="n">06</span><span class="label">Model card · evidence boundary</span></div>
-        <h2 class="display-l">What this model knows, and where it stops knowing it.</h2>
-      </div>
-      <p class="lead">
-        The surrogate's overall status is <strong>preliminary</strong>, taken from the weaker of two
-        validation protocols. That label appears on the CLI banner, in the model metadata and here,
-        because a shortlist is only useful if you know how far to trust it.
-      </p>
-    </header>
-
-    <div class="cols-2">
-      <div class="panel">
-        <div class="panel__head"><span class="label">Out-of-sample validation</span></div>
-        <div class="tbl-scroll">
-          <table class="tbl" id="cv-table"></table>
-        </div>
-      </div>
-
-      <div class="stack-md">
-        <div class="panel">
-          <div class="panel__head"><span class="label">Empirical back-test</span></div>
-          <div class="tbl-scroll">
-            <table class="tbl" id="backtest-table"></table>
-          </div>
-        </div>
-        <div class="panel">
-          <div class="panel__head"><span class="label">Measured envelope</span></div>
-          <div class="panel__body">
-            <div class="statline" id="envelope-stats" style="border-top:0"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card-grid mt-lg">
-      <div class="card-cell card-cell--yes">
-        <h3>What it is for</h3>
-        <ul>
-          <li>Planning an experiment before any GPU time is committed.</li>
-          <li>Generating a shortlist of two or three configurations worth measuring.</li>
-          <li>Screening out configurations that will not fit a known VRAM budget.</li>
-          <li>Comparing strategies under an explicit, stated weighting of objectives.</li>
-        </ul>
-      </div>
-      <div class="card-cell card-cell--no">
-        <h3>What it is not</h3>
-        <ul>
-          <li>It does not run fine-tuning. It recommends; you execute.</li>
-          <li>It does not guarantee the accuracy, energy, carbon or runtime you will observe.</li>
-          <li>The error bands are measured out-of-sample error, not calibrated prediction intervals.</li>
-          <li>It does not eliminate emissions — it reduces the compute spent discovering dead ends.</li>
-        </ul>
-      </div>
-      <div class="card-cell">
-        <h3>Where the evidence ends</h3>
-        <ul>
-          <li>All direct measurement is SST-2 classification on one NVIDIA Tesla T4, 15.6 GB usable.</li>
-          <li>Measured span: 0.5–3.0 B parameters, families <span class="mono">qwen</span> and <span class="mono">llama</span>, 14 of 20 (method, scale) cells.</li>
-          <li>Catalogue entries outside that span are extrapolations, labelled <span class="mono">OUT_OF_RANGE_SCALE</span> or <span class="mono">UNSEEN_FAMILY</span> and given LOW confidence.</li>
-          <li>Beyond 3.0 B the reported band is a lower bound: the extrapolation protocol never tested that far.</li>
-        </ul>
-      </div>
-      <div class="card-cell">
-        <h3>How to use it responsibly</h3>
-        <ul>
-          <li>Treat the top-ranked candidate as a hypothesis, then measure it.</li>
-          <li>Raise the evidence floor to <span class="mono">measured</span> when the stakes are high.</li>
-          <li>Record the real run with <span class="mono">experiments/validate_recommendation.py</span>.</li>
-          <li>Read the scope label before the number — it says which protocol's error applies.</li>
-        </ul>
-      </div>
-    </div>
-
-    <p class="prose mt-lg">
-      Twelve of the 70 catalogue candidates produce physically impossible predictions: negative peak
-      VRAM below 0.5 B, accuracy above 1.0 at 7 B. The Ridge surrogates are linear, so far outside
-      the fitted range they extrapolate straight through those limits. Those candidates are dropped
-      before scoring with a stated reason rather than silently ranked — one negative VRAM value
-      would otherwise pass every budget and rescale the memory objective for everything else.
-    </p>
-  </div>
-</section>
-
-<!-- ========================================================== CLI ====== -->
-<section class="band band--forest" id="cli">
-  <div class="wrap">
-    <header class="sec-head">
-      <div>
-        <div class="sec-head__id"><span class="n">07</span><span class="label">CLI quickstart</span></div>
-        <h2 class="display-l">One install, one command, one shortlist.</h2>
-      </div>
-      <p class="lead">
-        The package ships with the surrogate bundle and the model catalogue, so the recommender runs
-        offline. Point <span class="inline-code">--artifacts-dir</span> at your own export to use a
-        different bundle.
-      </p>
-    </header>
-
-    <div class="cols-2">
-      <div>
-        <div class="tabs" role="tablist" aria-label="CLI examples" id="cli-tabs">
-          <button type="button" role="tab" aria-selected="true" data-tab="recommend">recommend</button>
-          <button type="button" role="tab" aria-selected="false" data-tab="carbon">strict carbon</button>
-          <button type="button" role="tab" aria-selected="false" data-tab="zoo">list-zoo</button>
-          <button type="button" role="tab" aria-selected="false" data-tab="json">json</button>
-        </div>
-
-        <div class="term">
-          <div class="term__bar">
-            <div class="term__dots" aria-hidden="true"><i></i><i></i><i></i></div>
-            <span class="term__title">bash</span>
-            <button type="button" class="btn btn--ghost btn--sm term__copy" id="copy-cmd">Copy command</button>
-          </div>
-          <div class="term__body" id="term-cmd"></div>
-        </div>
-
-        <div class="chips mt-md">
-          <a class="btn btn--ghost btn--sm" href="https://pypi.org/project/green-peft/" target="_blank" rel="noopener">PyPI package</a>
-          <a class="btn btn--ghost btn--sm" href="https://huggingface.co/ai-tanzil/GreenPEFT-v2" target="_blank" rel="noopener">Hugging Face artifacts</a>
-          <a class="btn btn--ghost btn--sm" href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks" target="_blank" rel="noopener">Source repository</a>
-          <a class="btn btn--ghost btn--sm" href="https://www.kaggle.com/datasets/ashrafulislamtanzil/greenpeft-surrogate-data" target="_blank" rel="noopener">Kaggle dataset</a>
-        </div>
-      </div>
-
-      <div class="term">
-        <div class="term__bar">
-          <div class="term__dots" aria-hidden="true"><i></i><i></i><i></i></div>
-          <span class="term__title">output</span>
-          <span class="label" id="term-out-label">recorded run</span>
-        </div>
-        <div class="term__body" id="term-out"></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===================================================== RESEARCH ====== -->
-<section class="band band--paper" id="research">
-  <div class="rules" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-  <div class="wrap">
-    <header class="sec-head">
-      <div>
-        <div class="sec-head__id"><span class="n">08</span><span class="label">Research and reproducibility</span></div>
-        <h2 class="display-l">Every table, figure and metric on this page is regenerable.</h2>
-      </div>
-      <p class="lead">
-        <span class="inline-code">python reproduce.py</span> reruns the surrogate audit, rebuilds the
-        envelope, regenerates the benchmark tables, Pareto frontiers, scenarios and figures, replays
-        the back-test and runs the test suite. <span class="inline-code">--check</span> verifies the
-        committed artifacts without writing anything.
-      </p>
-    </header>
-
-    <div class="cols-2">
-      <div>
-        <h3 class="label" style="margin-bottom:6px">Documentation and reports</h3>
-        <div class="linklist" id="links-docs"></div>
-      </div>
-      <div>
-        <h3 class="label" style="margin-bottom:6px">Code, data and artifacts</h3>
-        <div class="linklist" id="links-code"></div>
-      </div>
-    </div>
-
-    <div class="term mt-lg">
-      <div class="term__bar">
-        <div class="term__dots" aria-hidden="true"><i></i><i></i><i></i></div>
-        <span class="term__title">reproduce</span>
-        <button type="button" class="btn btn--ghost btn--sm term__copy" id="copy-repro">Copy</button>
-      </div>
-<div class="term__body"><span class="c-prompt">$</span> <span class="c-cmd">git clone</span> https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks.git
-<span class="c-prompt">$</span> <span class="c-cmd">cd</span> Green-AI-Decision-Support-Frameworks
-<span class="c-prompt">$</span> <span class="c-cmd">pip install</span> -e green_peft_cli/green_peft_pkg
-<span class="c-prompt">$</span> <span class="c-cmd">python</span> reproduce.py          <span class="c-dim"># or --check to verify without writing</span>
-
-<span class="c-dim">  1  surrogate/validate.py                   grouped CV         -> results/surrogate/
-  2  analysis/build_training_envelope.py     measured envelope  -> models/model_metadata.json
-  3  analysis/benchmark_analysis.py          summary tables     -> results/benchmark/
-  4  analysis/pareto_analysis.py             frontiers          -> results/pareto/
-  5  analysis/recommendation_scenarios.py    scenario table     -> results/recommendations/
-  6  analysis/figures.py                     figures A and E    -> results/*/figures/
-  7  analysis/build_hf_export.py             model card         -> results/hf_export/
-  8  experiments/validate_recommendation.py  predicted vs actual back-test
-  9  pytest                                  the test suite</span></div>
-    </div>
-  </div>
-</section>
-
-<!-- ======================================================= AUTHOR ====== -->
-<section class="band band--forest" id="author">
-  <div class="wrap">
-    <header class="sec-head">
-      <div>
-        <div class="sec-head__id"><span class="n">09</span><span class="label">Author and citation</span></div>
-        <h2 class="display-l">Cite the artifacts, not the website.</h2>
-      </div>
-      <p class="lead">
-        GreenPEFT is released under the MIT License. The dataset and the model bundle each carry
-        their own persistent identifier.
-      </p>
-    </header>
-
-    <div class="cols-2">
-      <div class="author">
-        <img class="author__photo" src="assets/author.jpg" width="360" height="360"
-             alt="Portrait of Ashraful Islam Tanzil" loading="lazy" decoding="async">
-        <div>
-          <p class="author__name">Ashraful Islam Tanzil</p>
-          <p class="author__role">
-            Computer Science undergraduate, United International University · Dhaka, Bangladesh.
-            Author and maintainer of the GreenPEFT framework, benchmark and CLI.
+        <header class="section-header">
+          <div class="eyebrow">01 / Decision Engine</div>
+          <h2 class="display-title">A decision engine you can turn the dials on.</h2>
+          <p class="body-lead">
+            Every prediction below updates live in your browser. Move a constraint slider or change preference weights — the feasibility gate, Pareto filtering, and Green Efficiency Index (GEI) recompute instantly with zero latency.
           </p>
-          <div class="author__links">
-            <a class="btn btn--ghost btn--sm" href="https://github.com/ai-tanzil811" target="_blank" rel="noopener">GitHub</a>
-            <a class="btn btn--ghost btn--sm" href="https://huggingface.co/ai-tanzil" target="_blank" rel="noopener">Hugging Face</a>
-            <a class="btn btn--ghost btn--sm" href="https://www.kaggle.com/ashrafulislamtanzil" target="_blank" rel="noopener">Kaggle</a>
-            <a class="btn btn--ghost btn--sm" href="https://www.linkedin.com/in/ai-tanzil/" target="_blank" rel="noopener">LinkedIn</a>
-            <a class="btn btn--ghost btn--sm" href="mailto:ahmedtanzil174@gmail.com">Email</a>
+        </header>
+
+        <div class="lab-layout">
+
+          <!-- Left Column: Sticky Controls -->
+          <div class="lab-controls-sticky">
+            <div class="lab-controls-head">
+              <span class="lab-controls-title">Hardware &amp; Objectives</span>
+            </div>
+
+            <!-- Max VRAM Slider -->
+            <div class="slider-group">
+              <div class="slider-header">
+                <label class="slider-label" for="sl-vram">Max VRAM</label>
+                <span class="slider-val" id="sl-vram-val">16 GB</span>
+              </div>
+              <input type="range" id="sl-vram" min="4" max="48" step="1" value="16" aria-label="Maximum VRAM in Gigabytes">
+            </div>
+
+            <!-- Min Accuracy Slider -->
+            <div class="slider-group">
+              <div class="slider-header">
+                <label class="slider-label" for="sl-acc">Min Accuracy</label>
+                <span class="slider-val" id="sl-acc-val">0.90</span>
+              </div>
+              <input type="range" id="sl-acc" min="0.70" max="0.99" step="0.005" value="0.90" aria-label="Minimum Accuracy threshold">
+            </div>
+
+            <!-- Carbon Budget Slider -->
+            <div class="slider-group">
+              <div class="slider-header">
+                <label class="slider-label" for="sl-carbon">Carbon Budget</label>
+                <span class="slider-val" id="sl-carbon-val">0.25 kg</span>
+              </div>
+              <input type="range" id="sl-carbon" min="0.01" max="1.00" step="0.01" value="0.25" aria-label="Carbon budget in kilograms of CO2 equivalent">
+            </div>
+
+            <!-- Runtime Limit Slider -->
+            <div class="slider-group">
+              <div class="slider-header">
+                <label class="slider-label" for="sl-time">Runtime Limit</label>
+                <span class="slider-val" id="sl-time-val">60 min</span>
+              </div>
+              <input type="range" id="sl-time" min="5" max="240" step="5" value="60" aria-label="Runtime limit in minutes">
+            </div>
+
+            <!-- Preference Profile Segmented Control -->
+            <div class="slider-group">
+              <div class="slider-header">
+                <span class="slider-label">Preference Profile</span>
+              </div>
+              <div class="segmented-control" role="radiogroup" aria-label="Optimization profile">
+                <button type="button" class="segmented-btn profile-btn" data-profile="balanced" aria-pressed="true">Balanced</button>
+                <button type="button" class="segmented-btn profile-btn" data-profile="strict_carbon" aria-pressed="false">Strict Carbon</button>
+                <button type="button" class="segmented-btn profile-btn" data-profile="high_accuracy" aria-pressed="false">High Accuracy</button>
+              </div>
+            </div>
+
+            <!-- Optional Backbone Dropdown -->
+            <div class="select-group">
+              <div class="slider-header">
+                <label class="slider-label" for="sel-backbone">Backbone Architecture</label>
+              </div>
+              <select class="select-control" id="sel-backbone" aria-label="Filter by backbone architecture">
+                <option value="">Any Backbone</option>
+                <option value="tiny">Qwen2.5-Tiny (0.5B)</option>
+                <option value="small">TinyLlama-Small (1.1B)</option>
+                <option value="medium">Qwen2.5-Medium (1.5B)</option>
+              </select>
+            </div>
+
+            <!-- Optional Method Dropdown -->
+            <div class="select-group">
+              <div class="slider-header">
+                <label class="slider-label" for="sel-method">Fine-Tuning Method</label>
+              </div>
+              <select class="select-control" id="sel-method" aria-label="Filter by PEFT method">
+                <option value="">Any Method</option>
+                <option value="full_ft">Full Fine-Tuning</option>
+                <option value="lora">LoRA</option>
+                <option value="qlora">QLoRA</option>
+                <option value="lora_fa">LoRA-FA</option>
+                <option value="lisa">LISA</option>
+              </select>
+            </div>
+
           </div>
 
-          <div class="doi-list">
-            <a href="https://doi.org/10.57967/hf/10690" target="_blank" rel="noopener">
-              <b>Model · GreenPEFT-v2</b><span>doi 10.57967/hf/10690</span></a>
-            <a href="https://doi.org/10.34740/KAGGLE/DSV/20178095" target="_blank" rel="noopener">
-              <b>Data · greenpeft-surrogate-data</b><span>doi 10.34740/KAGGLE/DSV/20178095</span></a>
-            <a href="https://doi.org/10.57967/hf/10504" target="_blank" rel="noopener">
-              <b>Model · GreenPEFT (first release)</b><span>doi 10.57967/hf/10504</span></a>
+          <!-- Right Column: Output Panel -->
+          <div class="output-panel" id="rec-output-panel" aria-live="polite">
+
+            <!-- Feasible Output View -->
+            <div id="recommendation-content">
+              <div class="output-header-block">
+                <span class="output-badge">RECOMMENDED CANDIDATE</span>
+                <h3 class="output-candidate-title" id="rec-title">LISA · Qwen2.5-Medium (1.5B)</h3>
+                <p class="output-rationale" id="rec-rationale">
+                  Optimal multi-objective Pareto trade-off: high accuracy within 16 GB VRAM budget with low memory activation overhead.
+                </p>
+              </div>
+
+              <!-- 2x4 Metrics Grid -->
+              <div class="metrics-grid-2x4">
+                <div class="metric-cell">
+                  <div class="metric-name">Predicted Accuracy</div>
+                  <div class="metric-val" id="m-acc">0.923</div>
+                </div>
+                <div class="metric-cell">
+                  <div class="metric-name">Peak VRAM</div>
+                  <div class="metric-val" id="m-vram">14.2<span class="metric-unit">GB</span></div>
+                </div>
+                <div class="metric-cell">
+                  <div class="metric-name">Energy</div>
+                  <div class="metric-val" id="m-energy">0.18<span class="metric-unit">kWh</span></div>
+                </div>
+                <div class="metric-cell">
+                  <div class="metric-name">Carbon</div>
+                  <div class="metric-val" id="m-carbon">0.09<span class="metric-unit">kg</span></div>
+                </div>
+                <div class="metric-cell">
+                  <div class="metric-name">Runtime</div>
+                  <div class="metric-val" id="m-time">42<span class="metric-unit">min</span></div>
+                </div>
+                <div class="metric-cell">
+                  <div class="metric-name">GEI Score</div>
+                  <div class="metric-val" id="m-gei">0.847</div>
+                </div>
+                <div class="metric-cell">
+                  <div class="metric-name">Feasibility</div>
+                  <div class="metric-val" id="m-feas">✓ FEASIBLE</div>
+                </div>
+                <div class="metric-cell">
+                  <div class="metric-name">Confidence</div>
+                  <div class="metric-val" id="m-conf">Medium</div>
+                </div>
+              </div>
+
+              <!-- Comparison Mini-Chart: Top 3 Candidates by GEI -->
+              <div class="comparison-section">
+                <div class="sub-heading-mono">GEI Relative Score Comparison (Top 3)</div>
+                <div class="bars-stack" id="comparison-bars">
+                  <!-- Populated dynamically via JS -->
+                </div>
+              </div>
+
+              <!-- Alternatives List (2 rows with "why not") -->
+              <div class="alternatives-section">
+                <div class="sub-heading-mono">Alternative Candidates</div>
+                <div class="alternatives-list" id="alternatives-list">
+                  <!-- Populated dynamically via JS -->
+                </div>
+              </div>
+
+              <div class="caption-mono" style="margin-top: 24px;">
+                Predictions are surrogate estimates, not guarantees. Validate with a real run.
+              </div>
+            </div>
+
+            <!-- Infeasible State (Inverted Black Panel) -->
+            <div class="infeasible-panel" id="infeasible-panel">
+              <h3 class="infeasible-title">NO FEASIBLE CANDIDATE — RELAX VRAM OR ACCURACY.</h3>
+              <p class="infeasible-sub">
+                No parameter-efficient fine-tuning configuration simultaneously satisfies your current hardware ceilings and performance floor.
+              </p>
+              <div class="infeasible-reasons" id="infeasible-reasons-list"></div>
+              <button type="button" class="btn btn--primary" id="relax-constraints-btn">Relax constraints</button>
+            </div>
+
           </div>
+
         </div>
+
       </div>
+    </section>
 
-      <div class="cite">
-        <div class="panel__head">
-          <span class="label">BibTeX</span>
-          <button type="button" class="btn btn--ghost btn--sm" id="copy-bib">Copy</button>
+    <!-- =======================================================================
+         Section 3: Why This Matters (Interactive 3-Beat)
+         ==================================================================== -->
+    <section class="band" id="why">
+      <div class="container">
+
+        <header class="section-header">
+          <div class="eyebrow">02 / Motivation</div>
+          <h2 class="display-title">Why pre-run decision support matters.</h2>
+          <p class="body-lead">
+            Parameter-efficient fine-tuning has dozens of tuning dimensions. Brute-force sweeps waste compute on configurations destined to fail.
+          </p>
+        </header>
+
+        <!-- Step Navigation Tabs -->
+        <div class="why-tabs" role="tablist" aria-label="Motivation steps">
+          <button class="why-tab-btn" data-step="cost" aria-selected="true" role="tab">01 / Trial &amp; Error Cost</button>
+          <button class="why-tab-btn" data-step="conflict" aria-selected="false" role="tab">02 / Conflicting Objectives</button>
+          <button class="why-tab-btn" data-step="filter" aria-selected="false" role="tab">03 / Filter First, Validate Second</button>
         </div>
-<pre id="bibtex">@misc{tanzil2026greenpeft,
-  <span class="k">author</span>    = {<span class="v">Ashraful Islam Tanzil</span>},
-  <span class="k">title</span>     = {<span class="v">GreenPEFT: A Multi-Objective Green AI Decision Support Framework</span>},
-  <span class="k">year</span>      = {<span class="v">2026</span>},
-  <span class="k">publisher</span> = {<span class="v">Hugging Face</span>},
-  <span class="k">doi</span>       = {<span class="v">10.57967/hf/10690</span>},
-  <span class="k">url</span>       = {<span class="v">https://huggingface.co/ai-tanzil/GreenPEFT-v2</span>}
-}
 
-@misc{tanzil2026greenpeftdata,
-  <span class="k">author</span>    = {<span class="v">Ashraful Islam Tanzil</span>},
-  <span class="k">title</span>     = {<span class="v">greenpeft-surrogate-data</span>},
-  <span class="k">year</span>      = {<span class="v">2026</span>},
-  <span class="k">publisher</span> = {<span class="v">Kaggle</span>},
-  <span class="k">doi</span>       = {<span class="v">10.34740/KAGGLE/DSV/20178095</span>}
+        <!-- Beat 1: Trial & error is expensive -->
+        <div class="why-step-card is-active" data-step="cost">
+          <div>
+            <h3 class="why-step-title">Trial and error is expensive.</h3>
+            <p class="body-regular" style="margin-bottom: 16px;">
+              A standard grid sweep evaluating 4 model backbones, 5 PEFT methods, 3 learning rates, and 3 random seeds requires 180 full fine-tuning runs.
+            </p>
+            <p class="body-regular">
+              Running blind sweeps on cloud GPUs wastes substantial budget and accumulates hundreds of kilograms of carbon before you discover that large rank adaptations trigger Out-Of-Memory (OOM) failures.
+            </p>
+          </div>
+          <div class="counter-hero">
+            <div class="counter-val">1 sweep ≈ $340 + 12h</div>
+            <div class="caption-mono">Based on 180-run baseline sweep on Tesla T4 cluster (45.2 kWh)</div>
+          </div>
+        </div>
+
+        <!-- Beat 2: Objectives conflict -->
+        <div class="why-step-card" data-step="conflict">
+          <div>
+            <h3 class="why-step-title">Objectives conflict.</h3>
+            <p class="body-regular" style="margin-bottom: 16px;">
+              Single-metric optimization creates severe unintended trade-offs. Chasing peak accuracy demands large model backbones and unquantized weights, driving up GPU memory requirements and energy draw.
+            </p>
+            <p class="body-regular">
+              Conversely, aggressive 4-bit quantization reduces memory footprint but can introduce performance degradation on complex domain tasks. GreenPEFT formalizes this Pareto frontier.
+            </p>
+          </div>
+          <div class="conflict-radar-box">
+            <div class="conflict-row">
+              <span>Downstream Accuracy</span>
+              <strong>Demands scale (↑ parameters, ↑ rank)</strong>
+            </div>
+            <div class="conflict-row">
+              <span>Peak VRAM Footprint</span>
+              <strong>Capped by GPU memory (16 GB ceiling)</strong>
+            </div>
+            <div class="conflict-row">
+              <span>Carbon &amp; Energy</span>
+              <strong>Accumulates over training hours</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Beat 3: Filter first. Validate second -->
+        <div class="why-step-card" data-step="filter">
+          <div>
+            <h3 class="why-step-title">Filter first. Validate second.</h3>
+            <p class="body-regular" style="margin-bottom: 20px;">
+              Rather than training every candidate, GreenPEFT evaluates all combinations through zero-shot surrogate models, applies physical constraints, and isolates the non-dominated Pareto frontier.
+            </p>
+            <div class="filter-toggle-container">
+              <div class="filter-toggle-bar">
+                <button type="button" class="filter-toggle-btn" id="btn-run-all" aria-pressed="true">Run everything (12 sweeps)</button>
+                <button type="button" class="filter-toggle-btn" id="btn-filter-greenpeft" aria-pressed="false">GreenPEFT (3 candidates)</button>
+              </div>
+            </div>
+          </div>
+          <div id="filter-dots-mount">
+            <!-- Populated via charts.js -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         Section 4: Pipeline + Evidence
+         ==================================================================== -->
+    <section class="band" id="pipeline">
+      <div class="container">
+
+        <header class="section-header">
+          <div class="eyebrow">03 / Architecture</div>
+          <h2 class="display-title">Five-stage surrogate pipeline.</h2>
+          <p class="body-lead">
+            A deterministic decision framework connecting raw empirical measurements to actionable recommendations. Hover or click any stage to inspect inputs and outputs.
+          </p>
+        </header>
+
+        <!-- 5-Stage Diagram -->
+        <div class="pipeline-track" role="region" aria-label="Five stage pipeline architecture">
+          <div class="pipeline-stage is-active" data-stage="harmonize" tabindex="0">
+            <div class="pipeline-stage-num">STAGE 01</div>
+            <div class="pipeline-stage-name">Harmonize</div>
+          </div>
+          <div class="pipeline-stage" data-stage="benchmark" tabindex="0">
+            <div class="pipeline-stage-num">STAGE 02</div>
+            <div class="pipeline-stage-name">Benchmark</div>
+          </div>
+          <div class="pipeline-stage" data-stage="surrogate" tabindex="0">
+            <div class="pipeline-stage-num">STAGE 03</div>
+            <div class="pipeline-stage-name">Surrogate</div>
+          </div>
+          <div class="pipeline-stage" data-stage="filter" tabindex="0">
+            <div class="pipeline-stage-num">STAGE 04</div>
+            <div class="pipeline-stage-name">Filter + Pareto</div>
+          </div>
+          <div class="pipeline-stage" data-stage="recommend" tabindex="0">
+            <div class="pipeline-stage-num">STAGE 05</div>
+            <div class="pipeline-stage-name">Recommend</div>
+          </div>
+        </div>
+
+        <!-- Dynamic Stage Details Box -->
+        <div class="pipeline-details-box">
+          <div class="pipeline-chips-line" id="pipeline-chips-mount">
+            <!-- Populated dynamically via JS -->
+          </div>
+          <p class="pipeline-desc" id="pipeline-desc-mount">
+            Normalizes heterogeneous training traces and hardware telemetry into standard units. Eliminates measurement divergence across different tracking libraries.
+          </p>
+        </div>
+
+        <!-- Evidence Subsection -->
+        <div id="evidence" style="padding-top: 32px;">
+          <header class="section-header" style="margin-bottom: 40px;">
+            <div class="eyebrow">Empirical Ground Truth</div>
+            <h3 class="display-sub">Calibrated benchmark evidence.</h3>
+          </header>
+
+          <div class="evidence-grid">
+
+            <!-- Evidence Scatter Plot -->
+            <div class="evidence-chart-box">
+              <div class="sub-heading-mono" style="margin-bottom: 12px;">Accuracy vs Peak VRAM (60 Runs)</div>
+              <div id="evidence-scatter-mount"></div>
+              <div class="caption-mono" style="margin-top: 12px;">
+                Shapes: LoRA (▲), QLoRA (▼), LISA (■), LoRA-FA (◆), Full-FT (●)
+              </div>
+            </div>
+
+            <!-- Evidence Compact Table -->
+            <div class="evidence-table-box">
+              <div class="sub-heading-mono" style="margin-bottom: 12px;">Method Comparison (Tesla T4 · SST-2)</div>
+              <table class="compact-table">
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>Accuracy</th>
+                    <th>VRAM</th>
+                    <th>Energy</th>
+                    <th>Carbon</th>
+                    <th>Time</th>
+                    <th>GEI</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Full-FT (0.5B)</td>
+                    <td>0.905</td>
+                    <td>11.1 GB</td>
+                    <td>0.0024 kWh</td>
+                    <td>0.0016 kg</td>
+                    <td>136s</td>
+                    <td>0.490</td>
+                  </tr>
+                  <tr>
+                    <td>LoRA (1.1B)</td>
+                    <td>0.944</td>
+                    <td>9.4 GB</td>
+                    <td>0.0018 kWh</td>
+                    <td>0.0012 kg</td>
+                    <td>107s</td>
+                    <td>0.792</td>
+                  </tr>
+                  <tr>
+                    <td>QLoRA (1.1B)</td>
+                    <td>0.938</td>
+                    <td>4.0 GB</td>
+                    <td>0.0027 kWh</td>
+                    <td>0.0018 kg</td>
+                    <td>162s</td>
+                    <td>0.789</td>
+                  </tr>
+                  <tr>
+                    <td>LoRA-FA (1.1B)</td>
+                    <td>0.925</td>
+                    <td>8.4 GB</td>
+                    <td>0.0017 kWh</td>
+                    <td>0.0011 kg</td>
+                    <td>102s</td>
+                    <td>0.712</td>
+                  </tr>
+                  <tr>
+                    <td>LISA (1.5B)</td>
+                    <td>0.938</td>
+                    <td>15.2 GB</td>
+                    <td>0.0025 kWh</td>
+                    <td>0.0016 kg</td>
+                    <td>141s</td>
+                    <td>0.585</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="highlight-callout">
+                <span>LISA fits a 1.5B model in 16 GB VRAM.</span>
+              </div>
+
+              <div class="caption-mono" style="margin-top: 16px;">
+                60-run NVIDIA Tesla T4 · SST-2 · 0.5B–3B params · Extrapolated entries marked with *
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         Section 5: Trust & Limitations (Accordion)
+         ==================================================================== -->
+    <section class="band" id="trust">
+      <div class="container">
+
+        <header class="section-header">
+          <div class="eyebrow">04 / Transparency</div>
+          <h2 class="display-title">Trust &amp; limitations.</h2>
+          <p class="body-lead">
+            Rigorous research requires explicit boundaries. GreenPEFT makes no inflated claims about optimality or universal generalization.
+          </p>
+        </header>
+
+        <div class="accordion-list" role="region" aria-label="Trust and limitations details">
+
+          <div class="accordion-item">
+            <button class="accordion-trigger" aria-expanded="false">
+              <span>Scope</span>
+              <span class="accordion-icon">+</span>
+            </button>
+            <div class="accordion-content" style="display: none;">
+              Empirical grounding is calibrated on SST-2 text classification benchmarks executed on NVIDIA Tesla T4 GPUs across 0.5B to 3.0B parameter architectures. Applications to generative tasks, extreme sequence lengths, or multi-GPU distributed clusters extrapolate beyond measured bounds.
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button class="accordion-trigger" aria-expanded="false">
+              <span>Method</span>
+              <span class="accordion-icon">+</span>
+            </button>
+            <div class="accordion-content" style="display: none;">
+              Predictions originate from zero-shot linear surrogate regressors parameterized by architectural metadata. They capture macro scaling dynamics but cannot predict dataset-specific convergence anomalies or hyperparameter instabilities.
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button class="accordion-trigger" aria-expanded="false">
+              <span>What it does</span>
+              <span class="accordion-icon">+</span>
+            </button>
+            <div class="accordion-content" style="display: none;">
+              GreenPEFT plans experiments, prunes physically infeasible strategies before runtime, extracts the Pareto frontier across conflicting axes, and scores feasible candidates with the Green Efficiency Index.
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button class="accordion-trigger" aria-expanded="false">
+              <span>What it does not do</span>
+              <span class="accordion-icon">+</span>
+            </button>
+            <div class="accordion-content" style="display: none;">
+              GreenPEFT does not execute fine-tuning runs itself, does not modify model weights, and provides no mathematical guarantees of downstream task accuracy, runtime duration, or energy consumption.
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button class="accordion-trigger" aria-expanded="false">
+              <span>Validation</span>
+              <span class="accordion-icon">+</span>
+            </button>
+            <div class="accordion-content" style="display: none;">
+              Every claim is traceable to open-source repository artifacts, cross-validation splits, error bounds, and an independent reproducibility report published in the <a href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks" target="_blank" rel="noopener">GitHub repository</a>.
+            </div>
+          </div>
+
+        </div>
+
+        <div class="caption-mono">
+          Always validate a selected candidate with a real run.
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         Section 6: CLI Quickstart (Interactive Terminal)
+         ==================================================================== -->
+    <section class="band band--dark" id="cli">
+      <div class="container">
+
+        <header class="section-header">
+          <div class="eyebrow" style="color: #A3A3A3;">05 / Tooling</div>
+          <h2 class="display-title">CLI quickstart.</h2>
+          <p class="body-lead" style="color: #A3A3A3;">
+            Integrate GreenPEFT directly into your pre-flight CI/CD pipelines and experiment scripts.
+          </p>
+        </header>
+
+        <div class="cli-split">
+
+          <!-- Left Column: Code Block -->
+          <div class="code-panel">
+            <div class="code-panel-head">
+              <span class="caption-mono" style="color: #A3A3A3;">BASH · GREEN-PEFT CLI</span>
+              <div style="display: flex; gap: 8px;">
+                <button type="button" class="btn btn--ghost btn--sm" id="cli-run-demo-btn">▶ Run demo</button>
+                <button type="button" class="btn btn--primary btn--sm" id="cli-copy-btn">Copy</button>
+              </div>
+            </div>
+            <pre><code>$ pip install green-peft
+
+$ green-peft recommend \
+    --artifacts-dir ./peft_bench_export \
+    --vram 16 \
+    --accuracy 0.90 \
+    --profile balanced</code></pre>
+          </div>
+
+          <!-- Right Column: Mock Terminal Output -->
+          <div class="terminal-panel" id="terminal-panel">
+            <div id="terminal-output">→ Filtering 47 candidates...
+→ 6 feasible under constraints.
+→ Pareto frontier: 3 candidates.
+
+RECOMMENDED
+  method      LISA
+  backbone    Qwen2.5-Medium (1.5B)
+  accuracy    0.923 ± 0.011
+  peak_vram   14.2 GB
+  energy      0.18 kWh
+  carbon      0.09 kgCO₂e
+  runtime     42 min
+  GEI         0.847
+
+Alternatives:
+  QLoRA + TinyLlama-Small   GEI 0.791
+  LoRA-FA + Qwen2.5-Tiny    GEI 0.744</div>
+          </div>
+
+        </div>
+
+        <div class="cli-links">
+          <a href="https://pypi.org/project/green-peft/" target="_blank" rel="noopener">PyPI</a>
+          <a href="https://huggingface.co/ai-tanzil/GreenPEFT-v2" target="_blank" rel="noopener">Hugging Face</a>
+          <a href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks" target="_blank" rel="noopener">GitHub</a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         Section 7: Author, Links & Citation
+         ==================================================================== -->
+    <section class="band" id="research">
+      <div class="container">
+
+        <header class="section-header">
+          <div class="eyebrow">06 / Reference</div>
+          <h2 class="display-title">Author, links &amp; citation.</h2>
+        </header>
+
+        <div class="author-grid">
+
+          <!-- Left Column: Author Profile -->
+          <div class="author-profile">
+            <img class="author-avatar" src="https://gravatar.com/crownelectronic4c6790a6af" alt="Ashraful Islam Tanzil" width="72" height="72">
+            <div>
+              <h3 class="author-name">Ashraful Islam Tanzil</h3>
+              <p class="caption-mono" style="margin-top: 4px;">Researcher · Green AI &amp; Efficient LLM Systems</p>
+            </div>
+            <p class="body-regular">
+              Machine learning researcher working on Green AI decision frameworks, parameter-efficient fine-tuning efficiency, and empirical carbon accounting for large language models.
+            </p>
+          </div>
+
+          <!-- Right Column: 2-Column Link Grid -->
+          <div class="link-grid-2col">
+            <a class="research-link" href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks#readme" target="_blank" rel="noopener">
+              <span>→ README</span>
+            </a>
+            <a class="research-link" href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks/blob/main/reproduce.py" target="_blank" rel="noopener">
+              <span>→ Reproduction script</span>
+            </a>
+            <a class="research-link" href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks/tree/main/notebooks" target="_blank" rel="noopener">
+              <span>→ Notebooks</span>
+            </a>
+            <a class="research-link" href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks/blob/main/paper/reproducibility_report.pdf" target="_blank" rel="noopener">
+              <span>→ Audit report</span>
+            </a>
+            <a class="research-link" href="https://www.kaggle.com/dsv/20178095" target="_blank" rel="noopener">
+              <span>→ Data methodology</span>
+            </a>
+            <a class="research-link" href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks/tree/main/surrogate" target="_blank" rel="noopener">
+              <span>→ Surrogate validation</span>
+            </a>
+            <a class="research-link" href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks/tree/main/results" target="_blank" rel="noopener">
+              <span>→ Benchmark artifacts</span>
+            </a>
+            <a class="research-link" href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks/blob/main/analysis/validation.py" target="_blank" rel="noopener">
+              <span>→ Recommendation validation</span>
+            </a>
+            <a class="research-link" href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks/blob/main/models/model_metadata.json" target="_blank" rel="noopener">
+              <span>→ Model metadata</span>
+            </a>
+            <a class="research-link" href="https://pypi.org/project/green-peft/" target="_blank" rel="noopener">
+              <span>→ PyPI</span>
+            </a>
+            <a class="research-link" href="https://huggingface.co/ai-tanzil/GreenPEFT-v2" target="_blank" rel="noopener">
+              <span>→ Hugging Face export</span>
+            </a>
+            <a class="research-link" href="https://doi.org/10.57967/hf/10690" target="_blank" rel="noopener">
+              <span>→ DOI</span>
+            </a>
+          </div>
+
+        </div>
+
+        <!-- BibTeX Box -->
+        <div class="bibtex-box">
+          <div class="bibtex-head">
+            <span class="sub-heading-mono" style="margin-bottom: 0;">BibTeX Citation</span>
+            <button type="button" class="btn btn--ghost btn--sm" id="bibtex-copy-btn">Copy BibTeX</button>
+          </div>
+          <pre class="bibtex-code" id="bibtex-text">@software{tanzil_greenpeft_2025,
+  author  = {Tanzil, Ashraful Islam},
+  title   = {GreenPEFT: A Multi-Objective Green AI Decision Support Framework},
+  year    = {2025},
+  license = {MIT},
+  url     = {https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks}
 }</pre>
+        </div>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+          <div>MIT License · &copy; 2025 Ashraful Islam Tanzil</div>
+          <div>GreenPEFT Precision Decision Support</div>
+        </footer>
+
       </div>
-    </div>
+    </section>
 
-    <footer class="site-foot">
-      <span>GreenPEFT · MIT License</span>
-      <a href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks/blob/main/LICENSE" target="_blank" rel="noopener">LICENSE</a>
-      <a href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks/blob/main/CITATION.cff" target="_blank" rel="noopener">CITATION.cff</a>
-      <span class="site-foot__sep" id="build-stamp"></span>
-    </footer>
-  </div>
-</section>
+  </main>
 
-</main>
+  <!-- Precomputed candidate and evidence datasets -->
+  <script src="data/candidates.js"></script>
+  <script src="data/evidence.js"></script>
 
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-<script src="data/candidates.js"></script>
-<script src="data/evidence.js"></script>
-<script src="js/engine.js"></script>
-<script src="js/charts.js"></script>
-<script src="js/app.js"></script>
+  <!-- Decision engine & Hand-rolled SVG charts -->
+  <script src="js/engine.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
