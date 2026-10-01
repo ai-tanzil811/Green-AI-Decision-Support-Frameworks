@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "green-peft"
-version = "0.2.0"
+version = "0.3.0"
 description = "Constraint-aware, zero-shot PEFT strategy recommender using the GreenPEFT surrogate models."
 readme = "README.md"
 license = "MIT"

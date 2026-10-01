@@ -4,6 +4,7 @@ pyproject.toml
 green_peft/__init__.py
 green_peft/banner.py
 green_peft/cli.py
+green_peft/confidence.py
 green_peft/features.py
 green_peft/recommender.py
 green_peft.egg-info/PKG-INFO

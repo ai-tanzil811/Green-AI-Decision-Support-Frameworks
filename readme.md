@@ -259,7 +259,7 @@ already-measured configurations and is recorded as `in_sample=True`.
 `green-peft recommend --vram 16` works straight after install. Pass the flag only to point at a
 different export.
 
-The published CLI release is `green-peft==0.2.0` and the published artifact bundle
+The published CLI release is `green-peft==0.3.0` and the published artifact bundle
 is `ai-tanzil/GreenPEFT`. The CLI and artifact bundle should be treated as a matched
 release pair.
 
