@@ -11,6 +11,7 @@ Runs, in dependency order:
     5. analysis/recommendation_scenarios.py   Table 4 -> results/recommendations/
     6. analysis/figures.py                    Figures A and E
     6b. analysis/build_hf_export.py           model card + bundle -> results/hf_export/
+    6c. analysis/build_website_data.py        site data layer -> website/data/
     7. experiments/validate_recommendation.py predicted vs actual back-test
     8. pytest                                 the test suite
 
@@ -45,6 +46,10 @@ STEPS = [
     ('recommendation scenarios', [PY, 'analysis/recommendation_scenarios.py'], False),
     ('figures', [PY, 'analysis/figures.py'], False),
     ('hugging face export', [PY, 'analysis/build_hf_export.py'], False),
+    # The showcase site is static, so its data layer is a derived artifact like
+    # any other table in results/ -- it has to be rebuilt when the numbers move.
+    ('website data', [PY, 'analysis/build_website_data.py'], False),
+    ('website data (check)', [PY, 'analysis/build_website_data.py', '--check'], True),
     ('recommendation back-test',
      [PY, 'experiments/validate_recommendation.py', '--from-benchmark', '--replace'], False),
     ('tests', [PY, '-m', 'pytest', 'green_peft_cli/green_peft_pkg/tests', '-q'], True),

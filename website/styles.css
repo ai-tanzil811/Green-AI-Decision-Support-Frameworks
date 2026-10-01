@@ -1078,8 +1078,99 @@ button.ctrl__val:hover { color: var(--cyan-glow); }
   #pipeline-mount { display: none; }
 }
 
-.pipeline__svg { min-width: 1200px; }
 
 /* Matrix cells keep their shape when the table scrolls sideways. */
 .matrix td { min-width: 92px; }
 .matrix th[scope="row"] { min-width: 112px; }
+
+/* ---------- 27. Metric grid density -------------------------------------- */
+
+/* Six metrics at full width squeeze the numbers until units collide with the
+   cell border, so the recommendation grid tracks wider and the type steps down. */
+.rec__metrics { grid-template-columns: repeat(auto-fit, minmax(228px, 1fr)); }
+.rec__metrics .metric { min-width: 0; }
+.rec__metrics .metric__value { font-size: clamp(1.1rem, 1.5vw, 1.4rem); }
+.metric__value { overflow-wrap: anywhere; }
+.metric__band { line-height: 1.5; }
+
+.statline .metric__value { font-size: clamp(1.15rem, 1.6vw, 1.5rem); }
+
+/* ---------- 28. Figure strip ---------------------------------------------- */
+
+/* The repository figures come out of matplotlib at assorted aspect ratios.
+   A fixed frame with contained images keeps the grid from going ragged. */
+.figstrip { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+.fig__frame { aspect-ratio: 16 / 11; display: grid; place-items: center; }
+.fig__frame img { max-width: 100%; max-height: 100%; width: auto; height: auto; }
+.fig__src { display: block; margin-top: 5px; }
+
+/* Spans need blockifying before height and overflow apply to them. */
+.wbar__track, .wbar__fill, .alt__bar, .rank__bar, .crank__bar, .sbar__track { display: block; }
+.sbar__track { display: grid; }
+
+/* ---------- 29. Band-independent terminals ------------------------------- */
+
+/* A terminal is always dark, whichever band it sits in, so it re-declares the
+   band tokens its children read instead of inheriting paper-coloured ones. */
+.term {
+  --bg: #03100a;
+  --bg-panel: #03100a;
+  --fg: #e9efe9;
+  --fg-muted: #93a89c;
+  --fg-faint: #6e8378;
+  --rule: rgba(173, 214, 194, 0.16);
+  --rule-strong: rgba(173, 214, 194, 0.30);
+  --accent: #4fbdaf;
+  --accent-soft: rgba(79, 189, 175, 0.14);
+  color: #c9d8cd;
+}
+.term .btn--ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+/* The recorded output types in; reserving the space stops the page jumping. */
+#term-out { min-height: 360px; }
+
+/* ---------- 30. Author block --------------------------------------------- */
+
+.author__photo {
+  width: clamp(96px, 11vw, 132px);
+  height: clamp(96px, 11vw, 132px);
+  align-self: start;
+}
+
+.doi-list { display: grid; border-top: 1px solid var(--rule); margin-top: 18px; }
+.doi-list a {
+  display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline;
+  padding: 10px 0; border-bottom: 1px solid var(--rule); text-decoration: none;
+  transition: color 160ms var(--ease);
+}
+.doi-list a:hover { color: var(--accent); }
+.doi-list b { font-weight: 450; font-size: var(--fs-xs); }
+.doi-list span {
+  font-family: var(--font-mono); font-size: var(--fs-label);
+  color: var(--fg-faint); letter-spacing: 0.04em;
+}
+
+/* ---------- 31. Matrix caption ------------------------------------------- */
+
+.matrix caption {
+  caption-side: bottom; text-align: left; padding-top: 16px;
+  font-size: var(--fs-xs); color: var(--fg-faint); line-height: 1.5;
+}
+
+/* ---------- 32. Narrow-viewport corrections ------------------------------ */
+
+/* Divider rules between inline credibility marks look broken once the row
+   wraps, so below the breakpoint they become one item per line. */
+@media (max-width: 720px) {
+  .credmarks { display: grid; }
+  .credmarks a, .credmarks span { padding: 10px 0; border-left: 0 !important; }
+  .credmarks > * + * { border-top: 1px solid var(--rule); padding-left: 0; }
+}
+
+@media (max-width: 520px) {
+  .rec__metrics .metric { border-right: 0; }
+  .alt { grid-template-columns: 16px minmax(0, 1fr); row-gap: 8px; }
+  .alt__gei { grid-column: 2; }
+  .statline > * + * { padding-left: 0; border-left: 0; }
+  .statline > * { padding-right: 0; }
+}

@@ -365,40 +365,40 @@
           <span class="pstep__n">Stage 01</span>
           <h3 class="pstep__t">Multi-source data harmonisation</h3>
           <div class="pstep__io">
-            <div><h4>In</h4><ul><li>surrogate_dataset.csv</li><li>Open LLM-Perf leaderboard</li><li>llmenergy.csv</li></ul></div>
-            <div><h4>Out</h4><ul><li>477 × 46 ML-ready table</li><li>measurement-pass flags</li></ul></div>
+            <div><h4>Inputs</h4><ul><li>surrogate_dataset.csv</li><li>Open LLM-Perf leaderboard</li><li>llmenergy.csv</li></ul></div>
+            <div><h4>Outputs</h4><ul><li>477 × 46 ML-ready table</li><li>measurement-pass flags</li></ul></div>
           </div>
         </li>
         <li class="pstep">
           <span class="pstep__n">Stage 02</span>
           <h3 class="pstep__t">Empirical benchmarking</h3>
           <div class="pstep__io">
-            <div><h4>In</h4><ul><li>backbones 0.5–3.0 B</li><li>full_ft · lora · qlora · lora_fa · lisa</li><li>seeds 13 · 42 · 2024</li></ul></div>
-            <div><h4>Out</h4><ul><li>60 raw runs on a Tesla T4</li><li>peak VRAM · energy · accuracy · time</li></ul></div>
+            <div><h4>Inputs</h4><ul><li>backbones 0.5–3.0 B</li><li>full_ft · lora · qlora · lora_fa · lisa</li><li>seeds 13 · 42 · 2024</li></ul></div>
+            <div><h4>Outputs</h4><ul><li>60 raw runs on a Tesla T4</li><li>peak VRAM · energy · accuracy · time</li></ul></div>
           </div>
         </li>
         <li class="pstep">
           <span class="pstep__n">Stage 03</span>
           <h3 class="pstep__t">Zero-shot surrogate regression</h3>
           <div class="pstep__io">
-            <div><h4>In</h4><ul><li>params_b · adapter rank · quant_bits</li><li>dataset size · family · method</li></ul></div>
-            <div><h4>Out</h4><ul><li>accuracy · peak VRAM</li><li>energy kWh · wall-clock s</li><li>per-target error bands</li></ul></div>
+            <div><h4>Inputs</h4><ul><li>params_b · adapter rank · quant_bits</li><li>dataset size · family · method</li></ul></div>
+            <div><h4>Outputs</h4><ul><li>accuracy · peak VRAM</li><li>energy kWh · wall-clock s</li><li>per-target error bands</li></ul></div>
           </div>
         </li>
         <li class="pstep">
           <span class="pstep__n">Stage 04</span>
           <h3 class="pstep__t">Constraint filtering and Pareto optimisation</h3>
           <div class="pstep__io">
-            <div><h4>In</h4><ul><li>VRAM · accuracy · carbon · time budgets</li><li>evidence floor</li></ul></div>
-            <div><h4>Out</h4><ul><li>feasible set</li><li>non-dominated frontier</li><li>GEI ranking</li></ul></div>
+            <div><h4>Inputs</h4><ul><li>VRAM · accuracy · carbon · time budgets</li><li>evidence floor</li></ul></div>
+            <div><h4>Outputs</h4><ul><li>feasible set</li><li>non-dominated frontier</li><li>GEI ranking</li></ul></div>
           </div>
         </li>
         <li class="pstep">
           <span class="pstep__n">Stage 05</span>
           <h3 class="pstep__t">CLI recommendation and empirical back-testing</h3>
           <div class="pstep__io">
-            <div><h4>In</h4><ul><li>green-peft recommend</li><li>recorded real runs</li></ul></div>
-            <div><h4>Out</h4><ul><li>ranked shortlist with scope labels</li><li>predicted-vs-actual validation log</li></ul></div>
+            <div><h4>Inputs</h4><ul><li>green-peft recommend</li><li>recorded real runs</li></ul></div>
+            <div><h4>Outputs</h4><ul><li>ranked shortlist with scope labels</li><li>predicted-vs-actual validation log</li></ul></div>
           </div>
         </li>
       </ol>
@@ -801,9 +801,13 @@
             <a class="btn btn--ghost btn--sm" href="mailto:ahmedtanzil174@gmail.com">Email</a>
           </div>
 
-          <div class="credmarks mt-md">
-            <a href="https://doi.org/10.57967/hf/10690" target="_blank" rel="noopener">Model DOI · 10.57967/hf/10690</a>
-            <a href="https://doi.org/10.34740/KAGGLE/DSV/20178095" target="_blank" rel="noopener">Data DOI · 10.34740/KAGGLE/DSV/20178095</a>
+          <div class="doi-list">
+            <a href="https://doi.org/10.57967/hf/10690" target="_blank" rel="noopener">
+              <b>Model · GreenPEFT-v2</b><span>doi 10.57967/hf/10690</span></a>
+            <a href="https://doi.org/10.34740/KAGGLE/DSV/20178095" target="_blank" rel="noopener">
+              <b>Data · greenpeft-surrogate-data</b><span>doi 10.34740/KAGGLE/DSV/20178095</span></a>
+            <a href="https://doi.org/10.57967/hf/10504" target="_blank" rel="noopener">
+              <b>Model · GreenPEFT (first release)</b><span>doi 10.57967/hf/10504</span></a>
           </div>
         </div>
       </div>

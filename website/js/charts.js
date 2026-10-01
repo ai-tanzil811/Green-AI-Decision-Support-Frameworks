@@ -269,9 +269,14 @@ const GPCharts = (function () {
   /* ---- pipeline diagram -------------------------------------------------- */
 
   function pipeline(stages) {
-    const BW = 196, GAPX = 26;
+    const BW = 196, GAPX = 26, BOXH = 62;
+    // Stages list different numbers of inputs; the boxes still have to sit on
+    // one line, so the tallest input block sets the offset for all of them.
+    const maxIn = stages.reduce(function (n, st) { return Math.max(n, st.in.length); }, 1);
+    const maxOut = stages.reduce(function (n, st) { return Math.max(n, st.out.length); }, 1);
+    const BOXY = 24 + maxIn * 12 + 10;
     const W = stages.length * BW + (stages.length - 1) * GAPX;
-    const H = 268;
+    const H = BOXY + BOXH + 34 + maxOut * 12 + 4;
     const s = svg(W, H, 'pipeline__svg');
     s.setAttribute('preserveAspectRatio', 'xMinYMin meet');
 
@@ -285,8 +290,8 @@ const GPCharts = (function () {
         g.appendChild(el('text', { class: 'pio', x: x, y: 24 + k * 12 }, '· ' + t));
       });
 
-      const boxY = 24 + Math.max(st.in.length, 1) * 12 + 10;
-      const boxH = 62;
+      const boxY = BOXY;
+      const boxH = BOXH;
       g.appendChild(el('rect', { class: 'pbox', x: x, y: boxY, width: BW, height: boxH, rx: 3 }));
       g.appendChild(el('rect', { x: x, y: boxY, width: 2.5, height: boxH, fill: '#4fbdaf' }));
       g.appendChild(el('text', { class: 'pnum', x: x + 14, y: boxY + 20 }, 'STAGE 0' + (i + 1)));

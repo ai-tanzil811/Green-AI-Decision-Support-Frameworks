@@ -14,6 +14,7 @@
   const CFG = GPEngine.config;
   const REPO = 'https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks';
   const BLOB = REPO + '/blob/main/';
+  const TREE = REPO + '/tree/main/';
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const $ = function (sel, root) { return (root || document).querySelector(sel); };
@@ -355,8 +356,8 @@
           bandText(top.pred_peak_vram_gb, top.pred_peak_vram_gb_band_pct, fmt.gb1, 'GB')) +
         metric('Energy', fmt.kwh(top.pred_energy_kwh), 'kWh',
           bandText(top.pred_energy_kwh, top.pred_energy_kwh_band_pct, fmt.kwh)) +
-        metric('Carbon', fmt.kg(top.pred_carbon_kgco2eq), 'kgCO₂eq',
-          'derived as energy × ' + CFG.grid_carbon_kg_per_kwh) +
+        metric('Carbon (kgCO₂eq)', fmt.kg(top.pred_carbon_kgco2eq), '',
+          'derived as energy × ' + CFG.grid_carbon_kg_per_kwh + ', never modelled') +
         metric('Wall-clock', fmt.sec(top.pred_wall_clock_s), 's',
           bandText(top.pred_wall_clock_s, top.pred_wall_clock_s_band_pct, fmt.sec, 's')) +
       '</div>' +
@@ -1203,7 +1204,9 @@ Scope tally: 25 OUT_OF_RANGE_SCALE, 15 INTERPOLATED_SCALE, 14 MEASURED,
 
   function linkList(target, rows) {
     $(target).innerHTML = rows.map(function (r) {
-      return '<a href="' + BLOB + r[1] + '" target="_blank" rel="noopener">' +
+      // GitHub serves directories under /tree/ and files under /blob/.
+      const base = r[1].endsWith('/') ? TREE : BLOB;
+      return '<a href="' + base + r[1] + '" target="_blank" rel="noopener">' +
         '<span><span class="linklist__t">' + escapeHtml(r[0]) + '</span>' +
         '<span class="linklist__p">' + escapeHtml(r[1]) + '</span></span>' +
         '<svg class="linklist__arrow" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">' +
