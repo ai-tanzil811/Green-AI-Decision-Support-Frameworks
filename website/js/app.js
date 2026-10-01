@@ -623,9 +623,49 @@
   }
 
   /* --------------------------------------------------------------------------
-     10. Initialization
+     10. Theme Toggle System (Default Dark Mode with Instant Chart Sync)
+     ----------------------------------------------------------------------- */
+  function setupThemeToggle() {
+    const themeBtn = document.getElementById('theme-toggle');
+    const iconEl = document.getElementById('theme-toggle-icon');
+    const textEl = document.getElementById('theme-toggle-text');
+
+    let currentTheme = localStorage.getItem('greenpeft_theme') || 'dark';
+    applyTheme(currentTheme);
+
+    function applyTheme(theme) {
+      currentTheme = theme;
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('greenpeft_theme', theme);
+
+      if (theme === 'light') {
+        if (iconEl) iconEl.textContent = '🌙';
+        if (textEl) textEl.textContent = 'Dark';
+      } else {
+        if (iconEl) iconEl.textContent = '☀';
+        if (textEl) textEl.textContent = 'Light';
+      }
+
+      if (Charts && Charts.refreshTheme) {
+        Charts.refreshTheme();
+      }
+    }
+
+    if (themeBtn) {
+      themeBtn.addEventListener('click', () => {
+        const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        applyTheme(nextTheme);
+      });
+    }
+  }
+
+  /* --------------------------------------------------------------------------
+     11. Initialization
      ----------------------------------------------------------------------- */
   window.addEventListener('DOMContentLoaded', () => {
+    // Setup Theme (Default Dark Mode)
+    setupThemeToggle();
+
     // 1. Initialize Hero Scatter
     const heroMount = document.getElementById('hero-scatter-mount');
     if (heroMount) {
