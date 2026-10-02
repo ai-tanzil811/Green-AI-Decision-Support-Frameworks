@@ -317,7 +317,11 @@ tradeoff('peak_gpu_memory_gb', 'Measured peak GPU memory (GB)', 'fig3_accuracy_v
 # -- Figure 4: leave-one-tier-out parity -------------------------------------------
 UNITS = {'accuracy': ('Accuracy', 1, ''), 'peak_gpu_memory_gb': ('Peak VRAM', 1, ' (GB)'),
          'energy_kwh': ('Energy', 1000, ' (Wh)'), 'wall_clock_seconds': ('Runtime', 1, ' (s)')}
-fig, axes = plt.subplots(1, 4, figsize=(7.0, 1.95))
+# 2x2 at column width rather than a 1x4 strip at text width: this keeps it a
+# single-column float, so it does not compete with the methodology figure and Table I
+# for the scarce double-column slots.
+fig, axes = plt.subplots(2, 2, figsize=(3.4, 3.3))
+axes = axes.ravel()
 for ax, tgt in zip(axes, TARGETS):
     o = oof[oof.target == tgt]
     name, k, unit = UNITS[tgt]
@@ -332,10 +336,12 @@ for ax, tgt in zip(axes, TARGETS):
     ax.set_xlim(lo - pad, hi + pad)
     ax.set_ylim(lo - pad, hi + pad)
     ax.set_title(name + unit, color=INK)
-    ax.set_xlabel('Measured')
     ax.tick_params(labelsize=6.5)
-axes[0].set_ylabel('Predicted (held-out tier)')
-fig.tight_layout(w_pad=0.8)
+for ax in axes[2:]:                       # x label only on the bottom row
+    ax.set_xlabel('Measured')
+for ax in (axes[0], axes[2]):             # y label only on the left column
+    ax.set_ylabel('Predicted')
+fig.tight_layout(w_pad=0.8, h_pad=0.8)
 save(fig, 'fig4_surrogate_loto')
 
 
