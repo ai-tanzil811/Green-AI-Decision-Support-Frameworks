@@ -119,6 +119,14 @@
               <button type="button" class="preset-chip is-active" data-vram="16">16 GB (Tesla T4)</button>
               <button type="button" class="preset-chip" data-vram="24">24 GB (RTX 4090)</button>
             </div>
+            <div class="chart-legend" id="hero-method-legend" role="group" aria-label="Filter plot methods">
+              <span class="chart-legend-label">Methods</span>
+              <button type="button" class="chart-legend-btn is-active" data-method="Full-FT" aria-pressed="true"><span class="legend-dot legend-dot--full"></span>Full-FT</button>
+              <button type="button" class="chart-legend-btn is-active" data-method="LoRA" aria-pressed="true"><span class="legend-dot legend-dot--lora"></span>LoRA</button>
+              <button type="button" class="chart-legend-btn is-active" data-method="QLoRA" aria-pressed="true"><span class="legend-dot legend-dot--qlora"></span>QLoRA</button>
+              <button type="button" class="chart-legend-btn is-active" data-method="LoRA-FA" aria-pressed="true"><span class="legend-dot legend-dot--lorafa"></span>LoRA-FA</button>
+              <button type="button" class="chart-legend-btn is-active" data-method="LISA" aria-pressed="true"><span class="legend-dot legend-dot--lisa"></span>LISA</button>
+            </div>
             <div class="hero-scatter-container" id="hero-scatter-mount" role="region" aria-label="Interactive candidate scatter plot"></div>
             <div class="hero-footnote">
               <span>Drag the vertical dashed line or click a GPU preset</span>
@@ -237,6 +245,21 @@
 
           <!-- Right Column: Output Panel -->
           <div class="output-panel" id="rec-output-panel" aria-live="polite">
+            <div class="greenpeft-mascot-wrap">
+              <div class="greenpeft-mascot" id="greenpeft-mascot" data-state="feasible" role="img" aria-label="GreenPEFT Bot: recommendation ready">
+                <svg viewBox="0 0 96 96" aria-hidden="true" focusable="false">
+                  <rect class="mascot-body" x="18" y="20" width="60" height="58" rx="20"></rect>
+                  <path class="mascot-antenna" d="M48 20V10"></path>
+                  <circle class="mascot-signal" cx="48" cy="7" r="3"></circle>
+                  <path class="mascot-eye mascot-eye-left" d="M32 44c3-4 7-4 10 0"></path>
+                  <path class="mascot-eye mascot-eye-right" d="M54 44c3-4 7-4 10 0"></path>
+                  <path class="mascot-mouth" d="M37 57c7 7 15 7 22 0"></path>
+                  <path class="mascot-cheek mascot-cheek-left" d="M27 55h4"></path>
+                  <path class="mascot-cheek mascot-cheek-right" d="M65 55h4"></path>
+                </svg>
+                <span class="mascot-status" id="greenpeft-mascot-status">Ready</span>
+              </div>
+            </div>
 
             <!-- Feasible Output View -->
             <div id="recommendation-content">

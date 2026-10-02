@@ -113,6 +113,19 @@
      ----------------------------------------------------------------------- */
   let heroChartInstance = null;
 
+  function updateMascot(isFeasible, isFocused) {
+    const mascot = document.getElementById('greenpeft-mascot');
+    const status = document.getElementById('greenpeft-mascot-status');
+    if (!mascot) return;
+
+    mascot.setAttribute('data-state', isFeasible ? 'feasible' : 'infeasible');
+    mascot.classList.toggle('is-focused', Boolean(isFocused));
+    mascot.setAttribute('aria-label', isFeasible
+      ? 'GreenPEFT Bot: recommendation ready'
+      : 'GreenPEFT Bot: no feasible candidate');
+    if (status) status.textContent = isFeasible ? 'Ready' : 'Needs adjustment';
+  }
+
   function runRecommendation() {
     const query = {
       maxVramGb: state.vram,
@@ -133,8 +146,13 @@
     const dropReasonsEl = document.getElementById('infeasible-reasons-list');
 
     if (!result.feasible || result.feasible.length === 0) {
+      updateMascot(false, false);
       if (outputPanel) outputPanel.setAttribute('data-result-status', 'infeasible');
       if (normalPanel) normalPanel.style.display = 'none';
+      const barsContainer = document.getElementById('comparison-bars');
+      const altContainer = document.getElementById('alternatives-list');
+      if (barsContainer) barsContainer.replaceChildren();
+      if (altContainer) altContainer.innerHTML = '<div class="alt-row"><span class="alt-why">No alternative candidates pass all selected constraints.</span></div>';
       if (infeasiblePanel) {
         infeasiblePanel.classList.add('is-active');
         if (dropReasonsEl) {
@@ -150,6 +168,7 @@
     }
 
     // Feasible candidates found
+    updateMascot(true, false);
     if (outputPanel) outputPanel.setAttribute('data-result-status', 'ready');
     if (infeasiblePanel) infeasiblePanel.classList.remove('is-active');
     if (normalPanel) normalPanel.style.display = 'block';
@@ -313,11 +332,44 @@
      4. Setup Lab Controls & Event Listeners
      ----------------------------------------------------------------------- */
   function setupLabControls() {
+    function markMascotFocused() {
+      updateMascot(true, true);
+      window.clearTimeout(markMascotFocused.timer);
+      markMascotFocused.timer = window.setTimeout(() => {
+        const panel = document.getElementById('rec-output-panel');
+        updateMascot(panel && panel.getAttribute('data-result-status') === 'ready', false);
+      }, 500);
+    }
+
+    function trackMascotEyes(event) {
+      const mascot = document.getElementById('greenpeft-mascot');
+      if (!mascot) return;
+      const rect = event.currentTarget.getBoundingClientRect();
+      const x = ((event.clientX - rect.left) / rect.width - 0.5) * 4;
+      const y = ((event.clientY - rect.top) / rect.height - 0.5) * 3;
+      mascot.style.setProperty('--mascot-eye-x', `${x.toFixed(2)}px`);
+      mascot.style.setProperty('--mascot-eye-y', `${y.toFixed(2)}px`);
+    }
+
+    function resetMascotEyes() {
+      const mascot = document.getElementById('greenpeft-mascot');
+      if (mascot) {
+        mascot.style.setProperty('--mascot-eye-x', '0px');
+        mascot.style.setProperty('--mascot-eye-y', '0px');
+      }
+    }
+
+    document.querySelectorAll('.lab-controls-sticky input, .lab-controls-sticky select').forEach(control => {
+      control.addEventListener('pointermove', trackMascotEyes);
+      control.addEventListener('pointerleave', resetMascotEyes);
+    });
+
     // VRAM Slider
     const vramSlider = document.getElementById('sl-vram');
     const vramVal = document.getElementById('sl-vram-val');
     if (vramSlider) {
       vramSlider.addEventListener('input', (e) => {
+        markMascotFocused();
         state.vram = parseFloat(e.target.value);
         if (vramVal) vramVal.textContent = `${state.vram} GB`;
         if (heroChartInstance && heroChartInstance.setVram) {
@@ -332,6 +384,7 @@
     const accVal = document.getElementById('sl-acc-val');
     if (accSlider) {
       accSlider.addEventListener('input', (e) => {
+        markMascotFocused();
         state.accuracy = parseFloat(e.target.value);
         if (accVal) accVal.textContent = state.accuracy.toFixed(2);
         runRecommendation();
@@ -343,6 +396,7 @@
     const carbonVal = document.getElementById('sl-carbon-val');
     if (carbonSlider) {
       carbonSlider.addEventListener('input', (e) => {
+        markMascotFocused();
         state.carbon = parseFloat(e.target.value);
         if (carbonVal) carbonVal.textContent = `${state.carbon.toFixed(2)} kg`;
         runRecommendation();
@@ -354,6 +408,7 @@
     const timeVal = document.getElementById('sl-time-val');
     if (timeSlider) {
       timeSlider.addEventListener('input', (e) => {
+        markMascotFocused();
         state.runtimeMinutes = parseInt(e.target.value, 10);
         if (timeVal) timeVal.textContent = `${state.runtimeMinutes} min`;
         runRecommendation();
@@ -364,6 +419,7 @@
     const profileBtns = document.querySelectorAll('.profile-btn');
     profileBtns.forEach(btn => {
       btn.addEventListener('click', () => {
+        markMascotFocused();
         profileBtns.forEach(b => b.setAttribute('aria-pressed', 'false'));
         btn.setAttribute('aria-pressed', 'true');
         state.profile = btn.getAttribute('data-profile');
@@ -375,6 +431,7 @@
     const bbSelect = document.getElementById('sel-backbone');
     if (bbSelect) {
       bbSelect.addEventListener('change', (e) => {
+        markMascotFocused();
         state.backbone = e.target.value;
         runRecommendation();
       });
@@ -383,6 +440,7 @@
     const methodSelect = document.getElementById('sel-method');
     if (methodSelect) {
       methodSelect.addEventListener('change', (e) => {
+        markMascotFocused();
         state.method = e.target.value;
         runRecommendation();
       });
@@ -782,6 +840,12 @@
     const heroMount = document.getElementById('hero-scatter-mount');
     if (heroMount) {
       heroChartInstance = Charts.initHeroScatter(heroMount, (newVram) => {
+        updateMascot(true, true);
+        window.clearTimeout(updateMascot.heroFocusTimer);
+        updateMascot.heroFocusTimer = window.setTimeout(() => {
+          const panel = document.getElementById('rec-output-panel');
+          updateMascot(panel && panel.getAttribute('data-result-status') === 'ready', false);
+        }, 500);
         state.vram = Math.round(newVram);
         const vramSlider = document.getElementById('sl-vram');
         const vramVal = document.getElementById('sl-vram-val');

@@ -196,6 +196,7 @@ window.GPCharts = (function () {
       // Method label
       const dy = p.labelSide === 'bottom' ? 14 : -9;
       const lbl = createSvgEl('text', {
+        class: 'scatter-point-label',
         x: cx, y: cy + dy,
         'text-anchor': 'middle',
         'font-family': 'JetBrains Mono',
@@ -296,7 +297,8 @@ window.GPCharts = (function () {
 
       let feasibleCount = 0;
       pointElements.forEach(pt => {
-        const isFeasible = pt.data.vram <= currentVram;
+        const isVisible = pt.group.getAttribute('data-method-visible') !== 'false';
+        const isFeasible = isVisible && pt.data.vram <= currentVram;
         if (isFeasible) {
           feasibleCount++;
           pt.group.style.opacity = '1';
@@ -318,6 +320,28 @@ window.GPCharts = (function () {
         onVramChange(currentVram);
       }
     }
+
+    function setMethodVisibility(method, visible) {
+      pointElements.forEach(pt => {
+        if (pt.data.method !== method) return;
+        pt.group.setAttribute('data-method-visible', String(visible));
+        pt.group.style.display = visible ? '' : 'none';
+      });
+      updateVramThreshold(currentVram, false);
+    }
+
+    pointElements.forEach(pt => pt.group.setAttribute('data-method-visible', 'true'));
+    document.querySelectorAll('#hero-method-legend .chart-legend-btn').forEach(button => {
+      button.onclick = () => {
+        const active = button.getAttribute('aria-pressed') === 'true';
+        button.setAttribute('aria-pressed', String(!active));
+        button.classList.toggle('is-active', !active);
+        setMethodVisibility(button.getAttribute('data-method'), !active);
+      };
+      if (button.getAttribute('aria-pressed') !== 'true') {
+        setMethodVisibility(button.getAttribute('data-method'), false);
+      }
+    });
 
     // Drag event handling (Mouse + Touch)
     let isDragging = false;
@@ -372,7 +396,8 @@ window.GPCharts = (function () {
       },
       rebuild: function () {
         initHeroScatter(containerEl, onVramChange);
-      }
+      },
+      setMethodVisibility: setMethodVisibility
     };
 
     return heroChartInstance;
