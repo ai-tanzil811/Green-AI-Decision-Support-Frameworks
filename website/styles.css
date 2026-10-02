@@ -960,6 +960,12 @@ input[type="range"]:focus-visible::-webkit-slider-thumb {
   background: var(--c-surface-hover);
 }
 
+.bar-row[aria-current="true"] {
+  background: var(--c-surface-hover);
+  outline: 1px solid var(--c-border);
+  outline-offset: -1px;
+}
+
 @media (max-width: 600px) {
   .bar-row {
     grid-template-columns: 120px 1fr 50px;

@@ -126,12 +126,14 @@
     if (state.method) query.methods = [state.method];
 
     const result = Engine.recommend(query);
+    const outputPanel = document.getElementById('rec-output-panel');
 
     const normalPanel = document.getElementById('recommendation-content');
     const infeasiblePanel = document.getElementById('infeasible-panel');
     const dropReasonsEl = document.getElementById('infeasible-reasons-list');
 
     if (!result.feasible || result.feasible.length === 0) {
+      if (outputPanel) outputPanel.setAttribute('data-result-status', 'infeasible');
       if (normalPanel) normalPanel.style.display = 'none';
       if (infeasiblePanel) {
         infeasiblePanel.classList.add('is-active');
@@ -148,6 +150,7 @@
     }
 
     // Feasible candidates found
+    if (outputPanel) outputPanel.setAttribute('data-result-status', 'ready');
     if (infeasiblePanel) infeasiblePanel.classList.remove('is-active');
     if (normalPanel) normalPanel.style.display = 'block';
 
@@ -203,6 +206,7 @@
         row.className = 'bar-row';
         row.setAttribute('tabindex', '0');
         row.setAttribute('role', 'button');
+        row.setAttribute('aria-current', idx === 0 ? 'true' : 'false');
         row.setAttribute('aria-label', `${getMethodName(cand.method)} on ${getBackboneName(cand.backbone)}, GEI ${cand.gei.toFixed(3)}`);
 
         const label = document.createElement('div');
@@ -237,6 +241,17 @@
         row.addEventListener('focus', (e) => Charts.showTooltip(e, candInfo));
         row.addEventListener('mouseleave', Charts.hideTooltip);
         row.addEventListener('blur', Charts.hideTooltip);
+        row.addEventListener('click', () => {
+          barsContainer.querySelectorAll('.bar-row').forEach(item => item.setAttribute('aria-current', 'false'));
+          row.setAttribute('aria-current', 'true');
+          if (outputPanel) outputPanel.setAttribute('data-selected-candidate', candInfo.name);
+        });
+        row.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            row.click();
+          }
+        });
 
         barsContainer.appendChild(row);
       });
