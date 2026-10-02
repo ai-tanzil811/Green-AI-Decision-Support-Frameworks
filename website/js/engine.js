@@ -42,6 +42,34 @@ window.GPEngine = (function () {
   const DATA = window.GREENPEFT_CANDIDATES || FALLBACK_DATA;
   const CFG = DATA.engine;
 
+  function finitePositive(value) {
+    const number = typeof value === 'number' ? value : Number(value);
+    return Number.isFinite(number) && number > 0 ? number : null;
+  }
+
+  function normaliseCandidate(candidate) {
+    const row = Object.assign({}, candidate);
+    const energy = finitePositive(row.pred_energy_kwh);
+    const carbon = finitePositive(row.pred_carbon_kgco2eq);
+    const runtime = finitePositive(row.pred_wall_clock_s);
+    const vram = finitePositive(row.pred_peak_vram_gb);
+    const gridCarbon = finitePositive(CFG.grid_carbon_kg_per_kwh) || 0.65;
+
+    // Energy is derived from carbon when the surrogate omits it. The final
+    // estimate keeps the UI usable for fallback catalogues without inventing
+    // a value when no physical inputs are available.
+    if (energy !== null) {
+      row.pred_energy_kwh = energy;
+    } else if (carbon !== null) {
+      row.pred_energy_kwh = carbon / gridCarbon;
+    } else if (runtime !== null && vram !== null) {
+      row.pred_energy_kwh = (runtime / 3600) * (0.05 + (vram * 0.02));
+    } else {
+      row.pred_energy_kwh = null;
+    }
+    return row;
+  }
+
   const CONFIDENCE_ORDER = ['LOW', 'MEDIUM', 'HIGH'];
 
   // Weakest-to-strongest, same list the confidence module uses. Reversed when
@@ -55,7 +83,7 @@ window.GPEngine = (function () {
   ];
 
   const ALL = DATA.candidates.map(function (c, i) {
-    return Object.assign({ _i: i }, c);
+    return Object.assign({ _i: i }, normaliseCandidate(c));
   });
 
   /* ---- constraint filtering (apply_constraints) ------------------------- */

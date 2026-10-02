@@ -33,6 +33,12 @@
 
   --c-callout-bg:     #171922;
   --c-callout-border: #333846;
+  --c-accent:          #34D399;
+  --framework-card-fill: #17241E;
+  --framework-card-fill-end: #1D3028;
+  --framework-card-border: #3B6754;
+  --framework-body: #D9F5E7;
+  --framework-arrow: #34D399;
 
   /* Typography */
   --font-display: "Fraunces", Georgia, serif;
@@ -143,6 +149,12 @@
 
   --c-callout-bg:     #E9ECEF;
   --c-callout-border: #CED4DA;
+  --c-accent:          #059669;
+  --framework-card-fill: #F4F7F5;
+  --framework-card-fill-end: #E6F3EB;
+  --framework-card-border: #A7D8BE;
+  --framework-body: #26352E;
+  --framework-arrow: #059669;
 }
 
 /* ----------------------------------------------------------------------------
@@ -1501,8 +1513,29 @@ input[type="range"]:focus-visible::-webkit-slider-thumb {
 }
 
 .framework-svg-stage rect {
+  fill: var(--framework-card-fill);
+  filter: drop-shadow(0 8px 14px rgba(16, 185, 129, 0.14));
+  transform-box: fill-box;
+  transform-origin: center;
   stroke: var(--c-border);
   stroke-width: 2;
+}
+
+.framework-svg-stage {
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.framework-svg-stage:hover,
+.framework-svg-stage:focus-within {
+  filter: drop-shadow(0 10px 18px rgba(16, 185, 129, 0.28));
+}
+
+.framework-svg-stage:hover rect,
+.framework-svg-stage:focus-within rect {
+  stroke: var(--c-accent);
+  stroke-width: 2.5;
+  transform: translateY(-4px);
 }
 
 .framework-svg-kicker,
@@ -1528,6 +1561,7 @@ input[type="range"]:focus-visible::-webkit-slider-thumb {
 .framework-svg-body {
   font-size: 12px;
   font-weight: 600;
+  fill: var(--framework-body);
 }
 
 .framework-svg-rule {
@@ -1536,22 +1570,27 @@ input[type="range"]:focus-visible::-webkit-slider-thumb {
 }
 
 .framework-svg-arrow {
-  stroke: var(--c-accent);
+  stroke: var(--framework-arrow);
   stroke-width: 3;
   fill: none;
 }
 
-html[data-theme="dark"] .framework-svg-stage rect {
-  fill: #17241e;
+.framework-svg-stage rect {
+  stroke: var(--framework-card-border);
 }
 
-html[data-theme="dark"] .framework-svg-body,
-html[data-theme="dark"] .framework-svg-title {
-  fill: #f4f7f5;
+.framework-svg-title {
+  fill: var(--c-ink);
 }
 
-html[data-theme="dark"] .framework-svg-rule {
-  stroke: #52645b;
+.framework-svg-rule {
+  stroke: var(--framework-card-border);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .framework-svg-stage {
+    transition: none;
+  }
 }
 
 .pipeline-stage-num {

@@ -77,15 +77,21 @@
   function animateMetric(elementId, targetVal, decimals, unit, duration) {
     const el = document.getElementById(elementId);
     if (!el) return;
-
-    if (prefersReducedMotion || duration === 0) {
-      el.innerHTML = `${targetVal.toFixed(decimals)}${unit ? `<span class="metric-unit">${unit}</span>` : ''}`;
-      currentMetricValues[elementId] = targetVal;
+    const numericTarget = typeof targetVal === 'number' ? targetVal : Number(targetVal);
+    if (!Number.isFinite(numericTarget)) {
+      el.textContent = 'N/A';
+      delete currentMetricValues[elementId];
       return;
     }
 
-    const startVal = currentMetricValues[elementId] !== undefined ? currentMetricValues[elementId] : targetVal;
-    currentMetricValues[elementId] = targetVal;
+    if (prefersReducedMotion || duration === 0) {
+      el.innerHTML = `${numericTarget.toFixed(decimals)}${unit ? `<span class="metric-unit">${unit}</span>` : ''}`;
+      currentMetricValues[elementId] = numericTarget;
+      return;
+    }
+
+    const startVal = Number.isFinite(currentMetricValues[elementId]) ? currentMetricValues[elementId] : numericTarget;
+    currentMetricValues[elementId] = numericTarget;
 
     const startTime = performance.now();
     const animDur = duration || 220;
@@ -94,14 +100,14 @@
       const elapsed = currentTime - startTime;
       const progress = Math.min(1, elapsed / animDur);
       // Easing: cubic-bezier(0.2, 0, 1, 1)
-      const current = startVal + (targetVal - startVal) * progress;
+      const current = startVal + (numericTarget - startVal) * progress;
 
       el.innerHTML = `${current.toFixed(decimals)}${unit ? `<span class="metric-unit">${unit}</span>` : ''}`;
 
       if (progress < 1) {
         requestAnimationFrame(step);
       } else {
-        el.innerHTML = `${targetVal.toFixed(decimals)}${unit ? `<span class="metric-unit">${unit}</span>` : ''}`;
+        el.innerHTML = `${numericTarget.toFixed(decimals)}${unit ? `<span class="metric-unit">${unit}</span>` : ''}`;
       }
     }
 
@@ -124,6 +130,11 @@
       ? 'GreenPEFT Bot: recommendation ready'
       : 'GreenPEFT Bot: no feasible candidate');
     if (status) status.textContent = isFeasible ? 'Ready' : 'Needs adjustment';
+  }
+
+  function readFiniteInput(target, previousValue, fallbackValue) {
+    const value = Number.parseFloat(target.value);
+    return Number.isFinite(value) ? value : (Number.isFinite(previousValue) ? previousValue : fallbackValue);
   }
 
   function runRecommendation() {
@@ -365,10 +376,13 @@
     const methodSelect = document.getElementById('sel-method');
     const activeProfile = document.querySelector('.profile-btn[aria-pressed="true"]');
 
-    if (vramSlider) state.vram = parseFloat(vramSlider.value);
-    if (accSlider) state.accuracy = parseFloat(accSlider.value);
-    if (carbonSlider) state.carbon = parseFloat(carbonSlider.value);
-    if (timeSlider) state.runtimeMinutes = parseInt(timeSlider.value, 10);
+    if (vramSlider) state.vram = readFiniteInput(vramSlider, state.vram, DEFAULTS.vram);
+    if (accSlider) state.accuracy = readFiniteInput(accSlider, state.accuracy, DEFAULTS.accuracy);
+    if (carbonSlider) state.carbon = readFiniteInput(carbonSlider, state.carbon, DEFAULTS.carbon);
+    if (timeSlider) {
+      const parsedMinutes = Number.parseInt(timeSlider.value, 10);
+      state.runtimeMinutes = Number.isFinite(parsedMinutes) ? parsedMinutes : DEFAULTS.runtimeMinutes;
+    }
     if (bbSelect) state.backbone = bbSelect.value;
     if (methodSelect) state.method = methodSelect.value;
     if (activeProfile) state.profile = activeProfile.getAttribute('data-profile') || state.profile;
@@ -410,7 +424,7 @@
     if (vramSlider) {
       vramSlider.addEventListener('input', (e) => {
         markMascotFocused();
-        state.vram = parseFloat(e.target.value);
+        state.vram = readFiniteInput(e.target, state.vram, DEFAULTS.vram);
         if (vramVal) vramVal.textContent = `${state.vram} GB`;
         if (heroChartInstance && heroChartInstance.setVram) {
           heroChartInstance.setVram(state.vram);
@@ -424,7 +438,7 @@
     if (accSlider) {
       accSlider.addEventListener('input', (e) => {
         markMascotFocused();
-        state.accuracy = parseFloat(e.target.value);
+        state.accuracy = readFiniteInput(e.target, state.accuracy, DEFAULTS.accuracy);
         if (accVal) accVal.textContent = state.accuracy.toFixed(2);
         runRecommendation();
       });
@@ -435,7 +449,7 @@
     if (carbonSlider) {
       carbonSlider.addEventListener('input', (e) => {
         markMascotFocused();
-        state.carbon = parseFloat(e.target.value);
+        state.carbon = readFiniteInput(e.target, state.carbon, DEFAULTS.carbon);
         if (carbonVal) carbonVal.textContent = `${state.carbon.toFixed(2)} kg`;
         runRecommendation();
       });
@@ -446,7 +460,10 @@
     if (timeSlider) {
       timeSlider.addEventListener('input', (e) => {
         markMascotFocused();
-        state.runtimeMinutes = parseInt(e.target.value, 10);
+        const parsedMinutes = Number.parseInt(e.target.value, 10);
+        state.runtimeMinutes = Number.isFinite(parsedMinutes)
+          ? parsedMinutes
+          : (Number.isFinite(state.runtimeMinutes) ? state.runtimeMinutes : DEFAULTS.runtimeMinutes);
         if (timeVal) timeVal.textContent = `${state.runtimeMinutes} min`;
         runRecommendation();
       });

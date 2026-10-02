@@ -471,16 +471,12 @@
             <title id="framework-svg-title">GreenPEFT four-stage research pipeline</title>
             <desc id="framework-svg-desc">Benchmark measurements flow through audit and coverage, four Ridge surrogate models, and a constraint-aware decision engine.</desc>
             <defs>
-              <linearGradient id="framework-card-fill" x1="0" x2="1">
-                <stop offset="0" stop-color="#f4f7f5"/>
-                <stop offset="1" stop-color="#e6f3eb"/>
-              </linearGradient>
               <marker id="framework-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-                <path d="M0,0 L8,4 L0,8 Z" fill="currentColor"/>
+                <path d="M0,0 L8,4 L0,8 Z" fill="var(--framework-arrow)"/>
               </marker>
             </defs>
             <g class="framework-svg-stage" transform="translate(24 38)">
-              <rect width="264" height="252" rx="18" fill="url(#framework-card-fill)"/>
+              <rect width="264" height="252" rx="16"/>
               <text x="20" y="34" class="framework-svg-kicker">STAGE 1</text>
               <text x="20" y="66" class="framework-svg-title">BENCHMARK</text>
               <text x="20" y="101" class="framework-svg-body">4 backbones × 5 PEFT methods</text>
@@ -492,7 +488,7 @@
             </g>
             <path d="M300 164 H326" class="framework-svg-arrow" marker-end="url(#framework-arrow)"/>
             <g class="framework-svg-stage" transform="translate(328 38)">
-              <rect width="264" height="252" rx="18" fill="url(#framework-card-fill)"/>
+              <rect width="264" height="252" rx="16"/>
               <text x="20" y="34" class="framework-svg-kicker">STAGE 2</text>
               <text x="20" y="66" class="framework-svg-title">AUDIT &amp; COVERAGE</text>
               <text x="20" y="101" class="framework-svg-body">59.9 W retained under load</text>
@@ -504,7 +500,7 @@
             </g>
             <path d="M604 164 H630" class="framework-svg-arrow" marker-end="url(#framework-arrow)"/>
             <g class="framework-svg-stage" transform="translate(632 38)">
-              <rect width="264" height="252" rx="18" fill="url(#framework-card-fill)"/>
+              <rect width="264" height="252" rx="16"/>
               <text x="20" y="34" class="framework-svg-kicker">STAGE 3</text>
               <text x="20" y="66" class="framework-svg-title">MODELING</text>
               <text x="20" y="101" class="framework-svg-body">22 pre-run metadata features</text>
@@ -516,7 +512,7 @@
             </g>
             <path d="M908 164 H934" class="framework-svg-arrow" marker-end="url(#framework-arrow)"/>
             <g class="framework-svg-stage" transform="translate(936 38)">
-              <rect width="240" height="252" rx="18" fill="url(#framework-card-fill)"/>
+              <rect width="240" height="252" rx="16"/>
               <text x="20" y="34" class="framework-svg-kicker">STAGE 4</text>
               <text x="20" y="66" class="framework-svg-title">DECISION ENGINE</text>
               <text x="20" y="101" class="framework-svg-body">70 candidates → sanity filter</text>
