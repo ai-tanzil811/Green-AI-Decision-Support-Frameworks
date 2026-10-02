@@ -11,7 +11,7 @@
    is wrong until this changes too.
    ========================================================================= */
 
-const GPEngine = (function () {
+window.GPEngine = (function () {
   'use strict';
 
   const DATA = window.GREENPEFT_CANDIDATES;
