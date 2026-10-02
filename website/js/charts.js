@@ -60,8 +60,8 @@ window.GPCharts = (function () {
     const innerW = width - margin.left - margin.right;
     const innerH = height - margin.top - margin.bottom;
 
-    // VRAM Domain: 0 to 20 GB; Accuracy Domain: 0.86 to 0.97
-    const xMin = 0, xMax = 20;
+    // Match the recommender's full VRAM control range.
+    const xMin = 0, xMax = 48;
     const yMin = 0.86, yMax = 0.97;
 
     function scaleX(val) {
@@ -116,7 +116,7 @@ window.GPCharts = (function () {
       }, t.toFixed(2)));
     });
 
-    const xTicks = [0, 4, 8, 12, 16, 20];
+    const xTicks = [0, 8, 16, 24, 32, 40, 48];
     xTicks.forEach(t => {
       const x = scaleX(t);
       gridG.appendChild(createSvgEl('line', {
@@ -243,7 +243,7 @@ window.GPCharts = (function () {
       tabindex: '0',
       role: 'slider',
       'aria-valuemin': '4',
-      'aria-valuemax': '20',
+      'aria-valuemax': '48',
       'aria-valuenow': currentVram.toFixed(1),
       'aria-label': 'VRAM constraint boundary in GB'
     });
@@ -279,7 +279,7 @@ window.GPCharts = (function () {
 
     // Update filter state based on VRAM threshold
     function updateVramThreshold(vramVal, triggerCallback) {
-      currentVram = Math.max(2, Math.min(20, vramVal));
+      currentVram = Math.max(2, Math.min(48, vramVal));
       const px = scaleX(currentVram);
       const c = getThemeColors();
 
