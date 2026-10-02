@@ -626,37 +626,133 @@
      10. Theme Toggle System (Default Dark Mode with Instant Chart Sync)
      ----------------------------------------------------------------------- */
   function setupThemeToggle() {
-    const themeBtn = document.getElementById('theme-toggle');
-    const iconEl = document.getElementById('theme-toggle-icon');
-    const textEl = document.getElementById('theme-toggle-text');
+    const themeButtons = document.querySelectorAll('.theme-switch-btn');
 
     let currentTheme = localStorage.getItem('greenpeft_theme') || 'dark';
     applyTheme(currentTheme);
 
     function applyTheme(theme) {
-      currentTheme = theme;
+      currentTheme = theme === 'light' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', theme);
       localStorage.setItem('greenpeft_theme', theme);
 
-      if (theme === 'light') {
-        if (iconEl) iconEl.textContent = '🌙';
-        if (textEl) textEl.textContent = 'Dark';
-      } else {
-        if (iconEl) iconEl.textContent = '☀';
-        if (textEl) textEl.textContent = 'Light';
-      }
+      themeButtons.forEach(button => {
+        const isActive = button.getAttribute('data-theme-val') === currentTheme;
+        button.classList.toggle('is-active', isActive);
+        button.setAttribute('aria-pressed', String(isActive));
+      });
 
       if (Charts && Charts.refreshTheme) {
         Charts.refreshTheme();
       }
     }
 
-    if (themeBtn) {
-      themeBtn.addEventListener('click', () => {
-        const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        applyTheme(nextTheme);
+    themeButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        applyTheme(button.getAttribute('data-theme-val'));
       });
+    });
+  }
+
+  /* --------------------------------------------------------------------------
+     11. Language Selector (English, Bengali, Chinese, Russian)
+     ----------------------------------------------------------------------- */
+  const LANGUAGE_STRINGS = {
+    en: {
+      navRecommender: '01 Recommender', navWhy: '02 Why', navArchitecture: '03 Architecture',
+      navEvidence: '04 Evidence', navTrust: '05 Trust', navCli: '06 CLI', navResearch: '07 Research',
+      github: 'GitHub', dark: 'Dark', light: 'Light', language: 'Language',
+      tryRecommender: 'Try the recommender', exploreResearch: 'Explore the research',
+      maxVram: 'Max VRAM', minAccuracy: 'Min Accuracy', carbonBudget: 'Carbon Budget',
+      runtimeLimit: 'Runtime Limit', hardwareObjectives: 'Hardware & Objectives',
+      decisionEngine: '01 / Decision Engine', why: '02 / Motivation', architecture: '03 / Architecture',
+      trust: '04 / Transparency', copy: 'Copy BibTeX', runDemo: 'Run demo'
+    },
+    bn: {
+      navRecommender: '০১ সুপারিশ', navWhy: '০২ কেন', navArchitecture: '০৩ স্থাপত্য',
+      navEvidence: '০৪ প্রমাণ', navTrust: '০৫ বিশ্বাস', navCli: '০৬ CLI', navResearch: '০৭ গবেষণা',
+      github: 'গিটহাব', dark: 'ডার্ক', light: 'লাইট', language: 'ভাষা',
+      tryRecommender: 'সুপারিশ চালান', exploreResearch: 'গবেষণা দেখুন',
+      maxVram: 'সর্বোচ্চ VRAM', minAccuracy: 'ন্যূনতম নির্ভুলতা', carbonBudget: 'কার্বন বাজেট',
+      runtimeLimit: 'রানটাইম সীমা', hardwareObjectives: 'হার্ডওয়্যার ও লক্ষ্য',
+      decisionEngine: '০১ / সিদ্ধান্ত ইঞ্জিন', why: '০২ / কেন', architecture: '০৩ / স্থাপত্য',
+      trust: '০৪ / স্বচ্ছতা', copy: 'BibTeX কপি', runDemo: 'ডেমো চালান'
+    },
+    zh: {
+      navRecommender: '01 推荐器', navWhy: '02 为什么', navArchitecture: '03 架构',
+      navEvidence: '04 证据', navTrust: '05 可信度', navCli: '06 CLI', navResearch: '07 研究',
+      github: 'GitHub', dark: '深色', light: '浅色', language: '语言',
+      tryRecommender: '试用推荐器', exploreResearch: '探索研究',
+      maxVram: '最大显存', minAccuracy: '最低准确率', carbonBudget: '碳预算',
+      runtimeLimit: '运行时间限制', hardwareObjectives: '硬件与目标',
+      decisionEngine: '01 / 决策引擎', why: '02 / 动机', architecture: '03 / 架构',
+      trust: '04 / 透明度', copy: '复制 BibTeX', runDemo: '运行演示'
+    },
+    ru: {
+      navRecommender: '01 Рекомендатор', navWhy: '02 Зачем', navArchitecture: '03 Архитектура',
+      navEvidence: '04 Доказательства', navTrust: '05 Доверие', navCli: '06 CLI', navResearch: '07 Исследование',
+      github: 'GitHub', dark: 'Тёмная', light: 'Светлая', language: 'Язык',
+      tryRecommender: 'Запустить рекомендатор', exploreResearch: 'Изучить исследование',
+      maxVram: 'Макс. VRAM', minAccuracy: 'Мин. точность', carbonBudget: 'Углеродный бюджет',
+      runtimeLimit: 'Ограничение времени', hardwareObjectives: 'Оборудование и цели',
+      decisionEngine: '01 / Движок решений', why: '02 / Мотивация', architecture: '03 / Архитектура',
+      trust: '04 / Прозрачность', copy: 'Копировать BibTeX', runDemo: 'Запустить демо'
     }
+  };
+
+  function setupLanguageSelector() {
+    const selector = document.getElementById('language-select');
+    if (!selector) return;
+
+    const translations = {
+      '.nav-link[href="#recommender"]': 'navRecommender',
+      '.nav-link[href="#why"]': 'navWhy',
+      '.nav-link[href="#pipeline"]': 'navArchitecture',
+      '.nav-link[href="#evidence"]': 'navEvidence',
+      '.nav-link[href="#trust"]': 'navTrust',
+      '.nav-link[href="#cli"]': 'navCli',
+      '.nav-link[href="#research"]': 'navResearch',
+      '.nav-actions > .btn': 'github',
+      '#btn-theme-dark': 'dark',
+      '#btn-theme-light': 'light',
+      '.hero-actions .btn--primary': 'tryRecommender',
+      '.hero-actions .btn--ghost': 'exploreResearch',
+      '.lab-controls-title': 'hardwareObjectives',
+      'label[for="sl-vram"]': 'maxVram',
+      'label[for="sl-acc"]': 'minAccuracy',
+      'label[for="sl-carbon"]': 'carbonBudget',
+      'label[for="sl-time"]': 'runtimeLimit',
+      '#recommender .section-header .eyebrow': 'decisionEngine',
+      '#why .section-header .eyebrow': 'why',
+      '#pipeline .section-header .eyebrow': 'architecture',
+      '#trust .section-header .eyebrow': 'trust',
+      '#bibtex-copy-btn': 'copy',
+      '#cli-run-demo-btn': 'runDemo',
+      '#language-select': 'language'
+    };
+
+    function applyLanguage(language) {
+      const strings = LANGUAGE_STRINGS[language] || LANGUAGE_STRINGS.en;
+      Object.keys(translations).forEach(selectorText => {
+        const element = document.querySelector(selectorText);
+        const key = translations[selectorText];
+        if (!element || !strings[key]) return;
+        if (element.id === 'language-select') {
+          element.setAttribute('aria-label', strings[key]);
+        } else if (element.classList.contains('theme-switch-btn')) {
+          const textNode = Array.from(element.childNodes).reverse().find(node => node.nodeType === Node.TEXT_NODE);
+          if (textNode) textNode.textContent = ` ${strings[key]}`;
+        } else {
+          element.textContent = strings[key];
+        }
+      });
+      document.documentElement.lang = language === 'bn' ? 'bn' : (language === 'zh' ? 'zh-CN' : language);
+      selector.value = LANGUAGE_STRINGS[language] ? language : 'en';
+      localStorage.setItem('greenpeft_language', selector.value);
+    }
+
+    applyLanguage(localStorage.getItem('greenpeft_language') || 'en');
+    selector.addEventListener('change', () => applyLanguage(selector.value));
   }
 
   /* --------------------------------------------------------------------------
@@ -665,6 +761,7 @@
   window.addEventListener('DOMContentLoaded', () => {
     // Setup Theme (Default Dark Mode)
     setupThemeToggle();
+    setupLanguageSelector();
 
     // 1. Initialize Hero Scatter
     const heroMount = document.getElementById('hero-scatter-mount');
