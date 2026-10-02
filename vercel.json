@@ -4,6 +4,20 @@
   "outputDirectory": "website",
   "cleanUrls": true,
   "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/data/:path*",
+      "destination": "/website/data/:path*"
+    },
+    {
+      "source": "/js/:path*",
+      "destination": "/website/js/:path*"
+    },
+    {
+      "source": "/styles.css",
+      "destination": "/website/styles.css"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

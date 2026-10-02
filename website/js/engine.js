@@ -14,7 +14,32 @@
 window.GPEngine = (function () {
   'use strict';
 
-  const DATA = window.GREENPEFT_CANDIDATES;
+  const FALLBACK_DATA = {
+    model_status: 'FALLBACK — generated catalogue unavailable',
+    engine: {
+      vram_safety_margin: 0.1,
+      gei_profiles: {
+        balanced: [0.35, 0.25, 0.25, 0.15],
+        strict_carbon: [0.2, 0.2, 0.5, 0.1],
+        high_accuracy: [0.6, 0.15, 0.15, 0.1]
+      }
+    },
+    method_labels: {
+      full_ft: 'Full fine-tuning',
+      lora: 'LoRA',
+      qlora: 'QLoRA',
+      lora_fa: 'LoRA-FA',
+      lisa: 'LISA'
+    },
+    candidates: [
+      { model_id: 'Qwen2.5-0.5B', backbone: 'tiny', params_b: 0.5, family: 'Qwen', method: 'lora', pred_accuracy: 0.925, pred_peak_vram_gb: 4.2, pred_carbon_kgco2eq: 0.012, pred_wall_clock_s: 480, confidence: 'HIGH', scope: 'MEASURED', implausible: false },
+      { model_id: 'Qwen2.5-0.5B', backbone: 'tiny', params_b: 0.5, family: 'Qwen', method: 'qlora', pred_accuracy: 0.918, pred_peak_vram_gb: 3.4, pred_carbon_kgco2eq: 0.009, pred_wall_clock_s: 420, confidence: 'HIGH', scope: 'MEASURED', implausible: false },
+      { model_id: 'TinyLlama-1.1B', backbone: 'small', params_b: 1.1, family: 'TinyLlama', method: 'lora', pred_accuracy: 0.94, pred_peak_vram_gb: 8.9, pred_carbon_kgco2eq: 0.019, pred_wall_clock_s: 650, confidence: 'HIGH', scope: 'MEASURED', implausible: false },
+      { model_id: 'Qwen2.5-1.5B', backbone: 'medium', params_b: 1.5, family: 'Qwen', method: 'qlora', pred_accuracy: 0.952, pred_peak_vram_gb: 11.8, pred_carbon_kgco2eq: 0.027, pred_wall_clock_s: 820, confidence: 'HIGH', scope: 'MEASURED', implausible: false },
+      { model_id: 'Qwen2.5-3B', backbone: 'large', params_b: 3, family: 'Qwen', method: 'lora', pred_accuracy: 0.961, pred_peak_vram_gb: 18.6, pred_carbon_kgco2eq: 0.044, pred_wall_clock_s: 1250, confidence: 'MEDIUM', scope: 'INTERPOLATED_SCALE', implausible: false }
+    ]
+  };
+  const DATA = window.GREENPEFT_CANDIDATES || FALLBACK_DATA;
   const CFG = DATA.engine;
 
   const CONFIDENCE_ORDER = ['LOW', 'MEDIUM', 'HIGH'];
