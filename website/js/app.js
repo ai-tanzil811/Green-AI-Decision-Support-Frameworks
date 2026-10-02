@@ -645,7 +645,36 @@
     const runDemoBtn = document.getElementById('cli-run-demo-btn');
     const terminalOutput = document.getElementById('terminal-output');
 
-    const terminalLines = [
+    const terminalLines = String.raw`   ____                     ____  _____ _____ _____
+  / ___|_ __ ___  ___ _ __ |  _ \| ____|  ___|_   _|
+ | |  _| '__/ _ \/ _ \ '_ \| |_) |  _| | |_    | |
+ | |_| | | |  __/  __/ | | |  __/| |___|  _|   | |
+  \____|_|  \___|\___|_| |_|_|   |_____|_|     |_|
+
+  GreenPEFT v0.3.0 - sustainability-aware PEFT decision support
+  Ashraful Islam Tanzil | United International University
+  https://github.com/ai-tanzil811
+  surrogate status: [ok] VALIDATED
+  data doi 10.34740/KAGGLE/DSV/20178095 | model doi 10.57967/hf/10690
+
+→ Filtering 47 candidates...
+→ 6 feasible under constraints.
+→ Pareto frontier: 3 candidates.
+
+RECOMMENDED
+  method      LISA
+  backbone    Qwen2.5-Medium (1.5B)
+  accuracy    0.923 ± 0.011
+  peak_vram   14.2 GB
+  energy      0.18 kWh
+  carbon      0.09 kgCO₂e
+  runtime     42 min
+  GEI         0.847
+
+Alternatives:
+  QLoRA + TinyLlama-Small   GEI 0.791
+  LoRA-FA + Qwen2.5-Tiny    GEI 0.744`.split('\n');
+    /*
       '   ____                     ____  _____ _____ _____',
       '  / ___|_ __ ___  ___ _ __ |  _ \\| ____|  ___|_   _|',
       " | |  _| '__/ _ \\/ _ \\ '_ \\| |_) |  _| | |_    | |",
@@ -675,7 +704,7 @@
       'Alternatives:',
       '  QLoRA + TinyLlama-Small   GEI 0.791',
       '  LoRA-FA + Qwen2.5-Tiny    GEI 0.744'
-    ];
+    */
 
     function playTypingAnimation() {
       if (!terminalOutput) return;
@@ -750,7 +779,7 @@
           panel.classList.toggle('is-active', panel.id === `resources-${target}`);
         });
       });
-    }
+    });
   }
 
   /* --------------------------------------------------------------------------
@@ -889,7 +918,11 @@
   /* --------------------------------------------------------------------------
      11. Initialization
      ----------------------------------------------------------------------- */
-  window.addEventListener('DOMContentLoaded', () => {
+  let appInitialized = false;
+
+  function initializeApp() {
+    if (appInitialized) return;
+    appInitialized = true;
     // Setup Theme (Default Dark Mode)
     setupThemeToggle();
     setupLanguageSelector();
@@ -929,6 +962,12 @@
 
     // 4. Initial Recommender Run
     runRecommendation();
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', initializeApp, { once: true });
+  } else {
+    initializeApp();
+  }
 
 })();
