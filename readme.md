@@ -21,49 +21,28 @@ Instead of requiring practitioners to run expensive empirical sweeps prior to se
 
 ## 🔄 End-to-End Pipeline Overview
 
-The GreenPEFT framework operates across **5 integrated stages**, seamlessly connecting data collection, empirical benchmarking, surrogate regression, constraint-aware decision support, and CLI execution.
+The GreenPEFT framework now follows the **four-stage research pipeline** used by the paper and the interactive dashboard:
+
+1. **Benchmark** — run a fixed, reproducible PEFT benchmark and collect accuracy, memory, energy, runtime, and operational carbon measurements.
+2. **Audit & Coverage** — remove invalid telemetry, retain the canonical energy pass, and document which backbone–method cells are covered.
+3. **Modeling** — fit four Ridge surrogate models from pre-run metadata and validate them with grouped and leave-one-tier-out protocols.
+4. **Decision Engine** — score the candidate zoo with physical constraints, a four-objective Pareto frontier, and Green Efficiency Index (GEI) ranking.
 
 ```mermaid
-flowchart TD
-    subgraph Stage1 ["Stage 1: Multi-Source Data Harmonization"]
-        A1["Raw Datasets (data/raw/)<br>• surrogate_dataset.csv<br>• Open LLM-Perf Leaderboard<br>• llmenergy.csv"] --> A2["Feature Engineering & Filtering<br>(notebooks/data_preprocessing...)"]
-        A2 --> A3["ML-Ready Harmonized Dataset<br>(data/processed/greenpeft_ml_ready_dataset.csv)<br>477 rows × 46 features"]
-    end
-
-    subgraph Stage2 ["Stage 2: Empirical Benchmarking Sweep"]
-        B1["Backbones (0.5B - 3.0B)<br>• Qwen2.5, TinyLlama, Llama3"] --> B2["PEFT Strategies<br>• Full-FT, LoRA, QLoRA<br>• LoRA-FA, LISA"]
-        B2 --> B3["NVIDIA Tesla T4 Grid Sweep<br>(CodeCarbon + Peak VRAM Tracker)"]
-        B3 --> B4["Canonical Benchmark Artifacts<br>(results/canonical_benchmark/)"]
-    end
-
-    subgraph Stage3 ["Stage 3: Zero-Shot Surrogate Regressor"]
-        C1["Pre-Run Metadata Features<br>(Backbone params, Adapter rank, Quant bits, Dataset size)"] --> C2["Ridge Regressors (surrogate/validate.py)<br>• Peak VRAM (GB)<br>• Energy (kWh)<br>• Wall-Clock Time (s)<br>• Task Accuracy"]
-        C2 --> C3["Audited Artifacts<br>(data/processed/greenpeft_surrogate_models.joblib)<br>+ models/model_metadata.json"]
-    end
-
-    subgraph Stage4 ["Stage 4: Constraint Engine & GEI Scoring"]
-        D1["User Constraints<br>(VRAM, Carbon, Accuracy floor)"] --> D2["Feasibility Filter & Scope Check"]
-        D2 --> D3["Pareto Frontier Extraction"]
-        D3 --> D4["Green Efficiency Index (GEI)<br>Multi-Objective Scoring"]
-        D4 --> D5["Recommended PEFT Strategy"]
-    end
-
-    subgraph Stage5 ["Stage 5: System Interface & Back-Testing"]
-        E1["CLI Tool (green-peft recommend)"] --> E2["Empirical Run Verification<br>(experiments/validate_recommendation.py)"]
-        E2 --> E3["Validation Log & Error Tracking<br>(results/recommendation_validation.csv)"]
-    end
-
-    A3 --> C1
-    B4 --> C1
-    C3 --> D2
+flowchart LR
+    A["1 · BENCHMARK<br/>4 backbones × 5 PEFT methods<br/>SST-2 · Tesla T4<br/>300 steps × 3 seeds<br/><br/>Accuracy · Peak VRAM · Energy<br/>Runtime · CO₂e"] -->
+    B["2 · AUDIT & COVERAGE<br/>59.9 W under-load pass retained<br/>9.97 W idle-floor pass excluded<br/>41 valid configurations<br/>14 / 20 matrix cells covered"] -->
+    C["3 · MODELING<br/>22 pre-run metadata features<br/>4 Ridge surrogate models<br/>Pass-grouped · seed-grouped · LOTO<br/><br/>Energy/Carbon gate: R² 0.90<br/>MAPE 10.6%"] -->
+    D["4 · DECISION ENGINE<br/>70 candidates<br/>Sanity + constraint filters<br/>4-objective Pareto frontier<br/>GEI ranking<br/><br/>Measured / Interpolated evidence<br/>DOIs · HF · Kaggle · CLI"]
 ```
 
 ### Stage Breakdown:
-1. **Data Harmonization (`data/raw/` → `data/processed/`):** Merges multi-source fine-tuning and inference traces into a unified 477×46 feature dataset with rigorous measurement-validity filtering.
-2. **Empirical Benchmarking (`results/canonical_benchmark/`):** Executes 60 systematic sweeps across 5 PEFT strategies (Full-FT, LoRA, QLoRA, LoRA-FA, LISA) on NVIDIA Tesla T4 GPUs with CodeCarbon tracking.
-3. **Surrogate Regressor (`surrogate/validate.py`):** Fits zero-shot Ridge pipelines using pre-run metadata to estimate Peak VRAM, Energy (kWh), Wall-Clock Time, and Accuracy.
-4. **Decision Engine & GEI (`green_peft/recommender.py`):** Filters infeasible candidates against hard resource constraints, constructs the non-dominated Pareto frontier, and scores survivors using the Green Efficiency Index.
-5. **CLI & Empirical Back-Testing (`green_peft_cli`):** Provides instant CLI recommendations (`green-peft recommend`) and continuous back-testing against measured targets.
+1. **Benchmark (`results/canonical_benchmark/`):** Evaluates Qwen2.5-0.5B, TinyLlama-1.1B, Qwen2.5-1.5B, and Qwen2.5-3B with Full-FT, LoRA, QLoRA, LoRA-FA, and LISA on SST-2 using an NVIDIA Tesla T4, 300 steps, and three seeds. Measurements include Accuracy, Peak VRAM, NVML Energy at 5 Hz, Runtime, and operational CO₂e derived as `Energy × 0.65 kg/kWh`.
+2. **Audit & Coverage (`docs/AUDIT_REPORT.md`):** Retains the approximately 59.9 W under-load telemetry pass and excludes the approximately 9.97 W idle-floor pass caused by an instrumentation bug. The canonical dataset contains 41 valid configurations and covers 14 of 20 backbone–method cells.
+3. **Modeling (`surrogate/validate.py`):** Uses 22 pre-run metadata features, including scale, bit width, adapter rank, memory bytes, and weight bytes, to fit four Ridge models for Accuracy, Memory/VRAM, Energy, and Runtime. Validation is pass-grouped, seed-grouped, and leave-one-tier-out (LOTO). Energy/Carbon is currently the validated gate (`R² = 0.90`, `MAPE = 10.6%`); other targets remain preliminary.
+4. **Decision Engine (`green_peft/recommender.py`):** Scores 70 candidates through a sanity filter, a constraint filter with a 10% VRAM safety margin, accuracy/carbon/time limits, a four-objective Pareto frontier, and GEI ranking. Results label evidence as **Measured (High)** or **Interpolated / Out-of-bounds (Low)** and are exposed through the dashboard and `green-peft` CLI.
+
+The CLI, Hugging Face bundle, Kaggle dataset, DOI records, and empirical recommendation validation are **outputs and interfaces of the four-stage pipeline**, not separate pipeline stages.
 
 ---
 
