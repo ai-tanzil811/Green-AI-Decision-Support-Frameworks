@@ -127,6 +127,21 @@
   }
 
   function runRecommendation() {
+    const outputPanel = document.getElementById('rec-output-panel');
+    if (!Engine || typeof Engine.recommend !== 'function') {
+      if (outputPanel) outputPanel.setAttribute('data-result-status', 'error');
+      const normalPanel = document.getElementById('recommendation-content');
+      const infeasiblePanel = document.getElementById('infeasible-panel');
+      if (normalPanel) normalPanel.style.display = 'none';
+      if (infeasiblePanel) infeasiblePanel.classList.add('is-active');
+      const reasons = document.getElementById('infeasible-reasons-list');
+      const missingAssets = Array.isArray(window.GREENPEFT_ASSET_ERRORS)
+        ? ` Missing deployed data asset(s): ${window.GREENPEFT_ASSET_ERRORS.join(', ')}.`
+        : '';
+      if (reasons) reasons.textContent = `Decision engine is unavailable.${missingAssets} Redeploy the site with the complete website/data directory.`;
+      return;
+    }
+
     const query = {
       maxVramGb: state.vram,
       minAccuracy: state.accuracy,
@@ -139,7 +154,6 @@
     if (state.method) query.methods = [state.method];
 
     const result = Engine.recommend(query);
-    const outputPanel = document.getElementById('rec-output-panel');
 
     const normalPanel = document.getElementById('recommendation-content');
     const infeasiblePanel = document.getElementById('infeasible-panel');
@@ -148,7 +162,10 @@
     if (!result.feasible || result.feasible.length === 0) {
       updateMascot(false, false);
       if (outputPanel) outputPanel.setAttribute('data-result-status', 'infeasible');
+      if (outputPanel) outputPanel.removeAttribute('data-selected-candidate');
       if (normalPanel) normalPanel.style.display = 'none';
+      const titleEl = document.getElementById('rec-title');
+      if (titleEl) titleEl.textContent = 'No feasible candidate';
       const barsContainer = document.getElementById('comparison-bars');
       const altContainer = document.getElementById('alternatives-list');
       if (barsContainer) barsContainer.replaceChildren();
@@ -174,6 +191,14 @@
     if (normalPanel) normalPanel.style.display = 'block';
 
     const top = result.ranked[0];
+    if (!top) {
+      if (outputPanel) outputPanel.setAttribute('data-result-status', 'error');
+      if (normalPanel) normalPanel.style.display = 'none';
+      if (infeasiblePanel) infeasiblePanel.classList.add('is-active');
+      if (dropReasonsEl) dropReasonsEl.textContent = 'The engine returned no ranked candidate for the feasible set.';
+      return;
+    }
+    if (outputPanel) outputPanel.removeAttribute('data-selected-candidate');
 
     // Header & Titles
     const methodDisplay = getMethodName(top.method);
@@ -332,6 +357,22 @@
      4. Setup Lab Controls & Event Listeners
      ----------------------------------------------------------------------- */
   function setupLabControls() {
+    const vramSlider = document.getElementById('sl-vram');
+    const accSlider = document.getElementById('sl-acc');
+    const carbonSlider = document.getElementById('sl-carbon');
+    const timeSlider = document.getElementById('sl-time');
+    const bbSelect = document.getElementById('sel-backbone');
+    const methodSelect = document.getElementById('sel-method');
+    const activeProfile = document.querySelector('.profile-btn[aria-pressed="true"]');
+
+    if (vramSlider) state.vram = parseFloat(vramSlider.value);
+    if (accSlider) state.accuracy = parseFloat(accSlider.value);
+    if (carbonSlider) state.carbon = parseFloat(carbonSlider.value);
+    if (timeSlider) state.runtimeMinutes = parseInt(timeSlider.value, 10);
+    if (bbSelect) state.backbone = bbSelect.value;
+    if (methodSelect) state.method = methodSelect.value;
+    if (activeProfile) state.profile = activeProfile.getAttribute('data-profile') || state.profile;
+
     function markMascotFocused() {
       updateMascot(true, true);
       window.clearTimeout(markMascotFocused.timer);
@@ -365,7 +406,6 @@
     });
 
     // VRAM Slider
-    const vramSlider = document.getElementById('sl-vram');
     const vramVal = document.getElementById('sl-vram-val');
     if (vramSlider) {
       vramSlider.addEventListener('input', (e) => {
@@ -380,7 +420,6 @@
     }
 
     // Accuracy Slider
-    const accSlider = document.getElementById('sl-acc');
     const accVal = document.getElementById('sl-acc-val');
     if (accSlider) {
       accSlider.addEventListener('input', (e) => {
@@ -392,7 +431,6 @@
     }
 
     // Carbon Slider
-    const carbonSlider = document.getElementById('sl-carbon');
     const carbonVal = document.getElementById('sl-carbon-val');
     if (carbonSlider) {
       carbonSlider.addEventListener('input', (e) => {
@@ -404,7 +442,6 @@
     }
 
     // Runtime Slider
-    const timeSlider = document.getElementById('sl-time');
     const timeVal = document.getElementById('sl-time-val');
     if (timeSlider) {
       timeSlider.addEventListener('input', (e) => {
@@ -428,7 +465,6 @@
     });
 
     // Dropdowns
-    const bbSelect = document.getElementById('sel-backbone');
     if (bbSelect) {
       bbSelect.addEventListener('change', (e) => {
         markMascotFocused();
@@ -437,7 +473,6 @@
       });
     }
 
-    const methodSelect = document.getElementById('sel-method');
     if (methodSelect) {
       methodSelect.addEventListener('change', (e) => {
         markMascotFocused();
