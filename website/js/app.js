@@ -521,31 +521,27 @@
      6. Section 4: Pipeline Diagram (Expandable Stages & I/O Chips)
      ----------------------------------------------------------------------- */
   const PIPELINE_DATA = {
-    harmonize: {
-      inputs: ['raw_telemetry', 'hardware_logs', 'seed_variance'],
-      outputs: ['unified_metrics', 'calibration_envelope'],
-      desc: 'Normalizes heterogeneous training traces and hardware telemetry into standard units (FLOPs, peak memory GB, kWh, wall-clock seconds). Eliminates measurement divergence across different tracking libraries.'
-    },
     benchmark: {
-      inputs: ['backbone_params', 'adapter_rank', 'quant_bits', 'dataset_size'],
-      outputs: ['60_run_telemetry', 'empirical_bounds'],
-      desc: 'Executes calibrated micro-benchmarks across a 60-run parameter envelope on NVIDIA Tesla T4 GPUs. Captures empirical multi-objective ground truth across 0.5B to 3B parameter architectures.'
+      inputs: ['4 backbones', '5 PEFT methods', 'SST-2', 'Tesla T4 / Kaggle', '300 steps × 3 seeds'],
+      outputs: ['Accuracy (%)', 'Peak VRAM (GB)', 'Energy (W) @ NVML 5Hz', 'Runtime (s)', 'CO₂e = Energy × 0.65 kg/kWh'],
+      desc: 'Benchmark: Qwen2.5-0.5B, TinyLlama-1.1B, Qwen2.5-1.5B, and Qwen2.5-3B are evaluated with Full FT, LoRA, QLoRA, LoRA-FA, and LISA on SST-2 using a fixed 300-step, 3-seed setup. We collect Accuracy (%), Peak VRAM (GB), Energy (W) via NVML at 5 Hz, Runtime (s), and operational CO₂e derived as Energy × 0.65 kg/kWh.'
     },
-    surrogate: {
-      inputs: ['config_features', 'model_family', 'target_hardware'],
-      outputs: ['accuracy', 'peak_vram', 'energy_kwh', 'wall_clock_s'],
-      desc: 'Zero-shot regression models infer accuracy, peak VRAM, energy consumption, and wall-clock runtime instantly from configuration metadata. Eliminates blind parameter sweeps before code execution.'
+    audit: {
+      inputs: ['Pass 1: ~59.9 W under load', 'Pass 2: ~9.97 W idle floor excluded', '41 valid configurations'],
+      outputs: ['14 / 20 matrix cells covered', 'canonical dataset', 'coverage matrix'],
+      desc: 'Audit & Coverage: Pass 1 retained the approximately 59.9 W under-load telemetry. Pass 2 was excluded because the approximately 9.97 W idle-floor telemetry exposed an instrumentation bug. The canonical dataset contains 41 valid configurations, covering 14 of 20 backbone–method matrix cells.',
+      matrix: true
     },
-    filter: {
-      inputs: ['vram_budget', 'accuracy_floor', 'carbon_limit', 'time_ceiling'],
-      outputs: ['feasible_set', 'non_dominated_pareto_front'],
-      desc: 'Filters candidate configurations against hardware ceilings and user accuracy constraints. Extracts the non-dominated Pareto frontier, discarding all suboptimal trade-offs.'
+    modeling: {
+      inputs: ['22 pre-run metadata features', 'Scale', 'Bit width', 'Adapter rank', 'Memory / weight bytes'],
+      outputs: ['Ridge: Accuracy', 'Ridge: Memory / VRAM', 'Ridge: Energy', 'Ridge: Runtime'],
+      desc: 'Modeling: four Ridge surrogate models consume 22 pre-run metadata features covering scale, bit width, adapter rank, memory bytes, and weight bytes. Validation uses a hierarchical pyramid: pass-grouped, seed-grouped, and leave-one-tier-out (LOTO). Status gate: Energy/Carbon OK (R² = 0.90, MAPE = 10.6%); Memory, Runtime, and Accuracy remain preliminary.'
     },
-    recommend: {
-      inputs: ['preference_weights', 'gei_profile'],
-      outputs: ['gei_ranking', 'top_shortlist', 'inspectable_rationale'],
-      desc: 'Computes the Green Efficiency Index (GEI) across customizable preference profiles to deliver an inspectable shortlist and actionable candidate recommendation.'
-    }
+    decision: {
+      inputs: ['70 candidates', 'sanity filter', 'VRAM + 10% safety margin', 'accuracy / carbon / time limits'],
+      outputs: ['4-objective Pareto frontier', 'GEI ranking', 'Measured (High) / Interpolated (Low)', 'DOI · HF · Kaggle · CLI'],
+      desc: 'Decision Engine: 70 candidates pass through a sanity filter, constraint filter (Max VRAM with a 10% safety margin, Accuracy Floor, Carbon and Time limits), four-objective Pareto frontier, and Green Efficiency Index (GEI) ranking. Outputs label evidence as Measured (High) or Interpolated / Out-of-bounds (Low), alongside open-science artifacts: DOIs, the Hugging Face model bundle, Kaggle dataset, and pip install green-peft.'
+    },
   };
 
   function setupPipeline() {
@@ -554,7 +550,7 @@
     const descMount = document.getElementById('pipeline-desc-mount');
 
     function updateStageInfo(stageKey) {
-      const data = PIPELINE_DATA[stageKey] || PIPELINE_DATA.harmonize;
+      const data = PIPELINE_DATA[stageKey] || PIPELINE_DATA.benchmark;
 
       if (chipsMount) {
         let html = '';
@@ -563,9 +559,20 @@
         });
         html += `<span class="chip-arrow">→</span>`;
         data.outputs.forEach(outp => {
-          html += `<span class="chip-tag" style="background:#000;color:#fff;">${outp}</span>`;
+          html += `<span class="chip-tag chip-tag--output">${outp}</span>`;
         });
         chipsMount.innerHTML = html;
+        if (data.matrix) {
+          html += '<div class="coverage-matrix" aria-label="Coverage matrix showing 14 of 20 matrix cells covered">' +
+            '<span class="coverage-matrix-title">Coverage matrix · 14 / 20 cells</span>' +
+            '<span class="coverage-row"><b>Backbone</b><b>Full FT</b><b>LoRA</b><b>QLoRA</b><b>LoRA-FA</b><b>LISA</b></span>' +
+            '<span class="coverage-row"><b>0.5B</b><i>●</i><i>●</i><i>●</i><i>●</i><i>●</i></span>' +
+            '<span class="coverage-row"><b>1.1B</b><i>●</i><i>●</i><i>●</i><i>●</i><i>●</i></span>' +
+            '<span class="coverage-row"><b>1.5B</b><i>○</i><i>●</i><i>●</i><i>○</i><i>●</i></span>' +
+            '<span class="coverage-row"><b>3.0B</b><i>○</i><i>●</i><i>●</i><i>○</i><i>○</i></span>' +
+            '</div>';
+          chipsMount.innerHTML = html;
+        }
       }
 
       if (descMount) {
@@ -581,13 +588,22 @@
 
       stage.addEventListener('click', () => {
         stages.forEach(s => s.classList.remove('is-active'));
+        stages.forEach(s => s.setAttribute('aria-pressed', 'false'));
         stage.classList.add('is-active');
+        stage.setAttribute('aria-pressed', 'true');
         updateStageInfo(key);
+      });
+
+      stage.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          stage.click();
+        }
       });
     });
 
     // Default stage
-    updateStageInfo('harmonize');
+    updateStageInfo('benchmark');
   }
 
   /* --------------------------------------------------------------------------
@@ -630,6 +646,18 @@
     const terminalOutput = document.getElementById('terminal-output');
 
     const terminalLines = [
+      '   ____                     ____  _____ _____ _____',
+      '  / ___|_ __ ___  ___ _ __ |  _ \\| ____|  ___|_   _|',
+      " | |  _| '__/ _ \\/ _ \\ '_ \\| |_) |  _| | |_    | |",
+      ' | |_| | | |  __/  __/ | | |  __/| |___|  _|   | |',
+      '  \\____|_|  \\___|\\___|_| |_|_|   |_____|_|     |_|',
+      '',
+      '  GreenPEFT v0.3.0 - sustainability-aware PEFT decision support',
+      '  Ashraful Islam Tanzil | United International University',
+      '  https://github.com/ai-tanzil811',
+      '  surrogate status: [ok] VALIDATED',
+      '  data doi 10.34740/KAGGLE/DSV/20178095 | model doi 10.57967/hf/10690',
+      '',
       '→ Filtering 47 candidates...',
       '→ 6 feasible under constraints.',
       '→ Pareto frontier: 3 candidates.',
@@ -681,16 +709,46 @@
      ----------------------------------------------------------------------- */
   function setupBibtex() {
     const bibtexCopyBtn = document.getElementById('bibtex-copy-btn');
+    const hubBibtexCopyBtn = document.getElementById('bibtex-copy-btn-hub');
+    const installCopyBtn = document.getElementById('install-copy-btn');
     const bibtexCodeEl = document.getElementById('bibtex-text');
 
-    if (bibtexCopyBtn && bibtexCodeEl) {
-      bibtexCopyBtn.addEventListener('click', () => {
-        if (navigator.clipboard) {
-          navigator.clipboard.writeText(bibtexCodeEl.textContent).then(() => {
-            bibtexCopyBtn.textContent = 'Copied ✓';
-            setTimeout(() => { bibtexCopyBtn.textContent = 'Copy BibTeX'; }, 2000);
-          });
-        }
+    function copyText(text, button, defaultLabel) {
+      if (!navigator.clipboard || !text || !button) return;
+      navigator.clipboard.writeText(text).then(() => {
+        button.textContent = 'Copied ✓';
+        button.setAttribute('aria-label', 'Copied to clipboard');
+        setTimeout(() => {
+          button.textContent = defaultLabel;
+          button.removeAttribute('aria-label');
+        }, 2000);
+      }).catch(() => {
+        button.textContent = 'Copy unavailable';
+        setTimeout(() => { button.textContent = defaultLabel; }, 2000);
+      });
+    }
+
+    if (bibtexCodeEl) {
+      [bibtexCopyBtn, hubBibtexCopyBtn].filter(Boolean).forEach(button => {
+        button.addEventListener('click', () => copyText(bibtexCodeEl.textContent, button, 'Copy BibTeX'));
+      });
+    }
+    if (installCopyBtn) {
+      installCopyBtn.addEventListener('click', () => copyText(installCopyBtn.dataset.copyText, installCopyBtn, 'Copy install command'));
+    }
+
+    document.querySelectorAll('[data-resource-tab]').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.dataset.resourceTab;
+        document.querySelectorAll('[data-resource-tab]').forEach(item => {
+          const active = item === tab;
+          item.classList.toggle('is-active', active);
+          item.setAttribute('aria-selected', String(active));
+        });
+        document.querySelectorAll('.resource-panel').forEach(panel => {
+          panel.hidden = panel.id !== `resources-${target}`;
+          panel.classList.toggle('is-active', panel.id === `resources-${target}`);
+        });
       });
     }
   }

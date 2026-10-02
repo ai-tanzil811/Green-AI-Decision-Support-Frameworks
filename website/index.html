@@ -440,46 +440,96 @@
 
         <header class="section-header">
           <div class="eyebrow">03 / Architecture</div>
-          <h2 class="display-title">Five-stage surrogate pipeline.</h2>
+          <h2 class="display-title">Four-stage research pipeline.</h2>
           <p class="body-lead">
-            A deterministic decision framework connecting raw empirical measurements to actionable recommendations. Hover or click any stage to inspect inputs and outputs.
+            GreenPEFT follows the research paper's four core stages: benchmark, audit and coverage, modeling, and decision. Click any stage to inspect its inputs, measurements, validation gates, and outputs.
           </p>
         </header>
 
-        <!-- 5-Stage Diagram -->
-        <div class="pipeline-track" role="region" aria-label="Five stage pipeline architecture">
-          <div class="pipeline-stage is-active" data-stage="harmonize" tabindex="0">
+        <!-- 4-Stage Research Pipeline -->
+        <div class="pipeline-track pipeline-track--four" role="region" aria-label="Four stage GreenPEFT research pipeline">
+          <div class="pipeline-stage is-active" data-stage="benchmark" tabindex="0" role="button" aria-pressed="true">
             <div class="pipeline-stage-num">STAGE 01</div>
-            <div class="pipeline-stage-name">Harmonize</div>
-          </div>
-          <div class="pipeline-stage" data-stage="benchmark" tabindex="0">
-            <div class="pipeline-stage-num">STAGE 02</div>
             <div class="pipeline-stage-name">Benchmark</div>
           </div>
-          <div class="pipeline-stage" data-stage="surrogate" tabindex="0">
+          <div class="pipeline-stage" data-stage="audit" tabindex="0" role="button" aria-pressed="false">
+            <div class="pipeline-stage-num">STAGE 02</div>
+            <div class="pipeline-stage-name">Audit &amp; Coverage</div>
+          </div>
+          <div class="pipeline-stage" data-stage="modeling" tabindex="0" role="button" aria-pressed="false">
             <div class="pipeline-stage-num">STAGE 03</div>
-            <div class="pipeline-stage-name">Surrogate</div>
+            <div class="pipeline-stage-name">Modeling</div>
           </div>
-          <div class="pipeline-stage" data-stage="filter" tabindex="0">
+          <div class="pipeline-stage" data-stage="decision" tabindex="0" role="button" aria-pressed="false">
             <div class="pipeline-stage-num">STAGE 04</div>
-            <div class="pipeline-stage-name">Filter + Pareto</div>
-          </div>
-          <div class="pipeline-stage" data-stage="recommend" tabindex="0">
-            <div class="pipeline-stage-num">STAGE 05</div>
-            <div class="pipeline-stage-name">Recommend</div>
+            <div class="pipeline-stage-name">Decision Engine</div>
           </div>
         </div>
 
         <figure class="framework-figure">
-          <img
-            class="framework-figure-image"
-            src="https://raw.githubusercontent.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks/main/paper/figures/fig1_pipeline.png"
-            alt="GreenPEFT framework pipeline showing telemetry harmonization, benchmark measurement, surrogate prediction, constraint filtering, Pareto analysis, and recommendation"
-            loading="lazy"
-          >
+          <svg class="framework-figure-image framework-figure-svg" viewBox="0 0 1200 380" role="img" aria-labelledby="framework-svg-title framework-svg-desc">
+            <title id="framework-svg-title">GreenPEFT four-stage research pipeline</title>
+            <desc id="framework-svg-desc">Benchmark measurements flow through audit and coverage, four Ridge surrogate models, and a constraint-aware decision engine.</desc>
+            <defs>
+              <linearGradient id="framework-card-fill" x1="0" x2="1">
+                <stop offset="0" stop-color="#f4f7f5"/>
+                <stop offset="1" stop-color="#e6f3eb"/>
+              </linearGradient>
+              <marker id="framework-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                <path d="M0,0 L8,4 L0,8 Z" fill="currentColor"/>
+              </marker>
+            </defs>
+            <g class="framework-svg-stage" transform="translate(24 38)">
+              <rect width="264" height="252" rx="18" fill="url(#framework-card-fill)"/>
+              <text x="20" y="34" class="framework-svg-kicker">STAGE 1</text>
+              <text x="20" y="66" class="framework-svg-title">BENCHMARK</text>
+              <text x="20" y="101" class="framework-svg-body">4 backbones × 5 PEFT methods</text>
+              <text x="20" y="125" class="framework-svg-body">SST-2 · Tesla T4 · 300 steps</text>
+              <text x="20" y="149" class="framework-svg-body">3 seeds · fixed setup</text>
+              <line x1="20" y1="170" x2="244" y2="170" class="framework-svg-rule"/>
+              <text x="20" y="198" class="framework-svg-body">Accuracy · VRAM · Energy</text>
+              <text x="20" y="222" class="framework-svg-body">Runtime · CO₂e</text>
+            </g>
+            <path d="M300 164 H326" class="framework-svg-arrow" marker-end="url(#framework-arrow)"/>
+            <g class="framework-svg-stage" transform="translate(328 38)">
+              <rect width="264" height="252" rx="18" fill="url(#framework-card-fill)"/>
+              <text x="20" y="34" class="framework-svg-kicker">STAGE 2</text>
+              <text x="20" y="66" class="framework-svg-title">AUDIT &amp; COVERAGE</text>
+              <text x="20" y="101" class="framework-svg-body">59.9 W retained under load</text>
+              <text x="20" y="125" class="framework-svg-body">9.97 W idle floor excluded</text>
+              <text x="20" y="149" class="framework-svg-body">41 valid configurations</text>
+              <line x1="20" y1="170" x2="244" y2="170" class="framework-svg-rule"/>
+              <text x="20" y="198" class="framework-svg-body">14 / 20 matrix cells covered</text>
+              <text x="20" y="222" class="framework-svg-body">canonical telemetry dataset</text>
+            </g>
+            <path d="M604 164 H630" class="framework-svg-arrow" marker-end="url(#framework-arrow)"/>
+            <g class="framework-svg-stage" transform="translate(632 38)">
+              <rect width="264" height="252" rx="18" fill="url(#framework-card-fill)"/>
+              <text x="20" y="34" class="framework-svg-kicker">STAGE 3</text>
+              <text x="20" y="66" class="framework-svg-title">MODELING</text>
+              <text x="20" y="101" class="framework-svg-body">22 pre-run metadata features</text>
+              <text x="20" y="125" class="framework-svg-body">4 Ridge surrogate models</text>
+              <text x="20" y="149" class="framework-svg-body">Accuracy · VRAM · Energy · Runtime</text>
+              <line x1="20" y1="170" x2="244" y2="170" class="framework-svg-rule"/>
+              <text x="20" y="198" class="framework-svg-body">Pass / seed / LOTO validation</text>
+              <text x="20" y="222" class="framework-svg-body">Energy gate: R² 0.90 · MAPE 10.6%</text>
+            </g>
+            <path d="M908 164 H934" class="framework-svg-arrow" marker-end="url(#framework-arrow)"/>
+            <g class="framework-svg-stage" transform="translate(936 38)">
+              <rect width="240" height="252" rx="18" fill="url(#framework-card-fill)"/>
+              <text x="20" y="34" class="framework-svg-kicker">STAGE 4</text>
+              <text x="20" y="66" class="framework-svg-title">DECISION ENGINE</text>
+              <text x="20" y="101" class="framework-svg-body">70 candidates → sanity filter</text>
+              <text x="20" y="125" class="framework-svg-body">constraints + 10% VRAM margin</text>
+              <text x="20" y="149" class="framework-svg-body">Pareto → GEI ranking</text>
+              <line x1="20" y1="170" x2="220" y2="170" class="framework-svg-rule"/>
+              <text x="20" y="198" class="framework-svg-body">Measured / interpolated evidence</text>
+              <text x="20" y="222" class="framework-svg-body">DOIs · HF · Kaggle · CLI</text>
+            </g>
+          </svg>
           <figcaption class="caption-mono">
-            GreenPEFT framework: empirical telemetry becomes explainable, constraint-aware recommendations.
-            <a href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks/blob/main/paper/figures/fig1_pipeline.png" target="_blank" rel="noopener">View research figure</a>
+            GreenPEFT research framework: 41 audited configurations become validated, constraint-aware recommendations.
+            <a href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks/blob/main/paper/figures/fig1_pipeline.png" target="_blank" rel="noopener">View source research figure</a>
           </figcaption>
         </figure>
 
@@ -672,7 +722,7 @@
       <div class="container">
 
         <header class="section-header">
-          <div class="eyebrow" style="color: #A3A3A3;">05 / Tooling</div>
+          <div class="eyebrow" style="color: #A3A3A3;">06 / CLI</div>
           <h2 class="display-title">CLI quickstart.</h2>
           <p class="body-lead" style="color: #A3A3A3;">
             Integrate GreenPEFT directly into your pre-flight CI/CD pipelines and experiment scripts.
@@ -701,7 +751,19 @@ $ green-peft recommend \
 
           <!-- Right Column: Mock Terminal Output -->
           <div class="terminal-panel" id="terminal-panel">
-            <div id="terminal-output">→ Filtering 47 candidates...
+            <div id="terminal-output">   ____                     ____  _____ _____ _____
+  / ___|_ __ ___  ___ _ __ |  _ \| ____|  ___|_   _|
+ | |  _| '__/ _ \/ _ \ '_ \| |_) |  _| | |_    | |
+ | |_| | | |  __/  __/ | | |  __/| |___|  _|   | |
+  \____|_|  \___|\___|_| |_|_|   |_____|_|     |_|
+
+  GreenPEFT v0.3.0 - sustainability-aware PEFT decision support
+  Ashraful Islam Tanzil | United International University
+  https://github.com/ai-tanzil811
+  surrogate status: [ok] VALIDATED
+  data doi 10.34740/KAGGLE/DSV/20178095 | model doi 10.57967/hf/10690
+
+→ Filtering 47 candidates...
 → 6 feasible under constraints.
 → Pareto frontier: 3 candidates.
 
@@ -721,6 +783,7 @@ Alternatives:
           </div>
 
         </div>
+        <p class="caption-mono cli-banner-note">The CLI banner is written to stderr so <code>--json</code> output stays pipe-safe. In Windows CMD, append <code>2&gt;&amp;1</code> when you need to merge it into stdout.</p>
 
         <div class="cli-links">
           <a href="https://pypi.org/project/green-peft/" target="_blank" rel="noopener">PyPI</a>
@@ -741,6 +804,76 @@ Alternatives:
           <div class="eyebrow">06 / Reference</div>
           <h2 class="display-title">Author, links &amp; citation.</h2>
         </header>
+
+        <article class="author-hub" aria-labelledby="author-hub-title">
+          <div class="author-hub-hero">
+            <div class="author-identity">
+              <div class="author-avatar-wrap">
+                <img class="author-avatar" src="assets/author.jpg" alt="Ashraful Islam Tanzil" width="112" height="112" onerror="this.onerror=null; this.src='https://secure.gravatar.com/avatar/crownelectronic4c6790a6af?s=200';">
+              </div>
+              <div>
+                <p class="author-kicker">AUTHOR &amp; DEVELOPER HUB</p>
+                <h3 class="author-name" id="author-hub-title">Ashraful Islam Tanzil</h3>
+                <p class="author-role">Green AI &amp; Efficient LLM Systems</p>
+                <div class="author-badges" aria-label="Author credentials">
+                  <span>✓ Author &amp; Lead Researcher</span>
+                  <span>✓ United International University</span>
+                  <span>✓ Green AI &amp; PEFT Specialist</span>
+                </div>
+              </div>
+            </div>
+            <div class="author-bio">
+              <p class="body-regular">Computer Science researcher building transparent decision frameworks for parameter-efficient fine-tuning, resource-aware experimentation, and empirical carbon accounting.</p>
+              <div class="author-contact-links">
+                <a href="https://github.com/ai-tanzil811" target="_blank" rel="noopener">GitHub profile</a>
+                <a href="https://www.linkedin.com/in/ai-tanzil/" target="_blank" rel="noopener">LinkedIn</a>
+                <a href="mailto:ahmedtanzil174@gmail.com">Email</a>
+                <a href="../docs/author.md" target="_blank" rel="noopener">Source report</a>
+              </div>
+            </div>
+          </div>
+          <div class="author-metrics" aria-label="GreenPEFT project metrics">
+            <div class="author-metric"><span>Code artifacts</span><strong>PyPI v0.3.0 · HF v2</strong><small>pip install green-peft</small></div>
+            <div class="author-metric"><span>Benchmark grounding</span><strong>41 audited runs</strong><small>Tesla T4 · SST-2</small></div>
+            <div class="author-metric"><span>Research artifacts</span><strong>DOI · Kaggle · GitHub</strong><small>Open-source evidence trail</small></div>
+          </div>
+          <div class="author-quick-actions">
+            <button type="button" class="btn btn--primary btn--sm" id="install-copy-btn" data-copy-text="pip install green-peft">Copy install command</button>
+            <button type="button" class="btn btn--ghost btn--sm" id="bibtex-copy-btn-hub">Copy BibTeX</button>
+          </div>
+        </article>
+
+        <section class="resource-directory" aria-labelledby="resource-directory-title">
+          <div class="resource-directory-head">
+            <div>
+              <p class="eyebrow">PROJECT DIRECTORY</p>
+              <h3 class="display-sub" id="resource-directory-title">Explore the evidence stack.</h3>
+            </div>
+            <div class="resource-tabs" role="tablist" aria-label="Resource categories">
+              <button class="resource-tab is-active" role="tab" aria-selected="true" aria-controls="resources-research" data-resource-tab="research">Research &amp; methodology</button>
+              <button class="resource-tab" role="tab" aria-selected="false" aria-controls="resources-code" data-resource-tab="code">Code &amp; models</button>
+              <button class="resource-tab" role="tab" aria-selected="false" aria-controls="resources-package" data-resource-tab="package">Package &amp; deployment</button>
+            </div>
+          </div>
+          <div class="resource-panel is-active" id="resources-research" role="tabpanel">
+            <a class="resource-card" href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks/blob/main/paper/reproducibility_report.pdf" target="_blank" rel="noopener"><span class="resource-icon">PDF</span><span><strong>Audit report</strong><small>Reproducibility and measurement notes</small></span><span>↗</span></a>
+            <a class="resource-card" href="https://www.kaggle.com/dsv/20178095" target="_blank" rel="noopener"><span class="resource-icon">DATA</span><span><strong>Data methodology</strong><small>Canonical telemetry collection</small></span><span>↗</span></a>
+            <a class="resource-card" href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks/tree/main/surrogate" target="_blank" rel="noopener"><span class="resource-icon">R²</span><span><strong>Surrogate validation</strong><small>Models and validation protocol</small></span><span>↗</span></a>
+            <a class="resource-card" href="https://doi.org/10.57967/hf/10690" target="_blank" rel="noopener"><span class="resource-icon">DOI</span><span><strong>Paper record</strong><small>Persistent research identifier</small></span><span>↗</span></a>
+          </div>
+          <div class="resource-panel" id="resources-code" role="tabpanel" hidden>
+            <a class="resource-card" href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks#readme" target="_blank" rel="noopener"><span class="resource-icon">GH</span><span><strong>GitHub repository</strong><small>Framework source and README</small></span><span>↗</span></a>
+            <a class="resource-card" href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks/blob/main/reproduce.py" target="_blank" rel="noopener"><span class="resource-icon">&gt;_</span><span><strong>Reproduction script</strong><small>Repeat the benchmark workflow</small></span><span>↗</span></a>
+            <a class="resource-card" href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks/tree/main/notebooks" target="_blank" rel="noopener"><span class="resource-icon">NB</span><span><strong>Notebooks</strong><small>Exploration and analysis assets</small></span><span>↗</span></a>
+            <a class="resource-card" href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks/tree/main/results" target="_blank" rel="noopener"><span class="resource-icon">RUN</span><span><strong>Benchmark artifacts</strong><small>Results and evidence exports</small></span><span>↗</span></a>
+          </div>
+          <div class="resource-panel" id="resources-package" role="tabpanel" hidden>
+            <a class="resource-card" href="https://pypi.org/project/green-peft/" target="_blank" rel="noopener"><span class="resource-icon">PY</span><span><strong>PyPI release</strong><small>green-peft v0.3.0</small></span><span>↗</span></a>
+            <a class="resource-card" href="https://huggingface.co/ai-tanzil/GreenPEFT-v2" target="_blank" rel="noopener"><span class="resource-icon">HF</span><span><strong>Hugging Face bundle</strong><small>GreenPEFT model package v2</small></span><span>↗</span></a>
+            <a class="resource-card" href="https://doi.org/10.57967/hf/10690" target="_blank" rel="noopener"><span class="resource-icon">DOI</span><span><strong>Dataset DOI</strong><small>Traceable release metadata</small></span><span>↗</span></a>
+            <a class="resource-card" href="https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks/blob/main/models/model_metadata.json" target="_blank" rel="noopener"><span class="resource-icon">{ }</span><span><strong>Model metadata</strong><small>Deployment-ready model details</small></span><span>↗</span></a>
+          </div>
+        </section>
 
         <div class="author-grid">
 
@@ -853,12 +986,12 @@ Alternatives:
             <span class="sub-heading-mono" style="margin-bottom: 0;">BibTeX Citation</span>
             <button type="button" class="btn btn--ghost btn--sm" id="bibtex-copy-btn">Copy BibTeX</button>
           </div>
-          <pre class="bibtex-code" id="bibtex-text">@software{tanzil_greenpeft_2025,
-  author  = {Tanzil, Ashraful Islam},
-  title   = {GreenPEFT: A Multi-Objective Green AI Decision Support Framework},
-  year    = {2025},
-  license = {MIT},
-  url     = {https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks}
+          <pre class="bibtex-code" id="bibtex-text"><span class="bibtex-command">@software</span>{tanzil_greenpeft_2025,
+  <span class="bibtex-key">author</span>  = {Tanzil, Ashraful Islam},
+  <span class="bibtex-key">title</span>   = {GreenPEFT: A Multi-Objective Green AI Decision Support Framework},
+  <span class="bibtex-key">year</span>    = {2025},
+  <span class="bibtex-key">license</span> = {MIT},
+  <span class="bibtex-key">url</span>     = {https://github.com/ai-tanzil811/Green-AI-Decision-Support-Frameworks}
 }</pre>
         </div>
 
