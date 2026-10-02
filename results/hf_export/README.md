@@ -31,10 +31,10 @@ only energy clears the project's thresholds under both validation protocols.
 
 | Target | Interp. R² | Extrap. R² | Interp. MAPE | Extrap. MAPE | Status |
 | :--- | ---: | ---: | ---: | ---: | :--- |
-| Accuracy | 0.762 | 0.082 | 0.7% | 1.6% | PRELIMINARY |
-| Peak VRAM (GB) | 0.923 | 0.555 | 12.0% | 39.9% | PRELIMINARY |
-| Energy (kWh) | 0.997 | 0.897 | 2.6% | 10.6% | **VALIDATED** |
-| Wall-clock (s) | 0.984 | 0.531 | 4.5% | 23.0% | PRELIMINARY |
+| Accuracy | 0.764 | 0.082 | 0.7% | 1.6% | PRELIMINARY |
+| Peak VRAM (GB) | 0.923 | 0.555 | 11.5% | 39.9% | PRELIMINARY |
+| Energy (kWh) | 0.996 | 0.897 | 2.6% | 10.6% | **VALIDATED** |
+| Wall-clock (s) | 0.984 | 0.531 | 4.6% | 23.0% | PRELIMINARY |
 
 Two protocols are reported because they answer different questions. *Interpolation*
 (`GroupKFold(groups=config_id)`) tests a new seed of an already-measured configuration.
@@ -45,8 +45,8 @@ configurations nobody has measured.
 > **Read the interpolation column with care.** `config_id` contains the seed, so grouping on it
 > separates only the dataset's two measurement passes — two seeds of a configuration can train
 > while the third is tested. Re-validated with seeds held together (grouping on method +
-> backbone), accuracy R² falls from 0.762
-> to 0.39 and energy from 0.997
+> backbone), accuracy R² falls from 0.764
+> to 0.39 and energy from 0.996
 > to 0.88. The **extrapolation column is unaffected** by this and is the column to trust.
 
 ## Intended use
@@ -143,7 +143,7 @@ columns); these are **targets, not inputs**, and are guarded against in the trai
 | `model_metadata.json` | Features, targets, CV metrics, status, training envelope |
 | `configs/` | Backbone catalog, task and method definitions |
 
-Fitted with scikit-learn 1.8.0; loading with a different minor version may
+Fitted with scikit-learn 1.9.1; loading with a different minor version may
 warn or fail.
 
 ## Citation

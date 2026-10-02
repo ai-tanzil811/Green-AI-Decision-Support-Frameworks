@@ -902,10 +902,10 @@ window.GREENPEFT_EVIDENCE = {
    "protocol": "GroupKFold(k=5, groups=config_id)",
    "n_rows": 82,
    "n_groups": 41,
-   "MAE": 0.00618506,
-   "RMSE": 0.00921365,
-   "R2": 0.76207971,
-   "MAPE_pct": 0.67560346,
+   "MAE": 0.00608906,
+   "RMSE": 0.00917302,
+   "R2": 0.76417351,
+   "MAPE_pct": 0.66544325,
    "energy_filter_applied": false
   },
   {
@@ -924,10 +924,10 @@ window.GREENPEFT_EVIDENCE = {
    "protocol": "GroupKFold(k=5, groups=config_id)",
    "n_rows": 82,
    "n_groups": 41,
-   "MAE": 0.76698152,
-   "RMSE": 1.04100649,
-   "R2": 0.92280522,
-   "MAPE_pct": 11.98166262,
+   "MAE": 0.75976426,
+   "RMSE": 1.04302481,
+   "R2": 0.9225056,
+   "MAPE_pct": 11.51900023,
    "energy_filter_applied": false
   },
   {
@@ -946,10 +946,10 @@ window.GREENPEFT_EVIDENCE = {
    "protocol": "GroupKFold(k=5, groups=config_id)",
    "n_rows": 41,
    "n_groups": 41,
-   "MAE": 5.795e-05,
-   "RMSE": 6.993e-05,
-   "R2": 0.99652326,
-   "MAPE_pct": 2.59206619,
+   "MAE": 5.863e-05,
+   "RMSE": 7.083e-05,
+   "R2": 0.99643311,
+   "MAPE_pct": 2.61766417,
    "energy_filter_applied": true
   },
   {
@@ -968,10 +968,10 @@ window.GREENPEFT_EVIDENCE = {
    "protocol": "GroupKFold(k=5, groups=config_id)",
    "n_rows": 82,
    "n_groups": 41,
-   "MAE": 6.39852259,
-   "RMSE": 7.85677008,
-   "R2": 0.98412656,
-   "MAPE_pct": 4.54709551,
+   "MAE": 6.42424449,
+   "RMSE": 7.90708155,
+   "R2": 0.98392261,
+   "MAPE_pct": 4.56698491,
    "energy_filter_applied": false
   },
   {
